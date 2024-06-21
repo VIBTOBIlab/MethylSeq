@@ -14,6 +14,8 @@
 
 ## Introduction
 
+> **Note:** This pipeline has been modified using the original pipeline (version 2.6.0) to include the optical removal duplicates in the Bismark subworkflow. You can find the original pipeline at the following [nfcore repository](https://nf-co.re/methylseq/2.6.0).
+
 **nf-core/methylseq** is a bioinformatics analysis pipeline used for Methylation (Bisulfite) sequencing data. It pre-processes raw data from FastQ inputs, aligns the reads and performs extensive quality-control on the results.
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker / Singularity containers making installation trivial and results highly reproducible.
@@ -25,20 +27,21 @@ On release, automated continuous integration tests run the pipeline on a full-si
 The pipeline allows you to choose between running either [Bismark](https://github.com/FelixKrueger/Bismark) or [bwa-meth](https://github.com/brentp/bwa-meth) / [MethylDackel](https://github.com/dpryan79/methyldackel).
 Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for alignment), `--aligner bismark_hisat` or `--aligner bwameth`.
 
-| Step                                         | Bismark workflow | bwa-meth workflow     |
-| -------------------------------------------- | ---------------- | --------------------- |
-| Generate Reference Genome Index _(optional)_ | Bismark          | bwa-meth              |
-| Merge re-sequenced FastQ files               | cat              | cat                   |
-| Raw data QC                                  | FastQC           | FastQC                |
-| Adapter sequence trimming                    | Trim Galore!     | Trim Galore!          |
-| Align Reads                                  | Bismark          | bwa-meth              |
-| Deduplicate Alignments                       | Bismark          | Picard MarkDuplicates |
-| Extract methylation calls                    | Bismark          | MethylDackel          |
-| Sample report                                | Bismark          | -                     |
-| Summary Report                               | Bismark          | -                     |
-| Alignment QC                                 | Qualimap         | Qualimap              |
-| Sample complexity                            | Preseq           | Preseq                |
-| Project Report                               | MultiQC          | MultiQC               |
+| Step                                         | Bismark workflow     | bwa-meth workflow     |
+| -------------------------------------------- | -------------------- | --------------------- |
+| Generate Reference Genome Index _(optional)_ | Bismark              | bwa-meth              |
+| Merge re-sequenced FastQ files               | cat                  | cat                   |
+| Raw data QC                                  | FastQC               | FastQC                |
+| Adapter sequence trimming                    | Trim Galore!         | Trim Galore!          |
+| Align Reads                                  | Bismark              | bwa-meth              |
+| Deduplicate Alignments                       | Bismark              | Picard MarkDuplicates |
+| Removal of optical duplicates                | Picard MarkDuplicates| -                     |
+| Extract methylation calls                    | Bismark              | MethylDackel          |
+| Sample report                                | Bismark              | -                     |
+| Summary Report                               | Bismark              | -                     |
+| Alignment QC                                 | Qualimap             | Qualimap              |
+| Sample complexity                            | Preseq               | Preseq                |
+| Project Report                               | MultiQC              | MultiQC               |
 
 ## Usage
 
