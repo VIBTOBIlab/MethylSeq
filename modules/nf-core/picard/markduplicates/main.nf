@@ -38,7 +38,11 @@ process PICARD_MARKDUPLICATES {
         --INPUT $bam \\
         --OUTPUT ${prefix}.bam \\
         --REFERENCE_SEQUENCE $fasta \\
-        --METRICS_FILE ${prefix}.MarkDuplicates.metrics.txt
+        --METRICS_FILE ${prefix}.MarkDuplicates.metrics.txt \\
+        --OPTICAL_DUPLICATE_PIXEL_DISTANCE 12000 \\
+        --ASSUME_SORT_ORDER queryname \\
+        --READ_NAME_REGEX '[a-zA-Z0-9]+:[0-9]+:[a-zA-Z0-9]+:[0-9]+:([0-9]+):([0-9]+):([0-9]+)_[0-9]+:[a-zA-Z0-9]+:[0-9]+:[a-zA-Z0-9]+[+][a-zA-Z0-9]+' \\
+        --COMPRESSION_LEVEL 0 \\
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -1,0 +1,10 @@
+input: /scratch/gent/vo/000/gvo00027/TOBI/Projects/Maisa_project/prova/samples.csv
+outdir: /scratch/gent/vo/000/gvo00027/vsc44629/prova/results
+fasta: /scratch/gent/vo/000/gvo00027/BismarkResources/hg19_uxm/hg19.fa
+fasta_index: /scratch/gent/vo/000/gvo00027/BismarkResources/hg19_uxm/hg19.fa.fai
+rrbs: True
+bismark_index: /scratch/gent/vo/000/gvo00027/BismarkResources/hg19_uxm/
+clip_r1: 3
+clip_r2: 4
+three_prime_clip_r1: 1
+three_prime_clip_r2: 1
