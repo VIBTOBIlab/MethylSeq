@@ -2,7 +2,7 @@
 
 ## [v2.6.0](https://github.com/nf-core/methylseq/releases/tag/2.6.0) - 2024-07-31
 
-### Modifications applied to this pipeline version
+### In-house modifications applied to this pipeline version
 
 - Picard Markduplicates module modified to match our criteria (look at the module for more information) anf added to the Bismark subworkflow.
 - Bismark `filter_non_conversion` function added to the bismark subworkflow together with the `minimum_count` and `percentage_cutoff` parameters (see nextflow.conf and filter_non_conversion module for more information). It needs to be updated with a new version of Bismark (and the corresponding biocontainer) is released (there is a bug in the current version, see the issue [#688](https://github.com/FelixKrueger/Bismark/issues/688)) since now it's using an unofficial Bismark container.
