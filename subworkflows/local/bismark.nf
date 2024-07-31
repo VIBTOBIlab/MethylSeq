@@ -12,6 +12,8 @@ include { BISMARK_METHYLATIONEXTRACTOR                                          
 include { BISMARK_COVERAGE2CYTOSINE                                                   } from '../../modules/nf-core/bismark/coverage2cytosine/main'
 include { BISMARK_REPORT                                                              } from '../../modules/nf-core/bismark/report/main'
 include { BISMARK_SUMMARY                                                             } from '../../modules/nf-core/bismark/summary/main'
+include { BISMARK_FILTER_NON_CONVERSION                                               } from '../../modules/nf-core/bismark/filter_non_conversion/main'
+
 
 workflow BISMARK {
     take:
@@ -34,11 +36,21 @@ workflow BISMARK {
     )
     versions = versions.mix(BISMARK_ALIGN.out.versions)
 
+
+    /*
+     * Filtering out non-bisulfite converted reads
+     */
+    BISMARK_FILTER_NON_CONVERSION (
+        BISMARK_ALIGN.out.bam,
+    )
+    versions = versions.mix(BISMARK_FILTER_NON_CONVERSION.out.versions)
+
+
     /*
      * Sort deduplicated output BAM
      */
     SAMTOOLS_SORT_ALIGNED (
-        BISMARK_ALIGN.out.bam,
+        BISMARK_FILTER_NON_CONVERSION.out.filter_bam,
     )
     versions = versions.mix(SAMTOOLS_SORT_ALIGNED.out.versions)
 
@@ -62,7 +74,7 @@ workflow BISMARK {
         /*
         * Run deduplicate_bismark
         */
-        BISMARK_DEDUPLICATE( BISMARK_ALIGN.out.bam )
+        BISMARK_DEDUPLICATE( BISMARK_FILTER_NON_CONVERSION.out.filter_bam )
 
         alignments = BISMARK_DEDUPLICATE.out.bam
         alignment_reports = BISMARK_ALIGN.out.report.join(BISMARK_DEDUPLICATE.out.report)

@@ -34,6 +34,7 @@ Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for
 | Raw data QC                                  | FastQC               | FastQC                |
 | Adapter sequence trimming                    | Trim Galore!         | Trim Galore!          |
 | Align Reads                                  | Bismark              | bwa-meth              |
+| Filter Non Conversion                        | Bismark              | -                     |
 | Deduplicate Alignments                       | Bismark              | Picard MarkDuplicates |
 | Removal of optical duplicates                | Picard MarkDuplicates| -                     |
 | Extract methylation calls                    | Bismark              | MethylDackel          |

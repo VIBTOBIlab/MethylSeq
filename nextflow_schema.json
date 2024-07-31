@@ -372,6 +372,20 @@
                     "fa_icon": "fas fa-dna",
                     "description": "Sample is NOMe-seq or NMT-seq. Runs coverage2cytosine.",
                     "help_text": "Sets `--CX` during methylation extraction and `--nome` during the `coverage2cytosine` step.\n\nWill also force the coverage2cytosine step to run."
+                },
+                "percentage_cutoff": {
+                    "type": "integer",
+                    "default": 90,
+                    "fa_icon": "fas fa-dna",
+                    "description": "Instead of filtering on an absolute count of methylated cytosines in non-CG context this option allows you to define an overall percentage of methylation in non-CG context (both CHH and CHG) which, if reached or exceeded, results in the read or read pair being filtered out.",
+                    "help_text": "For paired-end files either Read 1 or Read 2 can fail the entire read pair. Also requires a minimum number of cytosines in non-CG context to make confident filtering choices (see --minimum_count [int])."
+                },
+                "minimum_count": {
+                    "type": "integer",
+                    "default": 3,
+                    "fa_icon": "fas fa-dna",
+                    "description": "At least this number of cytosines in non-CG context (CHH or CHG) have to be seen in a read (irrespective of their methylation state) before the --percentage_cutoff filter kicks in.",
+                    "help_text": "At least this number of cytosines in non-CG context (CHH or CHG) have to be seen in a read (irrespective of their methylation state) before the --percentage_cutoff filter kicks in."
                 }
             }
         },
