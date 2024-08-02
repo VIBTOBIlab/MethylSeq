@@ -1,11 +1,12 @@
 # nf-core/methylseq
 
-## [v2.6.0](https://github.com/nf-core/methylseq/releases/tag/2.6.0) - 2024-07-31
+## [v2.6.1](https://github.ugent.be/DePreterLab/MethylSeq/releases/2.6.1) - 2024-08-02
 
-### In-house modifications applied to this pipeline version
+### In-house modifications applied to methylseq pipeline version [v2.6.0](https://github.com/nf-core/methylseq/releases/tag/2.6.0)
 
-- Picard Markduplicates module modified to match our criteria (look at the module for more information) anf added to the Bismark subworkflow.
-- Bismark `filter_non_conversion` function added to the bismark subworkflow together with the `minimum_count` and `percentage_cutoff` parameters (see nextflow.conf and filter_non_conversion module for more information). It needs to be updated with a new version of Bismark (and the corresponding biocontainer) is released (there is a bug in the current version, see the issue [#688](https://github.com/FelixKrueger/Bismark/issues/688)) since now it's using an unofficial Bismark container.
+- Picard Markduplicates module has been added to Bismark subworflow(look at the module for more information).
+- Bismark `filter_non_conversion` function has been added to the Bismark subworkflow. It can be activated specifing the flga `--filter_non_conversion` together with the `minimum_count` and `percentage_cutoff` parameters (see nextflow.conf and filter_non_conversion module for more information). When activated, it creates an output folder where it saves 3 files. The fitlered bam file is then used for the subsequent modules. 
+It needs to be updated with a new version of Bismark (and the corresponding biocontainer) when it is released (there is a bug in the current version, see the issue [#688](https://github.com/FelixKrueger/Bismark/issues/688)) since now it's using an unofficial Bismark container.
 
 ## [v2.6.0](https://github.com/nf-core/methylseq/releases/tag/2.6.0) - 2024-01-05
 
