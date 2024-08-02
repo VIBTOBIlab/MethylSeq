@@ -373,6 +373,13 @@
                     "description": "Sample is NOMe-seq or NMT-seq. Runs coverage2cytosine.",
                     "help_text": "Sets `--CX` during methylation extraction and `--nome` during the `coverage2cytosine` step.\n\nWill also force the coverage2cytosine step to run."
                 },
+                "filter_non_conversion": {
+                    "type": "boolean",
+                    "default": false,
+                    "fa_icon": "fas fa-dna",
+                    "description": "Filtering incomplete bisulfite conversion from Bismark BAM files.",
+                    "help_text": "This script examines the methylation calls of reads and filters out reads that exceed a certain threshold of methylated calls in non-CG context (see percentage_cutoff and minimum_count)."
+                },
                 "percentage_cutoff": {
                     "type": "integer",
                     "default": 90,

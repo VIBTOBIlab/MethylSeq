@@ -3,7 +3,6 @@ process BISMARK_FILTER_NON_CONVERSION {
     label 'process_high'
 
     conda "bioconda::bismark=0.24.0"
-    
     container "astrobiomike/gl-methylseq-wf-bismark:main" // to be modified with the new version of biocontainer/bismark
 
     input:
@@ -12,7 +11,7 @@ process BISMARK_FILTER_NON_CONVERSION {
     output:
     tuple val(meta), path("*.nonCG_filtered.bam"), emit: filter_bam
     path "*.nonCG_removed_seqs.bam"
-    path "*.non-conversion_filtering.txt"
+    path "*.non-conversion_filtering.txt", emit: report
     path "versions.yml" , emit: versions
 
     script:

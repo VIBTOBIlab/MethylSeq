@@ -34,23 +34,26 @@ workflow BISMARK {
         reads,
         bismark_index
     )
+    bam_file = BISMARK_ALIGN.out.bam
     versions = versions.mix(BISMARK_ALIGN.out.versions)
 
 
     /*
-     * Filtering out non-bisulfite converted reads
+     * If filter_non_conversion flag has been specified, run this step (filtering out non-bisulfite converted reads)
      */
-    BISMARK_FILTER_NON_CONVERSION (
-        BISMARK_ALIGN.out.bam,
-    )
-    versions = versions.mix(BISMARK_FILTER_NON_CONVERSION.out.versions)
-
+    if (params.filter_non_conversion) {
+        BISMARK_FILTER_NON_CONVERSION (
+            BISMARK_ALIGN.out.bam
+        )
+        bam_file = BISMARK_FILTER_NON_CONVERSION.out.filter_bam
+        versions = versions.mix(BISMARK_FILTER_NON_CONVERSION.out.versions)
+    }
 
     /*
      * Sort deduplicated output BAM
      */
     SAMTOOLS_SORT_ALIGNED (
-        BISMARK_FILTER_NON_CONVERSION.out.filter_bam,
+        bam_file
     )
     versions = versions.mix(SAMTOOLS_SORT_ALIGNED.out.versions)
 
@@ -67,15 +70,14 @@ workflow BISMARK {
     if (skip_deduplication) {
         alignments = PICARD_MARKDUPLICATES.out.bam
         picard_metrics = PICARD_MARKDUPLICATES.out.metrics
-        picard_version = PICARD_MARKDUPLICATES.out.versions
         versions = versions.mix(PICARD_MARKDUPLICATES.out.versions)
         alignment_reports = BISMARK_ALIGN.out.report.map{ meta, report -> [ meta, report, [] ] }
     } else {
         /*
         * Run deduplicate_bismark
         */
+        picard_metrics = Channel.empty()
         BISMARK_DEDUPLICATE( BISMARK_FILTER_NON_CONVERSION.out.filter_bam )
-
         alignments = BISMARK_DEDUPLICATE.out.bam
         alignment_reports = BISMARK_ALIGN.out.report.join(BISMARK_DEDUPLICATE.out.report)
         versions = versions.mix(BISMARK_DEDUPLICATE.out.versions)
@@ -141,7 +143,7 @@ workflow BISMARK {
      * Sort aligned reads for bam emit file (will be used for preseq module)
      */
     SAMTOOLS_SORT_ALIGNED_CHR (
-        BISMARK_ALIGN.out.bam
+        bam_file
      )
     versions = versions.mix(SAMTOOLS_SORT_ALIGNED_CHR.out.versions)
 
@@ -149,6 +151,7 @@ workflow BISMARK {
      * Collect MultiQC inputs
      */
     BISMARK_SUMMARY.out.summary.ifEmpty([])
+        .mix(picard_metrics.collect{ it[1]})
         .mix(alignment_reports.collect{ it[1] })
         .mix(alignment_reports.collect{ it[2] })
         .mix(BISMARK_METHYLATIONEXTRACTOR.out.report.collect{ it[1] })
@@ -158,7 +161,7 @@ workflow BISMARK {
 
     emit:
     bam        = SAMTOOLS_SORT_ALIGNED_CHR.out.bam        // channel: [ val(meta), [ bam ] ] ## sorted, non-deduplicated (raw) BAM from aligner
-    dedup      = SAMTOOLS_SORT_DEDUPLICATED.out.bam   // channel: [ val(meta), [ bam ] ] ## sorted, possibly deduplicated BAM
-    mqc        = multiqc_files                        // path: *{html,txt}
-    versions                                       // path: *.version.txt
+    dedup      = SAMTOOLS_SORT_DEDUPLICATED.out.bam       // channel: [ val(meta), [ bam ] ] ## sorted, possibly deduplicated BAM
+    mqc        = multiqc_files                            // path: *{html,txt}
+    versions                                              // path: *.version.txt
 }
