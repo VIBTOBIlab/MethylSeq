@@ -1,6 +1,6 @@
 # nf-core/methylseq
 
-## [v2.6.1](https://github.ugent.be/DePreterLab/MethylSeq/releases/2.6.1) - 2024-08-02
+## [v2.6.1](https://github.ugent.be/DePreterLab/MethylSeq/releases/tag/v2.6.1) - 2024-08-02
 
 ### In-house modifications applied to methylseq pipeline version [v2.6.0](https://github.com/nf-core/methylseq/releases/tag/2.6.0)
 
