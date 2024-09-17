@@ -114,7 +114,7 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 The typical command for running the pipeline is as follows:
 
 ```bash
-nextflow run nf-core/methylseq --input ./samplesheet.csv --outdir ./results --genome GRCh37 -profile docker
+nextflow run main.nf --input ./samplesheet.csv --outdir ./results --genome GRCh37 -profile docker
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
@@ -139,7 +139,7 @@ Do not use `-c <file>` to specify parameters as this will result in errors. Cust
 The above pipeline run specified with a params file in yaml format:
 
 ```bash
-nextflow run nf-core/methylseq -profile docker -params-file params.yaml
+nextflow run main.nf -profile docker -params-file params.yaml
 ```
 
 with `params.yaml` containing:
