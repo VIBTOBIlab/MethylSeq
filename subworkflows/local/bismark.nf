@@ -144,7 +144,7 @@ workflow BISMARK {
      * Collect MultiQC inputs
      */
     BISMARK_SUMMARY.out.summary.ifEmpty([])
-        .mix(picard_metrics.collect{ it[1]})
+        .mix(picard_metrics.collect{ it[1] })
         .mix(alignment_reports.collect{ it[1] })
         .mix(alignment_reports.collect{ it[2] })
         .mix(BISMARK_METHYLATIONEXTRACTOR.out.report.collect{ it[1] })

@@ -41,9 +41,9 @@ process PICARD_MARKDUPLICATES {
         MarkDuplicates \\
         $args \\
         --INPUT $bam \\
-        --OUTPUT ${prefix}.bam \\
+        --OUTPUT ${meta.id}.markdup.bam \\
         --REFERENCE_SEQUENCE $fasta \\
-        --METRICS_FILE ${prefix}.MarkDuplicates.metrics.txt \\
+        --METRICS_FILE ${meta.id}.MarkDuplicates.metrics.txt \\
         --OPTICAL_DUPLICATE_PIXEL_DISTANCE ${opt_dupl_dist} \\
         --ASSUME_SORT_ORDER queryname \\
         --READ_NAME_REGEX '[a-zA-Z0-9]+:[0-9]+:[a-zA-Z0-9]+:[0-9]+:([0-9]+):([0-9]+):([0-9]+)_[0-9]+:[a-zA-Z0-9]+:[0-9]+:[a-zA-Z0-9]+[+][a-zA-Z0-9]+' \\
