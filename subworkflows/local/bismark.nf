@@ -3,7 +3,6 @@
  */
 include { BISMARK_ALIGN                                                               } from '../../modules/nf-core/bismark/align/main'
 include { SAMTOOLS_SORT as SAMTOOLS_SORT_DEDUPLICATED                                 } from '../../modules/nf-core/samtools/sort/main'
-include { SAMTOOLS_SORT as SAMTOOLS_SORT_ALIGNED_CHR                                  } from '../../modules/nf-core/samtools/sort/main'
 include { SAMTOOLS_SORT_ALIGNED                                                       } from '../../modules/nf-core/samtools/sort_n/main'
 include { SAMTOOLS_INDEX                                                              } from '../../modules/nf-core/samtools/index/main'
 include { PICARD_MARKDUPLICATES                                                       } from '../../modules/nf-core/picard/markduplicates/main'
@@ -25,6 +24,7 @@ workflow BISMARK {
     fasta_index        // channel: /path/to/fasta_index
     main:
     versions = Channel.empty()
+    picard_metrics = Channel.empty()
 
 
     /*
@@ -34,50 +34,51 @@ workflow BISMARK {
         reads,
         bismark_index
     )
-    bam_file = BISMARK_ALIGN.out.bam
+    alignments = BISMARK_ALIGN.out.bam
     versions = versions.mix(BISMARK_ALIGN.out.versions)
 
-
     /*
-     * If filter_non_conversion flag has been specified, run this step (filtering out non-bisulfite converted reads)
+     * If filter_non_conversion flag has been specified, 
+     * run this step (filtering out non-bisulfite converted reads)
      */
     if (params.filter_non_conversion) {
         BISMARK_FILTER_NON_CONVERSION (
-            BISMARK_ALIGN.out.bam
+            alignments
         )
-        bam_file = BISMARK_FILTER_NON_CONVERSION.out.filter_bam
+        alignments = BISMARK_FILTER_NON_CONVERSION.out.filter_bam
         versions = versions.mix(BISMARK_FILTER_NON_CONVERSION.out.versions)
     }
 
     /*
-     * Sort deduplicated output BAM
+     * Sort by queryname the output BAM for PicardMarkDupl
      */
     SAMTOOLS_SORT_ALIGNED (
-        bam_file
+        alignments
     )
+    alignments = SAMTOOLS_SORT_ALIGNED.out.bam
     versions = versions.mix(SAMTOOLS_SORT_ALIGNED.out.versions)
 
     /*
-     * Run picard_markduplicates
+     * Remove optical duplicates if specified
      */
-    PICARD_MARKDUPLICATES (
-        SAMTOOLS_SORT_ALIGNED.out.bam,
-        fasta,
-        fasta_index
-    )
+    if (params.remove_optic_duplicates) {
+        PICARD_MARKDUPLICATES (
+            alignments,
+            fasta,
+            fasta_index
+        )
+    alignments = PICARD_MARKDUPLICATES.out.bam
+    picard_metrics = PICARD_MARKDUPLICATES.out.metrics
     versions = versions.mix(PICARD_MARKDUPLICATES.out.versions)
+    }
 
     if (skip_deduplication) {
-        alignments = PICARD_MARKDUPLICATES.out.bam
-        picard_metrics = PICARD_MARKDUPLICATES.out.metrics
-        versions = versions.mix(PICARD_MARKDUPLICATES.out.versions)
         alignment_reports = BISMARK_ALIGN.out.report.map{ meta, report -> [ meta, report, [] ] }
     } else {
         /*
         * Run deduplicate_bismark
         */
-        picard_metrics = Channel.empty()
-        BISMARK_DEDUPLICATE( BISMARK_FILTER_NON_CONVERSION.out.filter_bam )
+        BISMARK_DEDUPLICATE( alignments )
         alignments = BISMARK_DEDUPLICATE.out.bam
         alignment_reports = BISMARK_ALIGN.out.report.join(BISMARK_DEDUPLICATE.out.report)
         versions = versions.mix(BISMARK_DEDUPLICATE.out.versions)
@@ -104,20 +105,6 @@ workflow BISMARK {
     }
 
     /*
-     * Sort deduplicated output BAM
-     */
-    SAMTOOLS_SORT_DEDUPLICATED (
-        alignments
-    )
-    versions = versions.mix(SAMTOOLS_SORT_DEDUPLICATED.out.versions)
-
-    /*
-     * Run samtools index on deduplicated alignment
-     */
-    SAMTOOLS_INDEX (SAMTOOLS_SORT_DEDUPLICATED.out.bam)
-    versions = versions.mix(SAMTOOLS_INDEX.out.versions)
-
-    /*
      * Generate bismark sample reports
      */
     BISMARK_REPORT (
@@ -140,12 +127,18 @@ workflow BISMARK {
     versions = versions.mix(BISMARK_SUMMARY.out.versions)
 
     /*
-     * Sort aligned reads for bam emit file (will be used for preseq module)
+     * Sort deduplicated output BAM
      */
-    SAMTOOLS_SORT_ALIGNED_CHR (
-        bam_file
-     )
-    versions = versions.mix(SAMTOOLS_SORT_ALIGNED_CHR.out.versions)
+    SAMTOOLS_SORT_DEDUPLICATED (
+        alignments
+    )
+    versions = versions.mix(SAMTOOLS_SORT_DEDUPLICATED.out.versions)
+
+    /*
+     * Run samtools index on deduplicated alignment
+     */
+    SAMTOOLS_INDEX (SAMTOOLS_SORT_DEDUPLICATED.out.bam)
+    versions = versions.mix(SAMTOOLS_INDEX.out.versions)
 
     /*
      * Collect MultiQC inputs
@@ -160,7 +153,7 @@ workflow BISMARK {
         .set{ multiqc_files }
 
     emit:
-    bam        = SAMTOOLS_SORT_ALIGNED_CHR.out.bam        // channel: [ val(meta), [ bam ] ] ## sorted, non-deduplicated (raw) BAM from aligner
+    bam        = SAMTOOLS_SORT_ALIGNED.out.bam            // channel: [ val(meta), [ bam ] ] ## sorted, non-deduplicated (raw) BAM from aligner
     dedup      = SAMTOOLS_SORT_DEDUPLICATED.out.bam       // channel: [ val(meta), [ bam ] ] ## sorted, possibly deduplicated BAM
     mqc        = multiqc_files                            // path: *{html,txt}
     versions                                              // path: *.version.txt

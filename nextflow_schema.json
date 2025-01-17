@@ -396,6 +396,24 @@
                 }
             }
         },
+        "pic_mark_opt_dupl_options": {
+            "title": "PicMarkOptDupl options",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "remove_optic_duplicates": {
+                    "type": "boolean",
+                    "description": "Mark and remove optical duplicates using PicardMarkDuplicates.",
+                    "fa_icon": "fas fa-angle-double-down"
+                },
+                "sequencer": {
+                    "type": "string",
+                    "description": "Type of sequencing machine used.",
+                    "enum": ["NovaSeq", "HiSeq", "NextSeq"]
+                }
+            }
+        },
         "bwa_meth_options": {
             "title": "bwa-meth options",
             "type": "object",

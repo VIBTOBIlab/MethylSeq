@@ -47,6 +47,11 @@ class WorkflowMain {
         if (!params.input) {
             Nextflow.error("Please provide an input samplesheet to the pipeline e.g. '--input samplesheet.csv'")
         }
+        // Exit pipeline if incorrect --sequencer key provided
+        def validSequencers = ['NovaSeq', 'HiSeq', 'NextSeq']
+        if (!validSequencers.contains(params.sequencer)) {
+            Nextflow.error("Invalid value for --sequencer parameter. Allowed values are: ${validSequencers.join(', ')}")
+        }
     }
     //
     // Get attribute from genome config file e.g. fasta

@@ -30,6 +30,11 @@ process PICARD_MARKDUPLICATES {
     } else {
         avail_mem = (task.memory.mega*0.8).intValue()
     }
+    if (params.sequencer=="NovaSeq") {
+        opt_dupl_dist = 12000
+    } else if (params.sequencer="HiSeq") {
+        opt_dupl_dist = 2500
+    } else { opt_dupl_dist = 100 }
     """
     picard \\
         -Xmx${avail_mem}M \\
@@ -39,10 +44,10 @@ process PICARD_MARKDUPLICATES {
         --OUTPUT ${prefix}.bam \\
         --REFERENCE_SEQUENCE $fasta \\
         --METRICS_FILE ${prefix}.MarkDuplicates.metrics.txt \\
-        --OPTICAL_DUPLICATE_PIXEL_DISTANCE 12000 \\
+        --OPTICAL_DUPLICATE_PIXEL_DISTANCE ${opt_dupl_dist} \\
         --ASSUME_SORT_ORDER queryname \\
         --READ_NAME_REGEX '[a-zA-Z0-9]+:[0-9]+:[a-zA-Z0-9]+:[0-9]+:([0-9]+):([0-9]+):([0-9]+)_[0-9]+:[a-zA-Z0-9]+:[0-9]+:[a-zA-Z0-9]+[+][a-zA-Z0-9]+' \\
-        --COMPRESSION_LEVEL 0 \\
+        --COMPRESSION_LEVEL 5 \\
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

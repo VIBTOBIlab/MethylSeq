@@ -26,7 +26,7 @@ process SAMTOOLS_SORT {
     samtools sort \\
         $args \\
         -@ $task.cpus \\
-        -o ${prefix}.bam \\
+        -o ${bam.baseName}.sorted.bam \\
         -T $prefix \\
         $bam
 
