@@ -78,6 +78,13 @@ For more details and further functionality, please refer to the [usage documenta
 ## Parameters included in the modified version
 
 ### Filter non conversion (Bismark) module
+
+#### `--remove_optic_duplicates`
+If specified, it removes the optical duplicates. It can be used together with `--sequencer` (see below).
+
+#### `--sequencer`
+If the flag `--remove_optic_duplicates` has been specified, `--sequencer` will be by default set to **NovaSeq**. Alternatively, you can specify **HiSeq** or **NextSeq**. This will change the OpticalDupsPixelDistance within PicardMarkDuplicates step (**NovaSeq**: 12000, **HiSeq**: 2500, **NextSeq**: 100).
+
 #### `--filter_non_conversion`
 If specified, it filters out all those reads that have a methylation value >= than a preset threshold in non-CG context where you expect a very low methylation level (<5% usually). For more information please consult the [Bismark usage](https://felixkrueger.github.io/Bismark/bismark/filter_nonconverted_reads/). 
 
