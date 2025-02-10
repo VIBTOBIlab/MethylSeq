@@ -414,6 +414,31 @@
                 }
             }
         },
+        "seq_saturat_curve_options": {
+            "title": "sequencing saturation curve options",
+            "type": "object",
+            "description": "",
+            "default":"",
+            "properties": {
+                "sequencing_curve": {
+                    "type": "boolean",
+                    "description": "Specify if you want or not sequencing saturation curve.",
+                    "default":true
+                },
+                "downsampling_percentages": {
+                    "type":"array",
+                    "description": "List containing percentages used to downsample the bam file and create the sequencing saturation curve.",
+                    "items":{
+                        "type":"number"
+                    }
+                },
+                "min_counts": {
+                    "type": "integer",
+                    "default": 3,
+                    "description": "Minimum number of counts to define a new CpG"
+                }
+            }
+        },
         "bwa_meth_options": {
             "title": "bwa-meth options",
             "type": "object",
