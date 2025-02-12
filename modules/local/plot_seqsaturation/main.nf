@@ -7,6 +7,7 @@ process PLOT_SEQ_SATURATION {
     input:
     path reads
     path cpgs
+    //val counts
 
     output:
     path ("*.png")
@@ -14,9 +15,9 @@ process PLOT_SEQ_SATURATION {
     script:
     """
     python3 ../../../bin/plot_reads_vs_cpgs.py \
-    --cpgs_file $cpgs \
-    --read_file $reads \
-    --percentages ${params.downsampling_percentages.join(',')}
+    --cpgs_file ${cpgs} \
+    --read_file ${reads} \
+    --percentages ${params.downsampling_percentages} \
     """
 }
 

@@ -5,8 +5,7 @@
 - Added parameter to deactivate PicardMarkduplicates module
 - Added parameter to specify which sequencer has been used for PicardMarkduplicates module
 - Reordered the main Bismark Workflow
-- Updated MultiQC to new version 1.27.1 and integrated the `--ai` and `--ai_anonymize_samples` flags.
-- Added the Sequencing Saturation plots by default when RRBS is specified.
+- Added the optional Sequencing Saturation plots.
 
 ## [v2.6.1](https://github.ugent.be/DePreterLab/MethylSeq/releases/tag/v2.6.1) - 2024-08-02
 

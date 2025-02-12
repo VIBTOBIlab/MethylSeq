@@ -426,14 +426,11 @@
                     "default":true
                 },
                 "downsampling_percentages": {
-                    "type":"array",
-                    "description": "List containing percentages used to downsample the bam file and create the sequencing saturation curve.",
-                    "items":{
-                        "type":"number"
-                    }
+                    "type":"string",
+                    "description": "List containing percentages used to downsample the bam file and create the sequencing saturation curve."
                 },
                 "min_counts": {
-                    "type": "integer",
+                    "type": "string",
                     "default": 3,
                     "description": "Minimum number of counts to define a new CpG"
                 }

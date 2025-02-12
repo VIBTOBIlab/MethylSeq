@@ -12,9 +12,9 @@ process SEQ_SATURATION_METHEXTRACTOR {
     path index
 
     output:
-    tuple val(meta), path("*.cov.gz"), val(percentage)   , emit: coverage
-    path "${meta.id}_${percentage}.cpgcount.csv"       , emit: csv
-    path "versions.yml"                                  , emit: versions
+    tuple val(meta), path("*.cov.gz"), val(percentage)          , emit: coverage
+    path "*.csv"                                                , emit: csv
+    path "versions.yml"                                         , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -38,11 +38,15 @@ process SEQ_SATURATION_METHEXTRACTOR {
         --counts \\
         --gzip \\
         $seqtype \\
-        $args
+        $args \\
 
-    CpG_COUNT=\$(zcat ${meta.id}_downsampled_${percentage}.bismark.cov.gz | awk -v OFS='\\t' '\$5 + \$6 >= ${params.min_counts}' | wc -l)
-    echo "${meta.id},${percentage},\$CpG_COUNT" > ${meta.id}_${percentage}.cpgcount.csv
-
+    IFS=',' read -ra numbers <<< "${params.min_counts}"
+    echo "${meta.id}_${percentage}.cpgcount.csv"
+    for i in "\${numbers[@]}"; do
+        CpG_COUNT=\$(zcat ${meta.id}_downsampled_${percentage}.bismark.cov.gz | awk -v OFS='\\t' -v i="\$i" '\$5 + \$6 >= i' | wc -l)
+        echo "${meta.id},${percentage},\${i},\$CpG_COUNT" >> "${meta.id}_${percentage}.cpgcount.csv"
+    done
+    
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         bismark: \$(echo \$(bismark -v 2>&1) | sed 's/^.*Bismark Version: v//; s/Copyright.*\$//')

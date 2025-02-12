@@ -14,38 +14,60 @@ def derivative_asymptotic_growth(x, beta0, beta1):
     return beta0 * beta1 / (1 + (beta1 * x) ** 2)
 
 
-def plot_data(x_data,y_data,asymptote,params,output_plot,title):
+def find_asymptote(params):
+    beta0, beta1 = params
+    asymptote = beta0 * np.pi / 2 # Limit for x that tends to Inf
+    return asymptote
+
+
+def plot_data(x_data,y_data,reads,asymptote,params,output_plot,title):
     # Predict new data
     xpred = np.append(x_data, np.array( [1.2,1.4,1.6,1.8,2] ) )
+    xpred_reads = np.array( reads*xpred )
     ypred = asymptotic_growth(xpred, *params)
     y_diff = [0,1]+[(ypred[i]-ypred[i-1])/ypred[i-1] for i in range(2,len(ypred))]
     
-    # Plot the data
-    plt.figure(figsize=(10, 6))
-    plt.plot(x_data, y_data, marker="o", color="blue",linestyle="")
-    plt.plot(xpred, ypred, 'g--',
-         label='fit: beta0=%5.3f, beta1=%5.3f' % tuple(params))
-    for i in range(4,len(xpred)):
-        plt.text(xpred[i], ypred[i] - 0.07 * ypred[i], f"{y_diff[i]:.4f}", color="blue", fontsize=10, ha="center")
-    plt.axhline(y=asymptote,color='r',linestyle='--')
-    plt.text(0, asymptote - asymptote*0.1, f"Asymptote = {asymptote:.2e}", color="red", fontsize=12)
-    plt.title(title, fontsize=16)
-    plt.xticks(xpred, labels=[f"{x:.1f}" for x in xpred], fontsize=10)
-    plt.xlabel("Percentage of downsampling", fontsize=14)
-    plt.ylabel("Number of CpGs", fontsize=14)
-    plt.grid(True, linestyle="--", alpha=0.6)
-    plt.tight_layout()
+    # Create the figure and axis
+    fig, ax1 = plt.subplots(figsize=(10, 6))
+
+    # Plot the main data (on bottom x-axis)
+    ax1.plot(x_data, y_data, marker="o", color="blue", linestyle="")
+
+    # Plot the fit line
+    ax1.plot(xpred, ypred, 'g--', label='fit: beta0=%5.3f, beta1=%5.3f' % tuple(params))
+    ax1.set_xticks(xpred)
+
+    # Add text labels for y_diff below the plot
+    for i in range(4, len(xpred)):
+        ax1.text(xpred[i], ypred[i] - 0.07 * ypred[i], f"{y_diff[i]:.4f}", color="blue", fontsize=10, ha="center")
+
+    # Add asymptote line
+    ax1.axhline(y=asymptote, color='r', linestyle='--')
+    ax1.text(0, asymptote - asymptote * 0.1, f"Asymptote = {asymptote:.2e}", color="red", fontsize=12)
+
+    # Set title and labels for the bottom x-axis
+    ax1.set_title(title, fontsize=16)
+    ax1.set_xlabel("Percentage of downsampling", fontsize=14)
+    ax1.set_ylabel("Number of CpGs", fontsize=14)
+
+    # Plot the second x-axis for xpred_reads (top x-axis)
+    ax2 = ax1.twiny()  # Create a second x-axis sharing the same y-axis
+    ax2.set_xlim(ax1.get_xlim())  
+    ax2.set_xticks(xpred)
+    ax2.tick_params(axis='x',pad=7)
+    ax2.set_xticklabels([f'{x:.1e}' for x in xpred_reads], fontsize=10)
+    # Customize the x-tick positions and move them to the top
+    ax2.xaxis.set_ticks_position('top')
+    ax1.xaxis.set_ticks_position('bottom')
+
+    # Display grid and layout
+    ax1.grid(True, linestyle="--", alpha=0.6)
+    fig.tight_layout()
 
     # Save the plot
     plt.savefig(output_plot)
     plt.close()
     print(f"Plot saved to {output_plot}")
-
-
-def find_asymptote(params):
-    beta0, beta1 = params
-    asymptote = beta0 * np.pi / 2 # Limit for x that tends to Inf
-    return asymptote
 
 
 def plot_reads_vs_cpgs(data, output_plot,percentages):
@@ -69,12 +91,13 @@ def plot_reads_vs_cpgs(data, output_plot,percentages):
     
     # Plot the data and save the plots
     title = list(set(data["sample"]))[0]
-    plot_data(x_data,y_data,asymptote,params,output_plot,title)
+    reads = int(data["reads_counts"].tolist()[-1])
+    plot_data(x_data,y_data,reads,asymptote,params,output_plot,title)
 
 
 def select_sample(cpgs, reads,percentages):
     # Read the input file into a DataFrame
-    column_names_cpgs = ["sample","percentage","cpgs_counts"]
+    column_names_cpgs = ["sample","percentage","min_counts","cpgs_counts"]
     column_names_reads = ["sample","percentage","reads_counts"]
 
     cpg_file = pd.read_csv(cpgs, sep=",",header=None,names=column_names_cpgs)
@@ -83,8 +106,11 @@ def select_sample(cpgs, reads,percentages):
     samples = data["sample"].unique()
     for sample in samples:
         sample_data = data[data["sample"] == sample]
-        output_plot = sample+"_plot.png"
-        plot_reads_vs_cpgs(sample_data,output_plot,percentages)
+        min_counts = sample_data["min_counts"].unique()
+        for min in min_counts:
+            fin_df = sample_data[sample_data["min_counts"]==min]
+            output_plot = sample+"_"+str(min)+"x_plot.png"
+            plot_reads_vs_cpgs(fin_df,output_plot,percentages)
 
 
 if __name__ == "__main__":

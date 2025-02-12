@@ -21,7 +21,7 @@ process SEQ_SATURATION {
     script:
     def args = ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    if (percentage !=1 ) { args += " -s ${percentage}" }
+    if (percentage.toFloat() !=1 ) { args += " -s ${percentage}" }
     if ("$bam" == "${prefix}.bam") error "Input and output names are the same, use \"task.ext.prefix\" to disambiguate!"
     """
     samtools view $args -b ${bam} > ${meta.id}_downsampled_${percentage}.bam
