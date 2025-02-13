@@ -21,10 +21,12 @@ process SEQ_SATURATION {
     script:
     def args = ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    if (percentage.toFloat() !=1 ) { args += " -s ${percentage}" }
+    if (percentage.toFloat() !=1 ) { 
+        args += " samtools view -s ${percentage} -b ${bam} > ${meta.id}_downsampled_${percentage}.bam" }
+    else { args += " ln -s ${bam} ${meta.id}_downsampled_${percentage}.bam"}
     if ("$bam" == "${prefix}.bam") error "Input and output names are the same, use \"task.ext.prefix\" to disambiguate!"
     """
-    samtools view $args -b ${bam} > ${meta.id}_downsampled_${percentage}.bam
+    $args
     READ_COUNT=\$(samtools view -c ${meta.id}_downsampled_${percentage}.bam)
     echo "${meta.id},${percentage},\$READ_COUNT" > ${meta.id}_${percentage}.readcount.csv
 
