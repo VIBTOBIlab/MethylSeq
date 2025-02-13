@@ -52,6 +52,12 @@ class WorkflowMain {
         if (!validSequencers.contains(params.sequencer)) {
             Nextflow.error("Invalid value for --sequencer parameter. Allowed values are: ${validSequencers.join(', ')}")
         }
+        // Check for invalid values and raise an error if found
+        def percentages = params.downsampling_percentages.split(',').collect { it.toDouble() }
+        def invalidValues = percentages.findAll { it <= 0 || it > 1 }
+        if (invalidValues) {
+            Nextflow.error("Invalid values found in downsampling_percentages: ${invalidValues.join(', ')}. All values must be greater than 0 and less than or equal to 1.")
+        }
     }
     //
     // Get attribute from genome config file e.g. fasta
