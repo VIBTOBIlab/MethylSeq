@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import argparse
 from scipy.optimize import curve_fit
 from scipy.optimize import fsolve
@@ -25,7 +26,7 @@ def plot_data(x_data,y_data,reads,asymptote,params,output_plot,title):
     xpred = np.append(x_data, np.array( [1.2,1.4,1.6,1.8,2] ) )
     xpred_reads = np.array( reads*xpred )
     ypred = asymptotic_growth(xpred, *params)
-    y_diff = [0,1]+[(ypred[i]-ypred[i-1])/ypred[i-1] for i in range(2,len(ypred))]
+    y_diff = [0,1]+[(ypred[i]-ypred[i-1])/ypred[i-1]*100 for i in range(2,len(ypred))]
     
     # Create the figure and axis
     fig, ax1 = plt.subplots(figsize=(10, 6))
@@ -34,12 +35,13 @@ def plot_data(x_data,y_data,reads,asymptote,params,output_plot,title):
     ax1.plot(x_data, y_data, marker="o", color="blue", linestyle="")
 
     # Plot the fit line
-    ax1.plot(xpred, ypred, 'g--', label='fit: beta0=%5.3f, beta1=%5.3f' % tuple(params))
+    ax1.plot(xpred, ypred, 'g-', label='fit: beta0=%5.3f, beta1=%5.3f' % tuple(params))
+    ax1.plot(xpred, ypred, marker='|', color="black",linestyle="",markersize=10)
     ax1.set_xticks(xpred)
 
     # Add text labels for y_diff below the plot
     for i in range(4, len(xpred)):
-        ax1.text(xpred[i], ypred[i] - 0.07 * ypred[i], f"{y_diff[i]:.4f}", color="blue", fontsize=10, ha="center")
+        ax1.text(xpred[i], ypred[i] - 0.07 * ypred[i], f"{y_diff[i]:.2f}%", color="black", fontsize=10, ha="center")
 
     # Add asymptote line
     ax1.axhline(y=asymptote, color='r', linestyle='--')
@@ -59,6 +61,8 @@ def plot_data(x_data,y_data,reads,asymptote,params,output_plot,title):
     # Customize the x-tick positions and move them to the top
     ax2.xaxis.set_ticks_position('top')
     ax1.xaxis.set_ticks_position('bottom')
+    leg_patch = mpatches.Patch(label = r"   % : CpGs percentage growth ($\frac{y_i - y_{i-1}}{y_{i-1}} \times 100$)")
+    plt.legend(handles=[leg_patch],loc="lower right",handletextpad=-1.0, handlelength=0)
 
     # Display grid and layout
     ax1.grid(True, linestyle="--", alpha=0.6)

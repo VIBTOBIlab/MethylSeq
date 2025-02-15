@@ -45,7 +45,7 @@ process PICARD_MARKDUPLICATES {
         --REFERENCE_SEQUENCE $fasta \\
         --METRICS_FILE ${meta.id}.MarkDuplicates.metrics.txt \\
         --OPTICAL_DUPLICATE_PIXEL_DISTANCE ${opt_dupl_dist} \\
-        --ASSUME_SORT_ORDER queryname \\
+        --ASSUME_SORT_ORDER coordinate \\
         --READ_NAME_REGEX '[a-zA-Z0-9]+:[0-9]+:[a-zA-Z0-9]+:[0-9]+:([0-9]+):([0-9]+):([0-9]+)_[0-9]+:[a-zA-Z0-9]+:[0-9]+:[a-zA-Z0-9]+[+][a-zA-Z0-9]+' \\
         --COMPRESSION_LEVEL 5 \\
 

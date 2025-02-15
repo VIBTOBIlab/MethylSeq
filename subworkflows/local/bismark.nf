@@ -3,7 +3,7 @@
  */
 include { BISMARK_ALIGN                                                               } from '../../modules/nf-core/bismark/align/main'
 include { SAMTOOLS_SORT as SAMTOOLS_SORT_DEDUPLICATED                                 } from '../../modules/nf-core/samtools/sort/main'
-include { SAMTOOLS_SORT_ALIGNED                                                       } from '../../modules/nf-core/samtools/sort_n/main'
+include { SAMTOOLS_SORT as SAMTOOLS_SORT_ALIGNED                                      } from '../../modules/nf-core/samtools/sort/main'
 include { SAMTOOLS_INDEX                                                              } from '../../modules/nf-core/samtools/index/main'
 include { PICARD_MARKDUPLICATES                                                       } from '../../modules/nf-core/picard/markduplicates/main'
 include { BISMARK_DEDUPLICATE                                                         } from '../../modules/nf-core/bismark/deduplicate/main'
@@ -25,6 +25,7 @@ workflow BISMARK {
     cytosine_report    // boolean: whether the run coverage2cytosine
     fasta              // channel: /path/to/fasta
     fasta_index        // channel: /path/to/fasta_index
+
     main:
     versions = Channel.empty()
     picard_metrics = Channel.empty()
@@ -44,7 +45,7 @@ workflow BISMARK {
      * If seq saturation curve specified, it will generate the 
      * necessary files and plot
      */
-    if (params.sequencing_curve) {
+    if (params.sequencing_curve | params.rrbs) {
 
         percentages_ch = Channel.fromList(params.downsampling_percentages.split(",").toList())
         downsample_input = BISMARK_ALIGN.out.bam.combine(percentages_ch)
@@ -62,9 +63,11 @@ workflow BISMARK {
         versions = versions.mix(SEQ_SATURATION_METHEXTRACTOR.out.versions)
 
         bam_res = SEQ_SATURATION.out.csv.
-            collectFile(name: 'downsampling_reads_results.csv')
+            collectFile(name: 'downsampling_reads_results.csv',
+                        storeDir: "${params.outdir}/${params.aligner}/sequencing_saturation_curve/")
         cov_res = SEQ_SATURATION_METHEXTRACTOR.out.csv.
-            collectFile(name: 'downsampling_cpgs_results.csv')
+            collectFile(name: 'downsampling_cpgs_results.csv',
+                        storeDir: "${params.outdir}/${params.aligner}/sequencing_saturation_curve/")
 
         PLOT_SEQ_SATURATION(
             bam_res,
@@ -104,9 +107,9 @@ workflow BISMARK {
             fasta,
             fasta_index
         )
-    alignments = PICARD_MARKDUPLICATES.out.bam
-    picard_metrics = PICARD_MARKDUPLICATES.out.metrics
-    versions = versions.mix(PICARD_MARKDUPLICATES.out.versions)
+        alignments = PICARD_MARKDUPLICATES.out.bam
+        picard_metrics = PICARD_MARKDUPLICATES.out.metrics
+        versions = versions.mix(PICARD_MARKDUPLICATES.out.versions)
     }
 
     if (skip_deduplication) {
