@@ -41,6 +41,7 @@ workflow BISMARK {
     alignments = BISMARK_ALIGN.out.bam
     versions = versions.mix(BISMARK_ALIGN.out.versions)
 
+
     /*
      * If seq saturation curve specified, it will generate the 
      * necessary files and plot
@@ -90,7 +91,7 @@ workflow BISMARK {
     }
 
     /*
-     * Sort by queryname the output BAM for PicardMarkDupl
+     * Sort the output BAM by coordinates for PicardMarkDupl
      */
     SAMTOOLS_SORT_ALIGNED (
         alignments
