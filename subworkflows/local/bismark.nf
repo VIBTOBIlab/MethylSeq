@@ -4,6 +4,7 @@
 include { BISMARK_ALIGN                                                               } from '../../modules/nf-core/bismark/align/main'
 include { SAMTOOLS_SORT as SAMTOOLS_SORT_DEDUPLICATED                                 } from '../../modules/nf-core/samtools/sort/main'
 include { SAMTOOLS_SORT as SAMTOOLS_SORT_ALIGNED                                      } from '../../modules/nf-core/samtools/sort/main'
+include { SAMTOOLS_QUERYNAME_SORT                                                     } from '../../modules/nf-core/samtools/queryname_sort/main'
 include { SAMTOOLS_INDEX                                                              } from '../../modules/nf-core/samtools/index/main'
 include { PICARD_MARKDUPLICATES                                                       } from '../../modules/nf-core/picard/markduplicates/main'
 include { BISMARK_DEDUPLICATE                                                         } from '../../modules/nf-core/bismark/deduplicate/main'
@@ -96,13 +97,17 @@ workflow BISMARK {
     SAMTOOLS_SORT_ALIGNED (
         alignments
     )
-    alignments = SAMTOOLS_SORT_ALIGNED.out.bam
+    //alignments = SAMTOOLS_SORT_ALIGNED.out.bam
     versions = versions.mix(SAMTOOLS_SORT_ALIGNED.out.versions)
 
     /*
      * Remove optical duplicates if specified
      */
     if (params.remove_optic_duplicates) {
+        // Sort by queryname for Picard module
+        SAMTOOLS_QUERYNAME_SORT (
+            alignments
+        )
         PICARD_MARKDUPLICATES (
             alignments,
             fasta,
