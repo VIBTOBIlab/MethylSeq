@@ -47,8 +47,8 @@ def plot_data(x_data,y_data,reads,asymptote,params,output_plot,title):
         ax1.text(xpred[i], ypred[i] - 0.07 * ypred[i], f"{y_diff[i]:.2f}%", color="black", fontsize=10, ha="center")
 
     # Add asymptote line
-    ax1.axhline(y=asymptote, color='r', linestyle='--')
-    ax1.text(0, asymptote - asymptote * 0.1, f"Asymptote = {asymptote:.2e}", color="red", fontsize=12)
+    ax1.axhline(y=asymptote, color='grey', linestyle='--')
+    ax1.axhline(y=y_data[-1], color='r', linestyle='--')
 
     # Set title and labels for the bottom x-axis
     ax1.set_title(title, fontsize=16)
@@ -60,11 +60,14 @@ def plot_data(x_data,y_data,reads,asymptote,params,output_plot,title):
     ax2.set_xlim(ax1.get_xlim())  
     ax2.set_xticks(xpred)
     ax2.tick_params(axis='x',pad=7)
-    ax2.set_xticklabels([f'{x:.1e}' for x in xpred_reads], fontsize=10)
+    ax2.set_xticklabels([f'{x:.1e}' for x in xpred_reads], fontsize=10, rotation=45)
+
     # Customize the x-tick positions and move them to the top
     ax2.xaxis.set_ticks_position('top')
     ax1.xaxis.set_ticks_position('bottom')
     leg_patch = mpatches.Patch(label = r"   % : CpGs percentage growth ($\frac{y_i - y_{i-1}}{y_{i-1}} \times 100$)")
+    ax1.text(1.35, asymptote*0.13, f"Asymptote = {asymptote:.2e}", color="grey", fontsize=10)
+    ax1.text(1.35, asymptote*0.08, f"Sequencing saturation = {y_data[-1]/asymptote*100:.2f}%", color="red", fontsize=10)
     plt.legend(handles=[leg_patch],loc="lower right",handletextpad=-1.0, handlelength=0)
 
     # Display grid and layout
@@ -95,7 +98,7 @@ def plot_reads_vs_cpgs(data, output_plot,percentages):
 
     # Find the asymptote value
     asymptote = find_asymptote(params)
-    
+
     # Plot the data and save the plots
     title = list(set(data["sample"]))[0]
     reads = int(data["reads_counts"].tolist()[-1])
