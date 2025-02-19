@@ -24,6 +24,7 @@ def find_asymptote(params):
 
 
 def plot_data(x_data,y_data,reads,asymptote,params,output_plot,title):
+
     # Predict new data
     xpred = np.append(x_data, np.array( [1.2,1.4,1.6,1.8,2] ) )
     xpred_reads = np.array( reads*xpred )
@@ -114,7 +115,8 @@ def select_sample(cpgs, reads,percentages):
         sample_data = data[data["sample"] == sample]
         min_counts = sample_data["min_counts"].unique()
         for min in min_counts:
-            fin_df = sample_data[sample_data["min_counts"]==min]
+            # Sort the dataframe to keep the ascending order for curve_fit function
+            fin_df = sample_data[sample_data["min_counts"]==min].sort_values(by=['percentage'])
             output_plot = sample+"_"+str(min)+"x_plot.png"
             plot_reads_vs_cpgs(fin_df,output_plot,percentages)
 
