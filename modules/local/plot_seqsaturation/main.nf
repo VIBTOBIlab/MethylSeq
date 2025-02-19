@@ -14,7 +14,7 @@ process PLOT_SEQ_SATURATION {
 
     script:
     """
-    python3 ../../../bin/plot_reads_vs_cpgs.py \
+    plot_reads_vs_cpgs.py \
     --cpgs_file ${cpgs} \
     --read_file ${reads} \
     --percentages ${params.downsampling_percentages} \
