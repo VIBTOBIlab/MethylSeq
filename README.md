@@ -77,6 +77,8 @@ For more details and further functionality, please refer to the [usage documenta
 
 ## Parameters included in the modified version
 
+The original [nf-core/methylseq pipeline](https://nf-co.re/methylseq/2.6.0/) has been modified to include modules that are important when processing RRBS/cfRRBS samples. The pipeline has been modified by @edogiuili and is currently maintained by Edoardo Giuili ([@edogiuili](https://github.com/edogiuili)) and Sofie Van de Velde ([@sofvdvel](https://github.com/sofvdvel)).
+
 ### Removal of optical duplicates
 
 #### `--remove_optic_duplicates`
