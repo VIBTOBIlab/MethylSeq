@@ -97,7 +97,6 @@ workflow BISMARK {
     SAMTOOLS_SORT_ALIGNED (
         BISMARK_ALIGN.out.bam
     )
-    //alignments = SAMTOOLS_SORT_ALIGNED.out.bam
     versions = versions.mix(SAMTOOLS_SORT_ALIGNED.out.versions)
 
     /*
