@@ -92,10 +92,10 @@ workflow BISMARK {
     }
 
     /*
-     * Sort the output BAM by coordinates for PicardMarkDupl
+     * Sort the raw, aligned BAM file
      */
     SAMTOOLS_SORT_ALIGNED (
-        alignments
+        BISMARK_ALIGN.out.bam
     )
     //alignments = SAMTOOLS_SORT_ALIGNED.out.bam
     versions = versions.mix(SAMTOOLS_SORT_ALIGNED.out.versions)
