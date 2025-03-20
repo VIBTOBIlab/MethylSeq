@@ -433,7 +433,13 @@
                     "type": "string",
                     "default": 3,
                     "description": "Minimum number of counts to define a new CpG"
+                },
+                "skip_seqcurve": {
+                    "type":"boolean",
+                    "default":"false",
+                    "description": "Skip sequencing saturation curve when using --rrbs flag (def. false)."
                 }
+
             }
         },
         "bwa_meth_options": {

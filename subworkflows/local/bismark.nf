@@ -47,7 +47,7 @@ workflow BISMARK {
      * If seq saturation curve specified, it will generate the 
      * necessary files and plot
      */
-    if (params.sequencing_curve | params.rrbs) {
+    if (params.rrbs & !params.skip_seqcurve) {
 
         percentages_ch = Channel.fromList(params.downsampling_percentages.split(",").toList())
         downsample_input = BISMARK_ALIGN.out.bam.combine(percentages_ch)
