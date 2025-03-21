@@ -112,6 +112,9 @@ The percentages to use when performing the downsampling (def. "0.1,0.2,0.4,0.6,0
 #### `--min_counts`
 The minimum number of reads necessary to call a unique CpGs in the sequencing curve. By default, it will use '1,3,5' corresponding respectively to 1, 3 and 5 reads.
 
+#### `--skip_seqcurve`
+If you are using the `--rrbs` flag and you want to skip the sequencing saturation curve process, activate this flag (def. false).
+
 ## Pipeline output
 
 To see the results of an example test run with a full size dataset refer to the [results](https://nf-co.re/methylseq/results) tab on the nf-core website pipeline page.
