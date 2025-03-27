@@ -103,9 +103,6 @@ Minimum methylation percentage for a read to be filtered out (def. 90%).
 
 When the flag `--rrbs` is specified, the pipeline will perform a downsampling of the raw aligned .bam files and calculate the sequencing saturation. The sequencing saturation is calculated as the number of unique CpGs with at least x counts (where x is 3 by default, but can be customized) divided by the theoretical maximum number of CpG (which corresponds to the asymptote of the curve). 
 
-#### `--sequencing_curve`
-In case you want to retrieve this information when using WGBS data as well, you can specifify this flag (When `--rrbs` is specified, this will be activated by default).
-
 #### `--downsampling_percentages`
 The percentages to use when performing the downsampling (def. "0.1,0.2,0.4,0.6,0.8,1"). This parameter cannot accept 0. It's strongly recommended to no change it, unless there are valid reasons (e.g. your sequencing saturation curve is not informative enough with the default percentages.)
 

@@ -420,11 +420,6 @@
             "description": "",
             "default":"",
             "properties": {
-                "sequencing_curve": {
-                    "type": "boolean",
-                    "description": "Specify if you want or not sequencing saturation curve.",
-                    "default":true
-                },
                 "downsampling_percentages": {
                     "type":"string",
                     "description": "List containing percentages used to downsample the bam file and create the sequencing saturation curve."
