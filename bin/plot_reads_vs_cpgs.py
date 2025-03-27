@@ -9,7 +9,7 @@ from scipy.optimize import curve_fit
 from scipy.optimize import fsolve
 import warnings
 from scipy.optimize import OptimizeWarning
-
+import sys
 
 def asymptotic_growth(x, beta0, beta1):
     return beta0 * np.arctan( beta1 * x ) #tanh cause it has an asymptotic growth similar to seq saturation
@@ -171,6 +171,12 @@ def select_sample(cpgs, reads,percentages):
             # Sort the dataframe to keep the ascending order for curve_fit function
             fin_df = sample_data[sample_data["min_counts"]==min].sort_values(by=['percentage'])
             output_plot = sample+"_"+str(min)+"x_plot.png"
+
+            # If duplicated rows in the df, it means some processes were duplicated
+            if fin_df.duplicated().any():
+                print(f"Error: duplicated rows in {sample}: this might be due to error in Nextflow run (usually happening with -c vsc_ugent.config). Try to rerun without -resume flag.")
+                sys.exit()
+
             plot_reads_vs_cpgs(fin_df,output_plot,percentages)
 
 
