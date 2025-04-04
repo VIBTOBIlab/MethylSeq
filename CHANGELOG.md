@@ -1,10 +1,10 @@
 # nf-core/methylseq
 
-## [v2.6.2]
+## [v2.6.2](https://github.ugent.be/DePreterLab/MethylSeq/releases/tag/v2.6.2) - 2025-04-04
 
 - Added parameter to deactivate PicardMarkduplicates module
-- Added parameter to specify which sequencer has been used for PicardMarkduplicates module
-- Reordered the main Bismark Workflow
+- Added parameter to specify which sequencer has been used for PicardMarkduplicates module.
+- Reordered the main Bismark Workflow.
 - Added the optional Sequencing Saturation plots.
 
 ## [v2.6.1](https://github.ugent.be/DePreterLab/MethylSeq/releases/tag/v2.6.1) - 2024-08-02
