@@ -32,7 +32,7 @@ process PICARD_MARKDUPLICATES {
     }
     if (params.sequencer=="NovaSeq") {
         opt_dupl_dist = 12000
-    } else if (params.sequencer="HiSeq") {
+    } else if (params.sequencer=="HiSeq") {
         opt_dupl_dist = 2500
     } else { opt_dupl_dist = 100 }
     """
