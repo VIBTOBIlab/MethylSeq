@@ -1,4 +1,4 @@
-# ![nf-core/methylseq](docs/images/nf-core-methylseq_logo_light.png#gh-light-mode-only) ![nf-core/methylseq](docs/images/nf-core-methylseq_logo_dark.png#gh-dark-mode-only)
+# MethylSeq pipeline (TOBI lab version)
 
 [![GitHub Actions CI Status](https://github.com/nf-core/methylseq/workflows/nf-core%20CI/badge.svg)](https://github.com/nf-core/methylseq/actions?query=workflow%3A%22nf-core+CI%22)
 [![GitHub Actions Linting Status](https://github.com/nf-core/methylseq/workflows/nf-core%20linting/badge.svg)](https://github.com/nf-core/methylseq/actions?query=workflow%3A%22nf-core+linting%22)[![AWS CI](https://img.shields.io/badge/CI%20tests-full%20size-FF9900?labelColor=000000&logo=Amazon%20AWS)](https://nf-co.re/methylseq/results)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.1343417-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.1343417)
@@ -10,13 +10,11 @@
 [![Launch on Nextflow Tower](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Nextflow%20Tower-%234256e7)](https://tower.nf/launch?pipeline=https://github.com/nf-core/methylseq)
 [![nf-test](https://img.shields.io/badge/tested_with-nf--test-337ab7.svg)](https://github.com/askimed/nf-test)
 
-[![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23methylseq-4A154B?labelColor=000000&logo=slack)](https://nfcore.slack.com/channels/methylseq)[![Follow on Twitter](http://img.shields.io/badge/twitter-%40nf__core-1DA1F2?labelColor=000000&logo=twitter)](https://twitter.com/nf_core)[![Follow on Mastodon](https://img.shields.io/badge/mastodon-nf__core-6364ff?labelColor=FFFFFF&logo=mastodon)](https://mstdn.science/@nf_core)[![Watch on YouTube](http://img.shields.io/badge/youtube-nf--core-FF0000?labelColor=000000&logo=youtube)](https://www.youtube.com/c/nf-core)
-
 ## Introduction
 
-> **Note:** This pipeline has been modified using the original pipeline (version 2.6.0) to include the optical removal duplicates in the Bismark subworkflow. You can find the original pipeline at the following [nfcore repository](https://nf-co.re/methylseq/2.6.0).
+> **Note:** This pipeline has been modified using the original nf-core/methylseq pipeline (version 2.6.0) to include the optical removal duplicates and some other modules in the Bismark subworkflow. You can find the original pipeline at the following [nfcore repository](https://nf-co.re/methylseq/2.6.0).
 
-**nf-core/methylseq** is a bioinformatics analysis pipeline used for Methylation (Bisulfite) sequencing data. It pre-processes raw data from FastQ inputs, aligns the reads and performs extensive quality-control on the results.
+**MethylSeq** is a bioinformatics analysis pipeline used for Methylation (Bisulfite) sequencing data. It pre-processes raw data from FastQ inputs, aligns the reads and performs extensive quality-control on the results.
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker / Singularity containers making installation trivial and results highly reproducible.
 
@@ -34,6 +32,7 @@ Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for
 | Raw data QC                                  | FastQC               | FastQC                |
 | Adapter sequence trimming                    | Trim Galore!         | Trim Galore!          |
 | Align Reads                                  | Bismark              | bwa-meth              |
+| Sequencing saturation _(optional)_           | Custom scripts       | -
 | Filter Non Conversion                        | Bismark              | -                     |
 | Deduplicate Alignments                       | Bismark              | Picard MarkDuplicates |
 | Removal of optical duplicates                | Picard MarkDuplicates| -                     |
@@ -122,7 +121,7 @@ For more details about the output files and reports, please refer to the
 
 These scripts were originally written for use at the [National Genomics Infrastructure](https://portal.scilifelab.se/genomics/) at [SciLifeLab](http://www.scilifelab.se/) in Stockholm, Sweden.
 
-- Main author:
+- Main authors of original nf-core/methylseq pipeline:
   - Phil Ewels ([@ewels](https://github.com/ewels/))
 - Maintainers:
   - Felix Krueger ([@FelixKrueger](https://github.com/FelixKrueger))
@@ -133,16 +132,8 @@ These scripts were originally written for use at the [National Genomics Infrastr
   - Alexander Peltzer ([@apeltzer](https://github.com/apeltzer/))
   - Patrick Hüther ([@phue](https://github.com/phue/))
 
-## Contributions and Support
-
-If you would like to contribute to this pipeline, please see the [contributing guidelines](.github/CONTRIBUTING.md).
-
-For further information or help, don't hesitate to get in touch on the [Slack `#methylseq` channel](https://nfcore.slack.com/channels/methylseq) (you can join with [this invite](https://nf-co.re/join/slack)).
 
 ## Citations
-
-If you use nf-core/methylseq for your analysis, please cite it using the following doi: [10.5281/zenodo.1343417](https://doi.org/10.5281/zenodo.1343417)
-
 An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
 
 You can cite the `nf-core` publication as follows:
