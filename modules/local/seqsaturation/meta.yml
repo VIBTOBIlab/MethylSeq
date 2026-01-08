@@ -1,5 +1,5 @@
 name: samtools_stats
-description:  Views and converts SAM/BAM/CRAM files
+description: Views and converts SAM/BAM/CRAM files
 keywords:
   - view
   - counts

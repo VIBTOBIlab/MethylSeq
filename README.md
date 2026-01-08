@@ -27,22 +27,22 @@ On release, automated continuous integration tests run the pipeline on a full-si
 The pipeline allows you to choose between running either [Bismark](https://github.com/FelixKrueger/Bismark) or [bwa-meth](https://github.com/brentp/bwa-meth) / [MethylDackel](https://github.com/dpryan79/methyldackel).
 Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for alignment), `--aligner bismark_hisat` or `--aligner bwameth`.
 
-| Step                                         | Bismark workflow     | bwa-meth workflow     |
-| -------------------------------------------- | -------------------- | --------------------- |
-| Generate Reference Genome Index _(optional)_ | Bismark              | bwa-meth              |
-| Merge re-sequenced FastQ files               | cat                  | cat                   |
-| Raw data QC                                  | FastQC               | FastQC                |
-| Adapter sequence trimming                    | Trim Galore!         | Trim Galore!          |
-| Align Reads                                  | Bismark              | bwa-meth              |
-| Filter Non Conversion                        | Bismark              | -                     |
-| Deduplicate Alignments                       | Bismark              | Picard MarkDuplicates |
-| Removal of optical duplicates                | Picard MarkDuplicates| -                     |
-| Extract methylation calls                    | Bismark              | MethylDackel          |
-| Sample report                                | Bismark              | -                     |
-| Summary Report                               | Bismark              | -                     |
-| Alignment QC                                 | Qualimap             | Qualimap              |
-| Sample complexity                            | Preseq               | Preseq                |
-| Project Report                               | MultiQC              | MultiQC               |
+| Step                                         | Bismark workflow      | bwa-meth workflow     |
+| -------------------------------------------- | --------------------- | --------------------- |
+| Generate Reference Genome Index _(optional)_ | Bismark               | bwa-meth              |
+| Merge re-sequenced FastQ files               | cat                   | cat                   |
+| Raw data QC                                  | FastQC                | FastQC                |
+| Adapter sequence trimming                    | Trim Galore!          | Trim Galore!          |
+| Align Reads                                  | Bismark               | bwa-meth              |
+| Filter Non Conversion                        | Bismark               | -                     |
+| Deduplicate Alignments                       | Bismark               | Picard MarkDuplicates |
+| Removal of optical duplicates                | Picard MarkDuplicates | -                     |
+| Extract methylation calls                    | Bismark               | MethylDackel          |
+| Sample report                                | Bismark               | -                     |
+| Summary Report                               | Bismark               | -                     |
+| Alignment QC                                 | Qualimap              | Qualimap              |
+| Sample complexity                            | Preseq                | Preseq                |
+| Project Report                               | MultiQC               | MultiQC               |
 
 ## Usage
 
@@ -82,34 +82,43 @@ The original [nf-core/methylseq pipeline](https://nf-co.re/methylseq/2.6.0/) has
 ### Removal of optical duplicates
 
 #### `--remove_optic_duplicates`
+
 If specified, it removes the optical duplicates. It can be used together with `--sequencer` (see below).
 
 #### `--sequencer`
+
 If the flag `--remove_optic_duplicates` has been specified, `--sequencer` will be by default set to **NovaSeq**. Alternatively, you can specify **HiSeq** or **NextSeq**. This will change the OpticalDupsPixelDistance within PicardMarkDuplicates step (**NovaSeq**: 12000, **HiSeq**: 2500, **NextSeq**: 100).
 
 ### Filter non conversion (Bismark) module
 
 #### `--filter_non_conversion`
-If specified, it filters out all those reads that have a methylation value >= than a preset threshold in non-CG context where you expect a very low methylation level (<5% usually). For more information please consult the [Bismark usage](https://felixkrueger.github.io/Bismark/bismark/filter_nonconverted_reads/). 
+
+If specified, it filters out all those reads that have a methylation value >= than a preset threshold in non-CG context where you expect a very low methylation level (<5% usually). For more information please consult the [Bismark usage](https://felixkrueger.github.io/Bismark/bismark/filter_nonconverted_reads/).
 
 #### `--minimum_count`
+
 Minimum number of methylation sites for a read to be filtered out (def. 3).
 
 #### `--percentage_cutoff`
+
 Minimum methylation percentage for a read to be filtered out (def. 90%).
 
 ### Sequencing saturation plots
+
 > [NOTE:] It's recommended only when using RRBS data, while with WGBS it's recommended to look at the results provided by PreSeq module.
 
-When the flag `--rrbs` is specified, the pipeline will perform a downsampling of the raw aligned .bam files and calculate the sequencing saturation. The sequencing saturation is calculated as the number of unique CpGs with at least x counts (where x is 3 by default, but can be customized) divided by the theoretical maximum number of CpG (which corresponds to the asymptote of the curve). 
+When the flag `--rrbs` is specified, the pipeline will perform a downsampling of the raw aligned .bam files and calculate the sequencing saturation. The sequencing saturation is calculated as the number of unique CpGs with at least x counts (where x is 3 by default, but can be customized) divided by the theoretical maximum number of CpG (which corresponds to the asymptote of the curve).
 
 #### `--downsampling_percentages`
+
 The percentages to use when performing the downsampling (def. "0.1,0.2,0.4,0.6,0.8,1"). This parameter cannot accept 0. It's strongly recommended to no change it, unless there are valid reasons (e.g. your sequencing saturation curve is not informative enough with the default percentages.)
 
 #### `--min_counts`
+
 The minimum number of reads necessary to call a unique CpGs in the sequencing curve. By default, it will use '1,3,5' corresponding respectively to 1, 3 and 5 reads.
 
 #### `--skip_seqcurve`
+
 If you are using the `--rrbs` flag and you want to skip the sequencing saturation curve process, activate this flag (def. false).
 
 ## Pipeline output
