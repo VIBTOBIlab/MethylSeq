@@ -1,7 +1,7 @@
 process SEQ_SATURATION {
     tag "$meta.id"
     label 'process_medium'
-
+    errorStrategy 'ignore'
     conda "bioconda::samtools=1.17"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/samtools:1.17--h00cdaf9_0' :

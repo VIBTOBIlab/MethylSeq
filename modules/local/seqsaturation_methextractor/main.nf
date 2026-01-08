@@ -1,7 +1,7 @@
 process SEQ_SATURATION_METHEXTRACTOR {
     tag "$meta.id"
     label 'process_high'
-
+    errorStrategy 'ignore'
     conda "bioconda::bismark=0.24.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/bismark:0.24.0--hdfd78af_0' :
