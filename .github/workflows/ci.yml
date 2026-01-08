@@ -122,7 +122,7 @@ jobs:
           shard: ${{ matrix.shard }}
           total_shards: ${{ needs.get-shards.outputs.total_shards }}
           filters: ${{ matrix.filters }}
-          tags: "cpu"
+          tags: "pipeline"
 
       - name: Report test status
         if: ${{ always() }}
