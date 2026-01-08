@@ -41,7 +41,7 @@ output:
         e.g. [ id:'test', single_end:false ]
   - bam:
       type: file
-      description: BAM file with duplicate reads marked/removed
+      description: BAM file with optical duplicate reads marked/removed
       pattern: "*.{bam}"
   - bai:
       type: file
