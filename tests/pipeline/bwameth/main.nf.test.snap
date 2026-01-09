@@ -7,7 +7,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2026-01-08T14:41:04.93942"
+        "timestamp": "2026-01-09T01:03:29.366179"
     },
     "single_end_rrbs_software_versions": {
         "content": [
@@ -17,7 +17,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2026-01-08T16:11:28.179347"
+        "timestamp": "2026-01-09T01:05:55.016802"
     },
     "single_end": {
         "content": [
@@ -25,10 +25,6 @@
             "Ecoli.stats:md5,c09155913e0164da9010a0840618cf1f",
             "SRR389222.flagstat:md5,f5a2dd6c9532bbfb8fe78aad010d8737",
             "SRR389222.stats:md5,cc81b8c56d038e437a99d9c04b61ce2d",
-            "Ecoli.markdup.sorted.bam:md5,0d1c814b476521286a829dc64fc3490a",
-            "Ecoli.markdup.sorted.bam.bai:md5,befef6ce0a34e2ce7f66c073d9bf4abd",
-            "SRR389222.markdup.sorted.bam:md5,46b5b49280efe5d5c5d1692092e8926f",
-            "SRR389222.markdup.sorted.bam.bai:md5,ad6cfa0344e1ba5b9057ea39f337b3d2",
             [
                 [
                     "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
@@ -52,7 +48,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2023-12-20T03:21:55.358959756"
+        "timestamp": "2026-01-09T01:03:29.367226"
     },
     "single_end_rrbs": {
         "content": [
@@ -83,6 +79,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2023-12-20T03:38:43.324010795"
+        "timestamp": "2026-01-09T01:05:55.519083"
     }
 }

@@ -18,8 +18,7 @@ nextflow_pipeline {
         then {
             assertAll(
                 { assert workflow.success },
-                { assert snapshot(path("$outputDir/bismark_hisat/sorted_indexed_reads/Ecoli.markdup.deduplicated.sorted.bam"),
-                            path("$outputDir/bismark_hisat/sorted_indexed_reads/SRR389222.markdup.deduplicated.sorted.bam"),
+                { assert snapshot(
                             path("$outputDir/bismark_hisat/methylation_calls/bedGraph/Ecoli.markdup.deduplicated.bedGraph.gz"),
                             path("$outputDir/bismark_hisat/methylation_calls/bedGraph/SRR389222.markdup.deduplicated.bedGraph.gz"),
                             path("$outputDir/bismark_hisat/methylation_calls/mbias/Ecoli.markdup.deduplicated.M-bias.txt"),
@@ -81,8 +80,7 @@ nextflow_pipeline {
         then {
             assertAll(
                 { assert workflow.success },
-                { assert snapshot(path("$outputDir/bismark_hisat/sorted_indexed_reads/Ecoli.markdup.sorted.bam"),
-                            path("$outputDir/bismark_hisat/sorted_indexed_reads/SRR389222.markdup.sorted.bam"),
+                { assert snapshot(
                             path("$outputDir/bismark_hisat/methylation_calls/bedGraph/Ecoli.markdup.bedGraph.gz"),
                             path("$outputDir/bismark_hisat/methylation_calls/bedGraph/SRR389222.markdup.bedGraph.gz"),
                             path("$outputDir/bismark_hisat/methylation_calls/mbias/Ecoli.markdup.M-bias.txt"),

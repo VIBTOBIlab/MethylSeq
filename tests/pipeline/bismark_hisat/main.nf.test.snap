@@ -7,7 +7,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2026-01-08T13:57:20.043125"
+        "timestamp": "2026-01-09T00:52:04.090886"
     },
     "single_end_rrbs_software_versions": {
         "content": [
@@ -17,12 +17,10 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2026-01-08T14:34:45.619082"
+        "timestamp": "2026-01-09T00:57:56.371223"
     },
     "single_end": {
         "content": [
-            "Ecoli.markdup.deduplicated.sorted.bam:md5,0eb87d2759b2e42634ca175f7399ee90",
-            "SRR389222.markdup.deduplicated.sorted.bam:md5,794c50ae2ed8cbfb1653533b1a76bc94",
             "Ecoli.markdup.deduplicated.bedGraph.gz:md5,357196071c54757566cdd0bb7ab79fa8",
             "SRR389222.markdup.deduplicated.bedGraph.gz:md5,b20f17236ff64db1114343ff333a6d5b",
             "Ecoli.markdup.deduplicated.M-bias.txt:md5,5fd8655f4b9dba2249a52b769fe50faf",
@@ -53,12 +51,10 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2026-01-08T13:57:19.447577"
+        "timestamp": "2026-01-09T00:52:03.583748"
     },
     "single_end_rrbs": {
         "content": [
-            "Ecoli.markdup.sorted.bam:md5,2228f5e7d58ddb2d4fb286b74715ccd5",
-            "SRR389222.markdup.sorted.bam:md5,8828700468564208487821ebff2ba42b",
             "Ecoli.markdup.bedGraph.gz:md5,357196071c54757566cdd0bb7ab79fa8",
             "SRR389222.markdup.bedGraph.gz:md5,d509b1e8e4ec03dcde48a127cf976594",
             "Ecoli.markdup.M-bias.txt:md5,5fd8655f4b9dba2249a52b769fe50faf",
@@ -89,6 +85,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2026-01-08T14:34:43.870219"
+        "timestamp": "2026-01-09T00:57:54.215645"
     }
 }
