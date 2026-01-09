@@ -131,10 +131,10 @@ jobs:
             echo "::error::Test with ${{ matrix.NXF_VER }} failed"
             # Add to workflow summary
             echo "## ❌ Test failed: ${{ matrix.profile }} | ${{ matrix.NXF_VER }} | Shard ${{ matrix.shard }}/${{ needs.get-shards.outputs.total_shards }}" >> $GITHUB_STEP_SUMMARY
-            if [[ "${{ matrix.NXF_VER }}" == "latest-everything" ]]; then
-              echo "::warning::Test with latest-everything failed but will not cause workflow failure. Please check if the error is expected or if it needs fixing."
+            if [[ "${{ matrix.NXF_VER }}" == "25.12.0" ]]; then
+              echo "::warning::Test with 25.12.0 failed but will not cause workflow failure. Please check if the error is expected or if it needs fixing."
             fi
-            if [[ "${{ matrix.NXF_VER }}" != "latest-everything" ]]; then
+            if [[ "${{ matrix.NXF_VER }}" != "25.12.0" ]]; then
               exit 1
             fi
           fi
@@ -144,7 +144,7 @@ jobs:
     needs: [nf-test]
     if: always()
     steps:
-      - name: One or more tests failed (excluding latest-everything)
+      - name: One or more tests failed (excluding 25.12.0)
         if: ${{ contains(needs.*.result, 'failure') }}
         run: exit 1
 
