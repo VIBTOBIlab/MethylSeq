@@ -101,8 +101,8 @@ jobs:
         profile: [docker, singularity]
         shard: ${{ fromJson(needs.get-shards.outputs.shard) }}
         NXF_VER:
-          - "24.04.4"
-          - "latest-everything"
+          - "23.04.0"
+          - "25.12.0"
         filters: [pipeline]
 
     steps:
@@ -114,7 +114,7 @@ jobs:
       - name: Run nf-test
         id: run_nf_test
         uses: ./.github/actions/nf-test
-        continue-on-error: ${{ matrix.NXF_VER == 'latest-everything' }}
+        continue-on-error: ${{ matrix.NXF_VER == '25.12.0' }}
         env:
           NFT_WORKDIR: ${{ env.NFT_WORKDIR }}
         with:
