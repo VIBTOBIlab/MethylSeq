@@ -11,3 +11,4 @@ testing*
 *.pyc
 bin/
 *.nf.test.snap
+docs/usage.md

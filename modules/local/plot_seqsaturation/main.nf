@@ -1,7 +1,7 @@
 process PLOT_SEQ_SATURATION {
 
     container "docker.io/egiuili/python3_pandas:v1"
-
+    errorStrategy 'ignore'
     label 'process_low'    
     
     input:

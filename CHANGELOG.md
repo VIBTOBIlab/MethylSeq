@@ -1,5 +1,13 @@
 # MethylSeq pipeline of TOBI lab
 
+## [v2.6.3] (https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.3)
+
+- Updated MultiQC to version v1.33
+- Added a second Picard Markduplicates for BwaMeth subworkflow and changed the name of the previous one with PicardMarkOpticalDuplicates for the Bismark subworkflow.
+- Updated tests of the pipeline
+
+## [v2.6.2] (https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.2)
+
 ## [v2.6.2](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.2) - 2025-07-15
 ### In-house modifications applied to nf-core/methylseq pipeline version [v2.6.0](https://github.com/nf-core/methylseq/releases/tag/2.6.0)
 - Added parameter to deactivate PicardMarkduplicates module
@@ -7,8 +15,8 @@
 - Reordered the main Bismark Workflow.
 - Added the optional Sequencing Saturation plots.
 - Picard Markduplicates module has been added to Bismark subworflow(look at the module for more information).
-- Bismark `filter_non_conversion` function has been added to the Bismark subworkflow. It can be activated specifing the flga `--filter_non_conversion` together with the `minimum_count` and `percentage_cutoff` parameters (see nextflow.conf and filter_non_conversion module for more information). When activated, it creates an output folder where it saves 3 files. The fitlered bam file is then used for the subsequent modules. 
-It needs to be updated with a new version of Bismark (and the corresponding biocontainer) when it is released (there is a bug in the current version, see the issue [#688](https://github.com/FelixKrueger/Bismark/issues/688)) since now it's not using an official Bismark biocontainer.
+- Bismark `filter_non_conversion` function has been added to the Bismark subworkflow. It can be activated specifing the flga `--filter_non_conversion` together with the `minimum_count` and `percentage_cutoff` parameters (see nextflow.conf and filter_non_conversion module for more information). When activated, it creates an output folder where it saves 3 files. The fitlered bam file is then used for the subsequent modules.
+  It needs to be updated with a new version of Bismark (and the corresponding biocontainer) when it is released (there is a bug in the current version, see the issue [#688](https://github.com/FelixKrueger/Bismark/issues/688)) since now it's using an unofficial Bismark container.
 
 ## [v2.6.0](https://github.com/nf-core/methylseq/releases/tag/2.6.0) - 2024-01-05
 

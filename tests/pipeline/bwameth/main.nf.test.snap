@@ -1,15 +1,23 @@
 {
     "single_end_software_versions": {
         "content": [
-            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.6.0}}"
+            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.6.1}}"
         ],
-        "timestamp": "2024-01-05T13:46:07.95961601"
+        "meta": {
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
+        },
+        "timestamp": "2026-01-09T01:03:29.366179"
     },
     "single_end_rrbs_software_versions": {
         "content": [
-            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, Workflow={nf-core/methylseq=2.6.0}}"
+            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, Workflow={nf-core/methylseq=2.6.1}}"
         ],
-        "timestamp": "2024-01-05T13:47:24.172597347"
+        "meta": {
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
+        },
+        "timestamp": "2026-01-09T01:05:55.016802"
     },
     "single_end": {
         "content": [
@@ -17,10 +25,6 @@
             "Ecoli.stats:md5,c09155913e0164da9010a0840618cf1f",
             "SRR389222.flagstat:md5,f5a2dd6c9532bbfb8fe78aad010d8737",
             "SRR389222.stats:md5,cc81b8c56d038e437a99d9c04b61ce2d",
-            "Ecoli.markdup.sorted.bam:md5,0d1c814b476521286a829dc64fc3490a",
-            "Ecoli.markdup.sorted.bam.bai:md5,befef6ce0a34e2ce7f66c073d9bf4abd",
-            "SRR389222.markdup.sorted.bam:md5,46b5b49280efe5d5c5d1692092e8926f",
-            "SRR389222.markdup.sorted.bam.bai:md5,ad6cfa0344e1ba5b9057ea39f337b3d2",
             [
                 [
                     "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
@@ -40,7 +44,11 @@
             "genome_results.txt:md5,d1a1b49086982318f0f94ba7059f71a3",
             "genome_results.txt:md5,c786cc367645cee286360707e2624dca"
         ],
-        "timestamp": "2023-12-20T03:21:55.358959756"
+        "meta": {
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
+        },
+        "timestamp": "2026-01-09T01:03:29.367226"
     },
     "single_end_rrbs": {
         "content": [
@@ -67,6 +75,10 @@
             "genome_results.txt:md5,cd545aa1ee209a1683374bfb5731ab0c",
             "genome_results.txt:md5,199902f9d8f10f73bcb0a1ce29ceca5d"
         ],
-        "timestamp": "2023-12-20T03:38:43.324010795"
+        "meta": {
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
+        },
+        "timestamp": "2026-01-09T01:05:55.519083"
     }
 }

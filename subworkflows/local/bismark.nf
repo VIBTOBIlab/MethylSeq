@@ -6,7 +6,7 @@ include { SAMTOOLS_SORT as SAMTOOLS_SORT_DEDUPLICATED                           
 include { SAMTOOLS_SORT as SAMTOOLS_SORT_ALIGNED                                      } from '../../modules/nf-core/samtools/sort/main'
 include { SAMTOOLS_QUERYNAME_SORT                                                     } from '../../modules/nf-core/samtools/queryname_sort/main'
 include { SAMTOOLS_INDEX                                                              } from '../../modules/nf-core/samtools/index/main'
-include { PICARD_MARKDUPLICATES                                                       } from '../../modules/nf-core/picard/markduplicates/main'
+include { PICARD_MARKOPTICALDUPLICATES                                                } from '../../modules/nf-core/picard/markopticalduplicates/main'
 include { BISMARK_DEDUPLICATE                                                         } from '../../modules/nf-core/bismark/deduplicate/main'
 include { SEQ_SATURATION_METHEXTRACTOR                                                } from '../../modules/local/seqsaturation_methextractor/main'
 include { BISMARK_METHYLATIONEXTRACTOR                                                } from '../../modules/nf-core/bismark/methylationextractor/main'
@@ -107,14 +107,14 @@ workflow BISMARK {
         SAMTOOLS_QUERYNAME_SORT (
             alignments
         )
-        PICARD_MARKDUPLICATES (
+        PICARD_MARKOPTICALDUPLICATES (
             alignments,
             fasta,
             fasta_index
         )
-        alignments = PICARD_MARKDUPLICATES.out.bam
-        picard_metrics = PICARD_MARKDUPLICATES.out.metrics
-        versions = versions.mix(PICARD_MARKDUPLICATES.out.versions)
+        alignments = PICARD_MARKOPTICALDUPLICATES.out.bam
+        picard_metrics = PICARD_MARKOPTICALDUPLICATES.out.metrics
+        versions = versions.mix(PICARD_MARKOPTICALDUPLICATES.out.versions)
     }
 
     if (skip_deduplication) {
