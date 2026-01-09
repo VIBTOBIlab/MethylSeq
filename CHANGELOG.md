@@ -1,4 +1,4 @@
-# nf-core/methylseq
+# MethylSeq pipeline of TOBI lab
 
 ## [v2.6.3] (https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.3)
 
