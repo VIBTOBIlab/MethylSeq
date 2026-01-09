@@ -1,12 +1,12 @@
 # MethylSeq pipeline of TOBI lab
 
-## [v2.6.3] (https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.3)
+## [v2.6.3](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.3)
 
 - Updated MultiQC to version v1.33
 - Added a second Picard Markduplicates for BwaMeth subworkflow and changed the name of the previous one with PicardMarkOpticalDuplicates for the Bismark subworkflow.
 - Updated tests of the pipeline
 
-## [v2.6.2] (https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.2)
+## [v2.6.2](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.2)
 
 - Added parameter to deactivate PicardMarkduplicates module
 - Added parameter to specify which sequencer has been used for PicardMarkduplicates module
