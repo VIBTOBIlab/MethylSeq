@@ -101,8 +101,8 @@ jobs:
         profile: [docker, singularity]
         shard: ${{ fromJson(needs.get-shards.outputs.shard) }}
         NXF_VER:
-          - "23.04.0"
-          - "25.12.0"
+          - "24.04.4"
+          - "25.10.0"
         filters: [pipeline]
 
     steps:
@@ -114,7 +114,7 @@ jobs:
       - name: Run nf-test
         id: run_nf_test
         uses: ./.github/actions/nf-test
-        continue-on-error: ${{ matrix.NXF_VER == '25.12.0' }}
+        continue-on-error: ${{ matrix.NXF_VER == '25.10.0' }}
         env:
           NFT_WORKDIR: ${{ env.NFT_WORKDIR }}
         with:
@@ -131,10 +131,10 @@ jobs:
             echo "::error::Test with ${{ matrix.NXF_VER }} failed"
             # Add to workflow summary
             echo "## ❌ Test failed: ${{ matrix.profile }} | ${{ matrix.NXF_VER }} | Shard ${{ matrix.shard }}/${{ needs.get-shards.outputs.total_shards }}" >> $GITHUB_STEP_SUMMARY
-            if [[ "${{ matrix.NXF_VER }}" == "25.12.0" ]]; then
-              echo "::warning::Test with 25.12.0 failed but will not cause workflow failure. Please check if the error is expected or if it needs fixing."
+            if [[ "${{ matrix.NXF_VER }}" == "25.10.0" ]]; then
+              echo "::warning::Test with 25.10.0 failed but will not cause workflow failure. Please check if the error is expected or if it needs fixing."
             fi
-            if [[ "${{ matrix.NXF_VER }}" != "25.12.0" ]]; then
+            if [[ "${{ matrix.NXF_VER }}" != "25.10.0" ]]; then
               exit 1
             fi
           fi
@@ -144,7 +144,7 @@ jobs:
     needs: [nf-test]
     if: always()
     steps:
-      - name: One or more tests failed (excluding 25.12.0)
+      - name: One or more tests failed (excluding 25.10.0)
         if: ${{ contains(needs.*.result, 'failure') }}
         run: exit 1
 
