@@ -28,7 +28,7 @@ process METHURATOR_DOWNSAMPLE {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        methurator: \$(echo \$(methurator --version 2>&1) | sed 's/^.*methurator Version: v//; s/Copyright.*\$//')
+        methurator: "\$(methurator --version 2>&1 | sed -E 's/.*version[[:space:]]+([0-9.]+).*/\\1/')"
     END_VERSIONS
     """
 }
