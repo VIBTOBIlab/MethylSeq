@@ -8,7 +8,6 @@ include { SAMTOOLS_QUERYNAME_SORT                                               
 include { SAMTOOLS_INDEX                                                              } from '../../modules/nf-core/samtools/index/main'
 include { PICARD_MARKOPTICALDUPLICATES                                                } from '../../modules/nf-core/picard/markopticalduplicates/main'
 include { BISMARK_DEDUPLICATE                                                         } from '../../modules/nf-core/bismark/deduplicate/main'
-include { SEQ_SATURATION_METHEXTRACTOR                                                } from '../../modules/local/seqsaturation_methextractor/main'
 include { BISMARK_METHYLATIONEXTRACTOR                                                } from '../../modules/nf-core/bismark/methylationextractor/main'
 include { BISMARK_COVERAGE2CYTOSINE                                                   } from '../../modules/nf-core/bismark/coverage2cytosine/main'
 include { BISMARK_REPORT                                                              } from '../../modules/nf-core/bismark/report/main'
@@ -41,43 +40,6 @@ workflow BISMARK {
     )
     alignments = BISMARK_ALIGN.out.bam
     versions = versions.mix(BISMARK_ALIGN.out.versions)
-
-
-    /*
-     * If seq saturation curve specified, it will generate the 
-     * necessary files and plot
-     */
-    if (params.rrbs & !params.skip_seqcurve) {
-
-        percentages_ch = Channel.fromList(params.downsampling_percentages.split(",").toList())
-        downsample_input = BISMARK_ALIGN.out.bam.combine(percentages_ch)
-
-        SEQ_SATURATION(
-            downsample_input
-        )
-        versions = versions.mix(SEQ_SATURATION.out.versions)
-
-        SEQ_SATURATION_METHEXTRACTOR(
-            SEQ_SATURATION.out.bam,
-            bismark_index
-
-        )
-        versions = versions.mix(SEQ_SATURATION_METHEXTRACTOR.out.versions)
-
-        bam_res = SEQ_SATURATION.out.csv.
-            collectFile(name: 'downsampling_reads_results.csv',
-                        storeDir: "${params.outdir}/${params.aligner}/sequencing_saturation_curve/")
-        cov_res = SEQ_SATURATION_METHEXTRACTOR.out.csv.
-            collectFile(name: 'downsampling_cpgs_results.csv',
-                        storeDir: "${params.outdir}/${params.aligner}/sequencing_saturation_curve/")
-
-        PLOT_SEQ_SATURATION(
-            bam_res,
-            cov_res
-        )
-        
-    }
-
 
     /*
      * If filter_non_conversion flag has been specified, 
