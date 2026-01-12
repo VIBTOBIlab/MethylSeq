@@ -102,19 +102,19 @@ Minimum methylation percentage for a read to be filtered out (def. 90%).
 
 > [NOTE:] It's recommended only when using RRBS data, while with WGBS it's recommended to look at the results provided by PreSeq module.
 
-When the flag `--rrbs` is specified, the pipeline will perform a downsampling of the raw aligned .bam files and calculate the sequencing saturation. The sequencing saturation is calculated as the number of unique CpGs with at least x counts (where x is 3 by default, but can be customized) divided by the theoretical maximum number of CpG (which corresponds to the asymptote of the curve).
+When the flag `--rrbs` is specified, the pipeline will calculate sequencing saturation using [methurator](https://github.com/VIBTOBIlab/methurator/tree/main). The sequencing saturation is calculated as the number of unique CpGs with at least x counts (where x is 3 by default, but can be customized) divided by the theoretical maximum number of CpG (which corresponds to the asymptote of the curve).
 
 #### `--downsampling_percentages`
 
-The percentages to use when performing the downsampling (def. "0.1,0.2,0.4,0.6,0.8,1"). This parameter cannot accept 0. It's strongly recommended to no change it, unless there are valid reasons (e.g. your sequencing saturation curve is not informative enough with the default percentages.)
+The percentages to use when performing the downsampling (def. "0.1,0.2,0.4,0.6,0.8"). This parameter cannot accept 0 and 1. It's strongly recommended to not change it, unless there are valid reasons (e.g. your sequencing saturation curve is not informative enough with the default percentages.)
 
 #### `--min_counts`
 
-The minimum number of reads necessary to call a unique CpGs in the sequencing curve. By default, it will use '1,3,5' corresponding respectively to 1, 3 and 5 reads.
+The minimum number of reads necessary to call a unique CpGs in the sequencing curve. By default, it will use '3' corresponding to 3 reads. Users can also specify more than 1 value (e.g. '1,3,5').
 
-#### `--skip_seqcurve`
+#### `--skip_methurator`
 
-If you are using the `--rrbs` flag and you want to skip the sequencing saturation curve process, activate this flag (def. false).
+If you are using the `--rrbs` flag and you want to skip the methurator sequencing saturation curve process, activate this flag (def. false).
 
 ## Pipeline output
 
