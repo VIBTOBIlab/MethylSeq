@@ -4,6 +4,7 @@ process METHURATOR_PLOT {
 
     conda "bioconda::methurator=0.1.8"
     container 'biocontainers/methurator:0.1.8--pyhdfd78af_0'
+    label 'error_ignore'
 
     input:
     tuple val(meta), path(summary_report)
