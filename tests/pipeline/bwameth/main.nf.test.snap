@@ -11,7 +11,7 @@
     },
     "single_end_rrbs_software_versions": {
         "content": [
-            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, Workflow={MethylSeq=2.6.3}}"
+            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, METHURATOR_DOWNSAMPLE={methurator=methurator, version 0.1.8}, METHURATOR_PLOT={methurator=methurator, version 0.1.8}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, Workflow={MethylSeq=2.6.3}}"
         ],
         "meta": {
             "nf-test": "0.9.0",
