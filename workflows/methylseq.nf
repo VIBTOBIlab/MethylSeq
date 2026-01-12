@@ -77,6 +77,7 @@ def multiqc_report = []
 workflow METHYLSEQ {
 
     ch_versions = Channel.empty()
+    seqsaturation_report = Channel.empty()
 
     //
     // SUBWORKFLOW: Prepare any required reference genome indices
