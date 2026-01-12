@@ -13,8 +13,6 @@ include { BISMARK_COVERAGE2CYTOSINE                                             
 include { BISMARK_REPORT                                                              } from '../../modules/nf-core/bismark/report/main'
 include { BISMARK_SUMMARY                                                             } from '../../modules/nf-core/bismark/summary/main'
 include { BISMARK_FILTER_NON_CONVERSION                                               } from '../../modules/nf-core/bismark/filter_non_conversion/main'
-include { SEQ_SATURATION                                                              } from '../../modules/local/seqsaturation/main'
-include { PLOT_SEQ_SATURATION                                                         } from '../../modules/local/plot_seqsaturation/main'
 
 
 workflow BISMARK {
