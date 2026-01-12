@@ -62,6 +62,8 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoft
 include { TRIMGALORE                  } from '../modules/nf-core/trimgalore/main'
 include { QUALIMAP_BAMQC              } from '../modules/nf-core/qualimap/bamqc/main'
 include { PRESEQ_LCEXTRAP             } from '../modules/nf-core/preseq/lcextrap/main'
+include { METHURATOR_DOWNSAMPLE       } from '../modules/local/methurator/downsample/main'
+include { METHURATOR_PLOT             } from '../modules/local/methurator/plot/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -194,12 +196,28 @@ workflow METHYLSEQ {
     ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions.first())
 
     /*
-     * MODULE: Run Preseq
+     * MODULE: Run Preseq if not RRBS, else run Methurator for RRBS data
      */
-    PRESEQ_LCEXTRAP (
-        ch_bam
-    )
-    ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
+    if ( !params.rrbs ) {
+        PRESEQ_LCEXTRAP (
+            ch_bam
+        )
+        seqsaturation_report = PRESEQ_LCEXTRAP.out.log
+        ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
+    }
+    else if ( params.rrbs  && !params.skip_methurator ) {
+        METHURATOR_DOWNSAMPLE (
+            ch_bam,
+            PREPARE_GENOME.out.fasta
+        )
+        seqsaturation_report = METHURATOR_DOWNSAMPLE.out.summary_report
+        ch_versions = ch_versions.mix(METHURATOR_DOWNSAMPLE.out.versions.first())
+
+        METHURATOR_PLOT (
+            METHURATOR_DOWNSAMPLE.out.summary_report
+        )
+        ch_versions = ch_versions.mix(METHURATOR_PLOT.out.versions.first())
+    }
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
@@ -220,7 +238,7 @@ workflow METHYLSEQ {
         ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
         ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[1] }.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(seqsaturation_report.collect{ it[1] }.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
         if (!params.skip_trimming) {
             ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
