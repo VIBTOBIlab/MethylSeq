@@ -6,6 +6,7 @@
 - Added a second Picard Markduplicates for BwaMeth subworkflow and changed the name of the previous one with PicardMarkOpticalDuplicates for the Bismark subworkflow.
 - Updated tests of the pipeline
 - Update the container of Bismark in the module `BISMARK_FILTER_NON_CONVERSION` with the official BioContainer (see CHANGELOG version [v2.6.1](#in-house-modifications-applied-to-methylseq-pipeline-version-v260))
+- Substitute the sequencing saturation analysis on RRBS samples previously run using custom scripts with [methurator package](https://github.com/VIBTOBIlab/methurator/tree/main).
 
 ## [v2.6.2](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.2)
 
