@@ -3,7 +3,9 @@ process METHURATOR_DOWNSAMPLE {
     label 'process_medium'
 
     conda "bioconda::methurator=0.1.8"
-    container 'biocontainers/methurator:0.1.8--pyhdfd78af_0'
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/methurator:0.1.8--pyhdfd78af_0' :
+        'biocontainers/methurator:0.1.8--pyhdfd78af_0' }"
 
     input:
     tuple val(meta), path(bam)
