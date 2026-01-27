@@ -12,6 +12,7 @@ nextflow_pipeline {
                 aligner        = "bwameth"
                 save_reference = true
                 outdir         = "$outputDir"
+                skip_methurator = true
             }
         }
 
@@ -66,6 +67,7 @@ nextflow_pipeline {
             params {
                 aligner        = "bwameth"
                 save_reference = true
+                skip_methurator = true
                 skip_trimming  = true
                 rrbs           = true
                 save_reference = true
