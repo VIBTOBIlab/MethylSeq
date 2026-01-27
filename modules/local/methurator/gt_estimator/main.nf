@@ -1,11 +1,11 @@
-process METHURATOR_DOWNSAMPLE {
+process METHURATOR_GTESTIMATOR {
     tag "$meta.id"
     label 'process_medium'
-
-    conda "bioconda::methurator=0.1.8"
+    errorStrategy 'ignore'
+    conda "bioconda::methurator=2.0.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/methurator:0.1.8--pyhdfd78af_0' :
-        'biocontainers/methurator:0.1.8--pyhdfd78af_0' }"
+        'https://depot.galaxyproject.org/singularity/methurator:2.0.0--pyhdfd78af_0' :
+        'biocontainers/methurator:2.0.0--pyhdfd78af_0' }"
 
     input:
     tuple val(meta), path(bam)
@@ -19,14 +19,17 @@ process METHURATOR_DOWNSAMPLE {
     task.ext.when == null || task.ext.when
 
     script:
+    def args = ''
+    if(params.rrbs) { args += '--rrbs'}
     """
-    methurator downsample \\
+    methurator gt-estimator \\
         $bam \\
         --fasta $fasta \\
         -mc ${params.min_counts} \\
-        -ds ${params.downsampling_percentages} \\
+        --t-max ${params.tmax} \\
         -@ ${task.cpus} \\
-        -o .
+        --compute_ci \\
+        -o . $args
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

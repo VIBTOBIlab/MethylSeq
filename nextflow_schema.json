@@ -420,9 +420,9 @@
             "description": "",
             "default": "",
             "properties": {
-                "downsampling_percentages": {
+                "tmax": {
                     "type": "string",
-                    "description": "List containing percentages used to downsample the bam file and create the sequencing saturation curve."
+                    "description": "Maximum extrapolation factor (t) value."
                 },
                 "min_counts": {
                     "type": "string",

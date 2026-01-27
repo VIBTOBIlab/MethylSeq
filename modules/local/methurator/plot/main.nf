@@ -1,11 +1,11 @@
 process METHURATOR_PLOT {
     tag "$meta.id"
     label 'process_low'
-
-    conda "bioconda::methurator=0.1.8"
+    errorStrategy 'ignore'
+    conda "bioconda::methurator=2.0.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/methurator:0.1.8--pyhdfd78af_0' :
-        'biocontainers/methurator:0.1.8--pyhdfd78af_0' }"
+        'https://depot.galaxyproject.org/singularity/methurator:2.0.0--pyhdfd78af_0' :
+        'biocontainers/methurator:2.0.0--pyhdfd78af_0' }"
 
     input:
     tuple val(meta), path(summary_report)

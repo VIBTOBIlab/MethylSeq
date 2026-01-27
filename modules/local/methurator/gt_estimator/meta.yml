@@ -1,5 +1,5 @@
-name: methurator downsample
-description: Performs downsampling and sequencing saturation analysis of bisulfite sequencing reads using methurator.
+name: methurator gt-estimator
+description: Methurator is a Python package designed to estimate CpGs saturation for DNA methylation sequencing data.
 keywords:
   - rrbs
   - BS-seq
@@ -7,13 +7,12 @@ keywords:
   - 5mC
   - methylseq
   - bisulphite
-  - bisulfite
   - bam
 tools:
   - methurator:
       description: |
-        methurator is a Python package designed to estimate sequencing saturation 
-        for reduced-representation bisulfite sequencing (RRBS) data.
+        Methurator is a Python package designed to estimate CpGs saturation 
+        for DNA methylation sequencing data.
       homepage: https://github.com/VIBTOBIlab/methurator
       documentation: https://github.com/VIBTOBIlab/methurator/README.md
       doi: ""
@@ -41,6 +40,6 @@ output:
   - summary_report:
       type: file
       description: |
-        YAML file summarizing the downsampling and saturation analysis results.
+        YAML file summarizing the saturation analysis results.
 authors:
   - "@edogiuili"

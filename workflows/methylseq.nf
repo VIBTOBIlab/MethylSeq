@@ -62,7 +62,7 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoft
 include { TRIMGALORE                  } from '../modules/nf-core/trimgalore/main'
 include { QUALIMAP_BAMQC              } from '../modules/nf-core/qualimap/bamqc/main'
 include { PRESEQ_LCEXTRAP             } from '../modules/nf-core/preseq/lcextrap/main'
-include { METHURATOR_DOWNSAMPLE       } from '../modules/local/methurator/downsample/main'
+include { METHURATOR_GTESTIMATOR      } from '../modules/local/methurator/gt_estimator/main'
 include { METHURATOR_PLOT             } from '../modules/local/methurator/plot/main'
 
 /*
@@ -197,25 +197,25 @@ workflow METHYLSEQ {
     ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions.first())
 
     /*
-     * MODULE: Run Preseq if not RRBS, else run Methurator for RRBS data
+     * MODULE: Run Preseq and Methurator if no skip specified
      */
-    if ( !params.rrbs ) {
-        PRESEQ_LCEXTRAP (
-            ch_bam
-        )
-        seqsaturation_report = PRESEQ_LCEXTRAP.out.log
-        ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
-    }
-    else if ( params.rrbs  && !params.skip_methurator ) {
-        METHURATOR_DOWNSAMPLE (
+    PRESEQ_LCEXTRAP (
+        ch_bam
+    )
+    seqsaturation_report = PRESEQ_LCEXTRAP.out.log
+    ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
+
+    if ( !params.skip_methurator ) {
+
+        METHURATOR_GTESTIMATOR (
             ch_bam,
             PREPARE_GENOME.out.fasta
         )
-        seqsaturation_report = METHURATOR_DOWNSAMPLE.out.summary_report
-        ch_versions = ch_versions.mix(METHURATOR_DOWNSAMPLE.out.versions.first())
+        seqsaturation_report = METHURATOR_GTESTIMATOR.out.summary_report
+        ch_versions = ch_versions.mix(METHURATOR_GTESTIMATOR.out.versions.first())
 
         METHURATOR_PLOT (
-            METHURATOR_DOWNSAMPLE.out.summary_report
+            METHURATOR_GTESTIMATOR.out.summary_report
         )
         ch_versions = ch_versions.mix(METHURATOR_PLOT.out.versions.first())
     }
