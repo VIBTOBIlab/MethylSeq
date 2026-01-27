@@ -180,6 +180,7 @@ nextflow_pipeline {
                 em_seq  = true
                 clip_r1 = 2
                 outdir  = "$outputDir"
+                skip_methurator = true
             }
         }
 
