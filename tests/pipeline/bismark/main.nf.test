@@ -73,6 +73,7 @@ nextflow_pipeline {
                 skip_trimming  = true
                 save_reference = true
                 rrbs           = true
+                skip_methurator = true
                 outdir         = "$outputDir"
             }
         }
