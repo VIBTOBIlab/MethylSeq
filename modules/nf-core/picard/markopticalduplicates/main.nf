@@ -10,7 +10,6 @@ process PICARD_MARKOPTICALDUPLICATES {
     input:
     tuple val(meta), path(bam)
     path fasta
-    path fai
 
     output:
     tuple val(meta), path("*.bam")        , emit: bam
