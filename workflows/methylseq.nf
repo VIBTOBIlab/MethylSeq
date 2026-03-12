@@ -163,8 +163,7 @@ workflow METHYLSEQ {
             PREPARE_GENOME.out.bismark_index,
             params.skip_deduplication || params.rrbs,
             params.cytosine_report || params.nomeseq,
-            params.fasta,
-            params.fasta_index
+            params.fasta
         )
         ch_versions = ch_versions.mix(BISMARK.out.versions.unique{ it.baseName })
         ch_bam = BISMARK.out.bam
