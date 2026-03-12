@@ -16,9 +16,11 @@ workflow PREPARE_GENOME {
     ch_bwameth_index = Channel.empty()
     ch_fasta_index   = Channel.empty()
 
-    // FASTA, if supplied
+    // FASTA, if supplied or from genome
     if (params.fasta) {
         ch_fasta = Channel.value(file(params.fasta))
+    } else if (params.genome && params.genomes && params.genomes.containsKey(params.genome)) {
+        ch_fasta = Channel.value(file(params.genomes[params.genome].fasta))
     }
 
     // Aligner: bismark or bismark_hisat
