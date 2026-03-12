@@ -22,11 +22,10 @@ workflow BISMARK {
     skip_deduplication // boolean: whether to deduplicate alignments
     cytosine_report    // boolean: whether the run coverage2cytosine
     fasta              // channel: /path/to/fasta
-    fasta_index        // channel: /path/to/fasta_index
 
     main:
-    versions = Channel.empty()
-    picard_metrics = Channel.empty()
+    versions = channel.empty()
+    picard_metrics = channel.empty()
 
 
     /*
@@ -69,8 +68,7 @@ workflow BISMARK {
         )
         PICARD_MARKOPTICALDUPLICATES (
             alignments,
-            fasta,
-            fasta_index
+            fasta
         )
         alignments = PICARD_MARKOPTICALDUPLICATES.out.bam
         picard_metrics = PICARD_MARKOPTICALDUPLICATES.out.metrics
