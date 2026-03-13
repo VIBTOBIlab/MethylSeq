@@ -136,6 +136,7 @@ nextflow_pipeline {
                 aligner = "bismark"
                 nomeseq = true
                 outdir = "$outputDir"
+                skip_methurator = true
             }
         }
 
