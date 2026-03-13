@@ -12,6 +12,8 @@ nextflow_pipeline {
                 aligner        = "bismark"
                 save_reference = true
                 outdir         = "$outputDir"
+                skip_methurator = true
+
             }
         }
 
