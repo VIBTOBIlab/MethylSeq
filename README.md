@@ -28,7 +28,6 @@ Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for
 | Raw data QC                                  | FastQC                | FastQC                |
 | Adapter sequence trimming                    | Trim Galore!          | Trim Galore!          |
 | Align Reads                                  | Bismark               | bwa-meth              |
-| Sequencing saturation _(optional)_           | methurator            | -                     |
 | Filter Non Conversion                        | Bismark               | -                     |
 | Deduplicate Alignments                       | Bismark               | Picard MarkDuplicates |
 | Removal of optical duplicates                | Picard MarkDuplicates | -                     |
@@ -36,7 +35,8 @@ Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for
 | Sample report                                | Bismark               | -                     |
 | Summary Report                               | Bismark               | -                     |
 | Alignment QC                                 | Qualimap              | Qualimap              |
-| Sample complexity                            | Preseq                | Preseq                |
+| Sample complexity _(optional)_               | Preseq                | Preseq                |
+| CpGs-level saturation _(optional)_           | methurator            | -                     |
 | Project Report                               | MultiQC               | MultiQC               |
 
 ## Usage
@@ -98,23 +98,19 @@ Minimum number of methylation sites for a read to be filtered out (def. 3).
 
 Minimum methylation percentage for a read to be filtered out (def. 90%).
 
-### Sequencing saturation plots
+### CpG-level sequencing saturation using methurator
 
-> [NOTE:] It's recommended only when using RRBS data, while with WGBS it's recommended to look at the results provided by PreSeq module.
+#### `--run_methurator`
 
-When the flag `--rrbs` is specified, the pipeline will calculate sequencing saturation using [methurator](https://github.com/VIBTOBIlab/methurator/tree/main). The sequencing saturation is calculated as the number of unique CpGs with at least x counts (where x is 3 by default, but can be customized) divided by the theoretical maximum number of CpG (which corresponds to the asymptote of the curve).
+If specified (by default: true), it will run [methurator](https://vibtobilab.github.io/methurator/latest/) to compute a CpG-level sequencing saturation analysis.
 
-#### `--downsampling_percentages`
+#### `--t_max`
 
-The percentages to use when performing the downsampling (def. "0.1,0.2,0.4,0.6,0.8"). This parameter cannot accept 0 and 1. It's strongly recommended to not change it, unless there are valid reasons (e.g. your sequencing saturation curve is not informative enough with the default percentages.)
+Maximum extrapolation factor (t) value (def. 10).
 
-#### `--min_counts`
+#### `--minimum_coverage`
 
-The minimum number of reads necessary to call a unique CpGs in the sequencing curve. By default, it will use '3' corresponding to 3 reads. Users can also specify more than 1 value (e.g. '1,3,5').
-
-#### `--skip_methurator`
-
-If you are using the `--rrbs` flag and you want to skip the methurator sequencing saturation curve process, activate this flag (def. false).
+Minimum number of counts to define a new CpG (def. 1). More than 1 value can be specified (e.g. '1,3,5').
 
 ## Pipeline output
 
