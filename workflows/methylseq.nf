@@ -163,7 +163,7 @@ workflow METHYLSEQ {
             PREPARE_GENOME.out.bismark_index,
             params.skip_deduplication || params.rrbs,
             params.cytosine_report || params.nomeseq,
-            params.fasta
+            PREPARE_GENOME.out.fasta
         )
         ch_versions = ch_versions.mix(BISMARK.out.versions.unique{ it.baseName })
         ch_bam = BISMARK.out.bam
@@ -204,7 +204,7 @@ workflow METHYLSEQ {
     seqsaturation_report = PRESEQ_LCEXTRAP.out.log
     ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
 
-    if ( !params.skip_methurator ) {
+    if ( params.run_methurator ) {
 
         METHURATOR_GTESTIMATOR (
             ch_bam,
