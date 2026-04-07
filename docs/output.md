@@ -185,6 +185,17 @@ Note that these are predictive numbers only, not absolute. The MultiQC plot can 
 - `sample_ccurve.txt`
   - This file contains plot values for the complexity curve, plotted in the MultiQC report.
 
+## methurator
+
+[methurator](https://vibtobilab.github.io/methurator/latest/) is a Python package to estimate CpG sequencing saturation for DNA methylation sequencing data.
+
+**Output directory: `results/methurator`**
+
+- `methurator_summary.yml`
+  - This file contains metadata, model parameters, and extrapolation results.
+- `plots/*.html`
+  - This folder contains one interactive, HTML file per sample analysed.
+
 ### MultiQC
 
 ![MultiQC - FastQC sequence counts plot](images/mqc_fastqc_counts.png)
