@@ -414,25 +414,25 @@
                 }
             }
         },
-        "seq_saturat_curve_options": {
-            "title": "sequencing saturation curve options",
+        "methurator_options": {
+            "title": "methurator options",
             "type": "object",
             "description": "",
             "default": "",
             "properties": {
-                "tmax": {
+                "t_max": {
                     "type": "string",
                     "description": "Maximum extrapolation factor (t) value."
                 },
-                "min_counts": {
+                "minimum_coverage": {
                     "type": "string",
-                    "default": 3,
+                    "default": "1",
                     "description": "Minimum number of counts to define a new CpG"
                 },
-                "skip_methurator": {
+                "run_methurator": {
                     "type": "boolean",
-                    "default": "false",
-                    "description": "Skip methurator sequencing saturation curve when using --rrbs flag (def. false)."
+                    "default": "true",
+                    "description": "Run methurator sequencing saturation curve (def. true)."
                 }
             }
         },
