@@ -6,14 +6,29 @@ nextflow_pipeline {
     tag "bismark"
     tag "pipeline"
 
+    test("Params: default with methurator") {
+        when {
+            params {
+                aligner        = "bismark"
+                save_reference = true
+                outdir         = "$outputDir"
+                run_methurator = true
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(path("$outputDir/methurator/summaries/Ecoli/methurator_summary.yml").readLines()[3..10].join('\n').md5()).match()
+        }
+    }
+
     test("Bismark Single-End") {
         when {
             params {
                 aligner        = "bismark"
                 save_reference = true
                 outdir         = "$outputDir"
-                skip_methurator = true
-
+                run_methurator = false
             }
         }
 
@@ -75,7 +90,7 @@ nextflow_pipeline {
                 skip_trimming  = true
                 save_reference = true
                 rrbs           = true
-                skip_methurator = true
+                run_methurator = false
                 outdir         = "$outputDir"
             }
         }
@@ -116,6 +131,7 @@ nextflow_pipeline {
             params {
                 aligner         = "bismark"
                 skip_trimming   = true
+                run_methurator  = false
                 rrbs            = true
                 bismark_index   = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz"
                 cytosine_report = true
@@ -136,7 +152,7 @@ nextflow_pipeline {
                 aligner = "bismark"
                 nomeseq = true
                 outdir = "$outputDir"
-                skip_methurator = true
+                run_methurator = false
             }
         }
 
@@ -184,7 +200,7 @@ nextflow_pipeline {
                 em_seq  = true
                 clip_r1 = 2
                 outdir  = "$outputDir"
-                skip_methurator = true
+                run_methurator = false
             }
         }
 

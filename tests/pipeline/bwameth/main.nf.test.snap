@@ -9,6 +9,16 @@
         },
         "timestamp": "2026-01-27T17:05:46.640233"
     },
+    "Params: bwameth with methurator": {
+        "content": [
+            "ab360ec57dbb49ab898ac581640370a9"
+        ],
+        "meta": {
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
+        },
+        "timestamp": "2026-04-07T20:44:11.99462"
+    },
     "single_end_rrbs_software_versions": {
         "content": [
             "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, Workflow={MethylSeq=2.6.3}}"
