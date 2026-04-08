@@ -20,6 +20,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 - [Bismark Reports](#bismark-reports) - Single-sample and summary analysis reports
 - [Qualimap](#qualimap) - Tool for genome alignments QC
 - [Preseq](#preseq) - Tool for estimating sample complexity
+- [methurator](#methurator) - Tool for estimating CpG-level sequencing saturation
 - [MultiQC](#multiqc) - Aggregate report describing results and QC from the whole pipeline
 - [Pipeline information](#pipeline-information) - Report metrics generated during the workflow execution
 
@@ -48,7 +49,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 
 [FastQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) gives general quality metrics about your sequenced reads. It provides information about the quality score distribution across your reads, per base sequence content (%A/T/G/C), adapter contamination and overrepresented sequences. For further reading and documentation see the [FastQC help pages](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/).
 
-## TrimGalore
+### TrimGalore
 
 The nf-core/methylseq pipeline uses [TrimGalore!](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/) for removal of adapter contamination and trimming of low quality regions. TrimGalore is a wrapper around [Cutadapt](https://github.com/marcelm/cutadapt) and runs FastQC after it finishes.
 
@@ -163,7 +164,7 @@ Bismark generates a HTML reports describing results for each sample, as well as 
 
 **Output directory: `results/bismark_summary`**
 
-## Qualimap
+### Qualimap
 
 [Qualimap BamQC](http://qualimap.bioinfo.cipf.es/doc_html/analysis.html#bam-qc) is a general-use quality-control tool that generates a number of statistics about aligned BAM files. It's not specific to bisulfite data, but it produces several useful stats - for example, insert size and coverage statistics.
 
@@ -174,7 +175,7 @@ Bismark generates a HTML reports describing results for each sample, as well as 
 - `sample/genome_results.txt`, `sample/raw_data_qualimapReport/*.txt`
   - Text-based statistics that can be loaded into downstream programs
 
-## Preseq
+### Preseq
 
 [Preseq](http://smithlabresearch.org/software/preseq/) estimates the complexity of a library, showing how many additional unique reads are sequenced for increasing the total read count. A shallow curve indicates that the library has reached complexity saturation and further sequencing would likely not add further unique reads. The dashed line shows a perfectly complex library where total reads = unique reads.
 
@@ -185,7 +186,7 @@ Note that these are predictive numbers only, not absolute. The MultiQC plot can 
 - `sample_ccurve.txt`
   - This file contains plot values for the complexity curve, plotted in the MultiQC report.
 
-## methurator
+### methurator
 
 [methurator](https://vibtobilab.github.io/methurator/latest/) is a Python package to estimate CpG sequencing saturation for DNA methylation sequencing data.
 
@@ -204,11 +205,8 @@ Note that these are predictive numbers only, not absolute. The MultiQC plot can 
 
 ![MultiQC - FastQC adapter content plot](images/mqc_fastqc_adapter.png)
 
-:::note
+**Note:**
 The FastQC plots displayed in the MultiQC report shows _untrimmed_ reads. They may contain adapter sequence and potentially regions with low quality.
-:::
-
-### MultiQC
 
 <details markdown="1">
 <summary>Output files</summary>
