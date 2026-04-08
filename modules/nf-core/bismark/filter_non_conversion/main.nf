@@ -2,8 +2,10 @@ process BISMARK_FILTER_NON_CONVERSION {
     tag "$meta.id"
     label 'process_high'
 
-    conda "bioconda::bismark=0.24.0"
-    container "astrobiomike/gl-methylseq-wf-bismark:main" // to be modified with the new version of biocontainer/bismark
+    conda "bioconda::bismark=0.25.0"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/bismark:0.25.0--hdfd78af_0' :
+        'biocontainers/bismark:0.25.0--hdfd78af_0' }"
 
     input:
     tuple val(meta), path(bam)

@@ -62,6 +62,8 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoft
 include { TRIMGALORE                  } from '../modules/nf-core/trimgalore/main'
 include { QUALIMAP_BAMQC              } from '../modules/nf-core/qualimap/bamqc/main'
 include { PRESEQ_LCEXTRAP             } from '../modules/nf-core/preseq/lcextrap/main'
+include { METHURATOR_GTESTIMATOR      } from '../modules/local/methurator/gt_estimator/main'
+include { METHURATOR_PLOT             } from '../modules/local/methurator/plot/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -75,6 +77,7 @@ def multiqc_report = []
 workflow METHYLSEQ {
 
     ch_versions = Channel.empty()
+    seqsaturation_report = Channel.empty()
 
     //
     // SUBWORKFLOW: Prepare any required reference genome indices
@@ -160,8 +163,7 @@ workflow METHYLSEQ {
             PREPARE_GENOME.out.bismark_index,
             params.skip_deduplication || params.rrbs,
             params.cytosine_report || params.nomeseq,
-            params.fasta,
-            params.fasta_index
+            PREPARE_GENOME.out.fasta
         )
         ch_versions = ch_versions.mix(BISMARK.out.versions.unique{ it.baseName })
         ch_bam = BISMARK.out.bam
@@ -194,12 +196,28 @@ workflow METHYLSEQ {
     ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions.first())
 
     /*
-     * MODULE: Run Preseq
+     * MODULE: Run Preseq and Methurator if no skip specified
      */
-    PRESEQ_LCEXTRAP (
-        ch_bam
-    )
-    ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
+    if (!params.skip_preseq && !params.rrbs) {
+        PRESEQ_LCEXTRAP (
+            ch_bam
+        )
+        ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
+    }
+
+    if ( params.run_methurator ) {
+
+        METHURATOR_GTESTIMATOR (
+            ch_bam,
+            PREPARE_GENOME.out.fasta
+        )
+        ch_versions = ch_versions.mix(METHURATOR_GTESTIMATOR.out.versions.first())
+
+        METHURATOR_PLOT (
+            METHURATOR_GTESTIMATOR.out.summary_report
+        )
+        ch_versions = ch_versions.mix(METHURATOR_PLOT.out.versions.first())
+    }
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
@@ -220,10 +238,12 @@ workflow METHYLSEQ {
         ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
         ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[1] }.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
         if (!params.skip_trimming) {
             ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
+        }
+        if (!params.skip_preseq && !params.rrbs) {
+            ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
         }
         ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ it[1] }.ifEmpty([]))
 

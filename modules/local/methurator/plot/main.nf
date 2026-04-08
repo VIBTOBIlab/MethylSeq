@@ -1,0 +1,30 @@
+process METHURATOR_PLOT {
+    tag "$meta.id"
+    label 'process_low'
+    errorStrategy 'ignore'
+
+    conda "bioconda::methurator=2.1.1"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/methurator:2.1.1--pyhdfd78af_0' :
+        'biocontainers/methurator:2.1.1--pyhdfd78af_0' }"
+
+    input:
+    tuple val(meta), path(summary_report)
+
+    output:
+    tuple val(meta), path("plots/*.html")     , emit: plots
+    path "versions.yml"                       , emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
+
+    script:
+    """
+    methurator plot --summary $summary_report -o .
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        methurator: "\$(methurator --version 2>&1 | --version | sed 's/.* //')"
+    END_VERSIONS
+    """
+}

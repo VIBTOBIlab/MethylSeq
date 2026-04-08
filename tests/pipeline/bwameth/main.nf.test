@@ -6,12 +6,29 @@ nextflow_pipeline {
     tag "bwameth"
     tag "pipeline"
 
+    test("Params: bwameth with methurator") {
+        when {
+            params {
+                aligner        = "bwameth"
+                save_reference = true
+                outdir         = "$outputDir"
+                run_methurator = true
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(path("$outputDir/methurator/summaries/Ecoli/methurator_summary.yml").readLines()[3..10].join('\n').md5()).match()
+        }
+    }
+
     test("Bwameth Single-End") {
         when {
             params {
                 aligner        = "bwameth"
                 save_reference = true
                 outdir         = "$outputDir"
+                run_methurator = false
             }
         }
 
@@ -23,10 +40,6 @@ nextflow_pipeline {
                             path("$outputDir/bwameth/alignments/samtools_stats/Ecoli.stats"),
                             path("$outputDir/bwameth/alignments/samtools_stats/SRR389222.flagstat"),
                             path("$outputDir/bwameth/alignments/samtools_stats/SRR389222.stats"),
-                            path("$outputDir/bwameth/deduplicated/Ecoli.markdup.sorted.bam"),
-                            path("$outputDir/bwameth/deduplicated/Ecoli.markdup.sorted.bam.bai"),
-                            path("$outputDir/bwameth/deduplicated/SRR389222.markdup.sorted.bam"),
-                            path("$outputDir/bwameth/deduplicated/SRR389222.markdup.sorted.bam.bai"),
                             path("$outputDir/bwameth/reference_genome/").list(),
                             path("$outputDir/cat/SRR389222.merged.fastq.gz"),
                             path("$outputDir/methyldackel/Ecoli.markdup.sorted_CpG.bedGraph"),
@@ -55,6 +68,7 @@ nextflow_pipeline {
                 bwa_meth_index = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwameth_Index.tar.gz"
                 methyl_kit     = true
                 outdir         = "$outputDir"
+                run_methurator  = false
             }
         }
 
@@ -70,6 +84,7 @@ nextflow_pipeline {
             params {
                 aligner        = "bwameth"
                 save_reference = true
+                run_methurator = false
                 skip_trimming  = true
                 rrbs           = true
                 save_reference = true
@@ -106,6 +121,7 @@ nextflow_pipeline {
             params {
                 aligner = "bwameth"
                 skip_trimming = true
+                run_methurator = false
                 rrbs = true
                 bwa_meth_index = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwameth_Index.tar.gz"
                 methyl_kit = true

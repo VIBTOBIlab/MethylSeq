@@ -10,15 +10,17 @@ include { SAMTOOLS_FAIDX              } from '../../modules/nf-core/samtools/fai
 workflow PREPARE_GENOME {
 
     main:
-    ch_versions      = Channel.empty()
-    ch_fasta         = Channel.empty()
-    ch_bismark_index = Channel.empty()
-    ch_bwameth_index = Channel.empty()
-    ch_fasta_index   = Channel.empty()
+    ch_versions      = channel.empty()
+    ch_fasta         = channel.empty()
+    ch_bismark_index = channel.empty()
+    ch_bwameth_index = channel.empty()
+    ch_fasta_index   = channel.empty()
 
-    // FASTA, if supplied
+    // FASTA, if supplied or from genome
     if (params.fasta) {
-        ch_fasta = Channel.value(file(params.fasta))
+        ch_fasta = channel.value(file(params.fasta))
+    } else if (params.genome && params.genomes && params.genomes.containsKey(params.genome)) {
+        ch_fasta = channel.value(file(params.genomes[params.genome].fasta))
     }
 
     // Aligner: bismark or bismark_hisat
@@ -31,7 +33,7 @@ workflow PREPARE_GENOME {
             if (params.bismark_index.endsWith('.gz')) {
                 ch_bismark_index = UNTAR ( [ [:], file(params.bismark_index) ] ).untar.map { it[1] }
             } else {
-                ch_bismark_index = Channel.value(file(params.bismark_index))
+                ch_bismark_index = channel.value(file(params.bismark_index))
             }
         } else {
             BISMARK_GENOMEPREPARATION(ch_fasta)
@@ -50,7 +52,7 @@ workflow PREPARE_GENOME {
             if (params.bwa_meth_index.endsWith('.tar.gz')) {
                 ch_bismark_index = UNTAR ( [ [:], file(params.bwa_meth_index) ] ).untar.map { it[1] }
             } else {
-                ch_bismark_index = Channel.value(file(params.bwa_meth_index))
+                ch_bismark_index = channel.value(file(params.bwa_meth_index))
             }
         } else {
             BWAMETH_INDEX(ch_fasta)
@@ -62,7 +64,7 @@ workflow PREPARE_GENOME {
          * Generate fasta index if not supplied
          */
         if (params.fasta_index) {
-            ch_fasta_index = Channel.value(file(params.fasta_index))
+            ch_fasta_index = channel.value(file(params.fasta_index))
         } else {
             SAMTOOLS_FAIDX([[:], ch_fasta])
             ch_fasta_index = SAMTOOLS_FAIDX.out.fai.map{ return(it[1])}
