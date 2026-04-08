@@ -36,7 +36,7 @@ Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for
 | Summary Report                               | Bismark               | -                     |
 | Alignment QC                                 | Qualimap              | Qualimap              |
 | Sample complexity _(optional)_               | Preseq                | Preseq                |
-| CpGs-level saturation _(optional)_           | methurator            | -                     |
+| CpGs-level saturation _(optional)_           | methurator            | methurator            |
 | Project Report                               | MultiQC               | MultiQC               |
 
 ## Usage
@@ -68,7 +68,7 @@ nextflow run main.nf --input samplesheet.csv --outdir <OUTDIR> --genome GRCh37 -
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_;
 > see [docs](https://nf-co.re/usage/configuration#custom-configuration-files).
 
-For more details and further functionality, please refer to the [usage documentation](https://nf-co.re/methylseq/usage), the [parameter documentation](https://nf-co.re/methylseq/parameters) and the section below for the parameters that have been added to the modifed version of the pipeline.
+For more details and further functionality, please refer to the [usage documentation](https://nf-co.re/methylseq/2.6.0/docs/usage), the [parameter documentation](https://nf-co.re/methylseq/2.6.0/parameters) and the section below for the parameters that have been added to the modifed version of the pipeline.
 
 ## Parameters included in the modified version
 
