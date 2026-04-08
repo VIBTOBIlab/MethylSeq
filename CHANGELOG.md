@@ -9,11 +9,11 @@
 - Substitute the sequencing saturation analysis on RRBS samples previously run using custom scripts with [methurator package](https://github.com/VIBTOBIlab/methurator/tree/main).
 - Fixed a bug for the PREPARE_GENOME() workflow to automatically fetch the FASTA file if not provided by the user.
 
-## [v2.6.2](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.2)
-
+## [v2.6.2](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.2) - 2025-07-15
+### In-house modifications applied to nf-core/methylseq pipeline version [v2.6.0](https://github.com/nf-core/methylseq/releases/tag/2.6.0)
 - Added parameter to deactivate PicardMarkduplicates module
-- Added parameter to specify which sequencer has been used for PicardMarkduplicates module
-- Reordered the main Bismark Workflow
+- Added parameter to specify which sequencer has been used for PicardMarkduplicates module.
+- Reordered the main Bismark Workflow.
 - Added the optional Sequencing Saturation plots.
 
 ## [v2.6.1](https://github.ugent.be/DePreterLab/MethylSeq/releases/tag/v2.6.1) - 2024-08-02
