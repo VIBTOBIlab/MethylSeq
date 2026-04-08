@@ -198,11 +198,12 @@ workflow METHYLSEQ {
     /*
      * MODULE: Run Preseq and Methurator if no skip specified
      */
-    PRESEQ_LCEXTRAP (
-        ch_bam
-    )
-    seqsaturation_report = PRESEQ_LCEXTRAP.out.log
-    ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
+    if (!params.skip_preseq && !params.rrbs) {
+        PRESEQ_LCEXTRAP (
+            ch_bam
+        )
+        ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
+    }
 
     if ( params.run_methurator ) {
 
@@ -210,7 +211,6 @@ workflow METHYLSEQ {
             ch_bam,
             PREPARE_GENOME.out.fasta
         )
-        seqsaturation_report = METHURATOR_GTESTIMATOR.out.summary_report
         ch_versions = ch_versions.mix(METHURATOR_GTESTIMATOR.out.versions.first())
 
         METHURATOR_PLOT (
@@ -238,10 +238,12 @@ workflow METHYLSEQ {
         ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
         ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[1] }.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(seqsaturation_report.collect{ it[1] }.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
         if (!params.skip_trimming) {
             ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
+        }
+        if (!params.skip_preseq && !params.rrbs) {
+            ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
         }
         ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ it[1] }.ifEmpty([]))
 

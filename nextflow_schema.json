@@ -499,6 +499,12 @@
                 "skip_multiqc": {
                     "type": "boolean",
                     "description": "Skip MultiQC"
+                },
+                "skip_preseq": {
+                    "type": "boolean",
+                    "description": "Skip preseq step.",
+                    "help_text": "Preseq is used to estimate the complexity of the sequencing library. Specifying this option will skip this step.",
+                    "fa_icon": "fas fa-fast-forward"
                 }
             },
             "fa_icon": "fas fa-fast-forward"
