@@ -168,6 +168,7 @@ workflow METHYLSEQ {
         ch_versions = ch_versions.mix(BISMARK.out.versions.unique{ it.baseName })
         ch_bam = BISMARK.out.bam
         ch_dedup = BISMARK.out.dedup
+        ch_bai = BISMARK.out.dedup_bai
         ch_aligner_mqc = BISMARK.out.mqc
     }
     // Aligner: bwameth
@@ -183,6 +184,7 @@ workflow METHYLSEQ {
         ch_versions = ch_versions.mix(BWAMETH.out.versions.unique{ it.baseName })
         ch_bam = BWAMETH.out.bam
         ch_dedup = BWAMETH.out.dedup
+        ch_bai = BWAMETH.out.dedup_bai
         ch_aligner_mqc = BWAMETH.out.mqc
     }
 
@@ -208,8 +210,10 @@ workflow METHYLSEQ {
     if ( params.run_methurator ) {
 
         METHURATOR_GTESTIMATOR (
-            ch_bam,
-            PREPARE_GENOME.out.fasta
+            ch_dedup,
+            ch_bai,
+            PREPARE_GENOME.out.fasta,
+            PREPARE_GENOME.out.fasta_index
         )
         ch_versions = ch_versions.mix(METHURATOR_GTESTIMATOR.out.versions.first())
 
