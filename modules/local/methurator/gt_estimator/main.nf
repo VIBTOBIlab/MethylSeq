@@ -10,7 +10,9 @@ process METHURATOR_GTESTIMATOR {
 
     input:
     tuple val(meta), path(bam)
+    tuple val(meta), path(bai)
     path fasta
+    path fai
 
     output:
     tuple val(meta), path("methurator_summary.yml") , emit: summary_report
