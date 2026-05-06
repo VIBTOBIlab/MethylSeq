@@ -11,13 +11,13 @@
     },
     "Params: bwameth with methurator": {
         "content": [
-            "ab360ec57dbb49ab898ac581640370a9"
+            "076df38712e1e787edb6d8d3b717ad07"
         ],
         "meta": {
-            "nf-test": "0.9.0",
+            "nf-test": "0.9.3",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2026-04-07T20:44:11.99462"
+        "timestamp": "2026-05-06T11:43:57.780047"
     },
     "single_end_rrbs_software_versions": {
         "content": [
