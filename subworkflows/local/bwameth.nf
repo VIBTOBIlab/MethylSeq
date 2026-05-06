@@ -107,7 +107,8 @@ workflow BWAMETH {
 
     emit:
     bam                  = SAMTOOLS_SORT.out.bam  // channel: [ val(meta), [ bam ] ] ## sorted, non-deduplicated (raw) BAM from aligner
-    dedup                = alignments             // channel: [ val(meta), [ bam ] ]  ## sorted, possibly deduplicated BAM
+    dedup                = alignments             // channel: [ val(meta), [ bam ] ] ## sorted, **potentially** deduplicated BAM
+    dedup_bai            = bam_index              // channel: [ val(meta), [ bai ] ] ## dedup bam index
     mqc                  = multiqc_files          // path: *{html,txt}
-    versions                                   // path: *.version.txt
+    versions                                      // path: *.version.txt
 }
