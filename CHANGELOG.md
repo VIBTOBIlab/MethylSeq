@@ -1,5 +1,9 @@
 # MethylSeq pipeline of TOBI lab
 
+## [v2.6.4](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.4) - 2026-05-19
+
+- Added the `.bai` and `.fai` files to the methurator process. These index files are required because, without them, methurator could fail to complete properly or produce errors due to the missing indexes.
+
 ## [v2.6.3](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.3) - 2026-04-08
 
 - Updated MultiQC to version v1.33
