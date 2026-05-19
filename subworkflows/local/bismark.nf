@@ -157,7 +157,8 @@ workflow BISMARK {
 
     emit:
     bam        = SAMTOOLS_SORT_ALIGNED.out.bam            // channel: [ val(meta), [ bam ] ] ## sorted, non-deduplicated (raw) BAM from aligner
-    dedup      = SAMTOOLS_SORT_DEDUPLICATED.out.bam       // channel: [ val(meta), [ bam ] ] ## sorted, possibly deduplicated BAM
+    dedup      = SAMTOOLS_SORT_DEDUPLICATED.out.bam       // channel: [ val(meta), [ bam ] ] ## sorted, **potentially** deduplicated BAM
+    dedup_bai  = SAMTOOLS_INDEX.out.bai                   // channel: [ val(meta), [ bai ] ] ## dedup bam index
     mqc        = multiqc_files                            // path: *{html,txt}
     versions                                              // path: *.version.txt
 }
