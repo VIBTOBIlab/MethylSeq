@@ -130,7 +130,7 @@ workflow BISMARK {
     versions = versions.mix(BISMARK_SUMMARY.out.versions)
 
     /*
-     * Sort deduplicated output BAM
+     * Sort potentially deduplicated output BAM
      */
     SAMTOOLS_SORT_DEDUPLICATED (
         alignments
@@ -138,7 +138,7 @@ workflow BISMARK {
     versions = versions.mix(SAMTOOLS_SORT_DEDUPLICATED.out.versions)
 
     /*
-     * Run samtools index on deduplicated alignment
+     * Run samtools index on potentially deduplicated alignment
      */
     SAMTOOLS_INDEX (SAMTOOLS_SORT_DEDUPLICATED.out.bam)
     versions = versions.mix(SAMTOOLS_INDEX.out.versions)
