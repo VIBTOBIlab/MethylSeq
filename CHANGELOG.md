@@ -1,5 +1,9 @@
 # MethylSeq pipeline of TOBI lab
 
+## [v2.6.5](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.5) -
+
+- Thanks to @Lucmeister55, fixed aligned BAM files not being published by the Bismark subworkflow when `--rrbs` was combined with `--remove_optical_duplicates false` (see issue [here](https://github.com/VIBTOBIlab/MethylSeq/issues/6)).
+
 ## [v2.6.4](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.4) - 2026-05-19
 
 - Added the `.bai` and `.fai` files to the methurator process. These index files are required because, without them, methurator could fail to complete properly or produce errors due to the missing indexes.
