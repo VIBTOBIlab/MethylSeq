@@ -21,6 +21,10 @@ On release, automated continuous integration tests run the pipeline on a full-si
 The pipeline allows you to choose between running either [Bismark](https://github.com/FelixKrueger/Bismark) or [bwa-meth](https://github.com/brentp/bwa-meth) / [MethylDackel](https://github.com/dpryan79/methyldackel).
 Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for alignment), `--aligner bismark_hisat` or `--aligner bwameth`.
 
+![MethylSeq metro map](docs/images/methylseq_metro.svg)
+
+An [interactive version of the metro map](https://htmlpreview.github.io/?https://github.com/VIBTOBIlab/MethylSeq/blob/main/docs/images/methylseq_metro.html) is also available ([source](docs/images/methylseq_metro.html)). The map was generated with [nf-metro](https://github.com/pinin4fjords/nf-metro) from [`docs/images/methylseq_metro.mmd`](docs/images/methylseq_metro.mmd).
+
 | Step                                         | Bismark workflow      | bwa-meth workflow     |
 | -------------------------------------------- | --------------------- | --------------------- |
 | Generate Reference Genome Index _(optional)_ | Bismark               | bwa-meth              |
