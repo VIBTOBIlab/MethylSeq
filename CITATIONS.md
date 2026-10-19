@@ -1,4 +1,4 @@
-# nf-core/methylseq: Citations
+# MethylSeq: Citations
 
 ## [nf-core/methylseq](https://doi.org/10.5281/zenodo.1343417)
 
@@ -37,6 +37,14 @@
 
   > Pedersen, Brent S. and Eyring, Kenneth and De, Subhajyoti and Yang, Ivana V. and Schwartz, David A. Fast and accurate alignment of long bisulfite-seq reads, arXiv:1401.1129, doi: [10.48550/arXiv.1401.1129](https://doi.org/10.48550/arXiv.1401.1129)
 
+- [MethylDackel](https://github.com/dpryan79/MethylDackel)
+
+  > <https://github.com/dpryan79/MethylDackel>
+
+- [SAMtools](https://doi.org/10.1093/bioinformatics/btp352)
+
+  > Li H, Handsaker B, Wysoker A, Fennell T, Ruan J, Homer N, Marth G, Abecasis G, Durbin R; 1000 Genome Project Data Processing Subgroup. The Sequence Alignment/Map format and SAMtools. Bioinformatics. 2009 Aug 15;25(16):2078-9. doi: [10.1093/bioinformatics/btp352](https://doi.org/10.1093/bioinformatics/btp352)
+
 - [Picard](http://broadinstitute.github.io/picard/)
 
   > Picard Tools, Broad Institute. <http://broadinstitute.github.io/picard/>
@@ -48,6 +56,10 @@
 - [Preseq](https://doi.org/10.1038/nmeth.2375)
 
   > Daley, T., Smith, A. Predicting the molecular complexity of sequencing libraries. Nat Methods 10, 325–327 (2013). doi: [10.1038/nmeth.2375](https://doi.org/10.1038/nmeth.2375)
+
+- [methurator](https://vibtobilab.github.io/methurator/latest/)
+
+  > <https://github.com/VIBTOBIlab/methurator>
 
 ## Software packaging/containerisation tools
 

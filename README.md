@@ -5,6 +5,9 @@
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
 [![nf-test](https://img.shields.io/badge/tested_with-nf--test-337ab7.svg)](https://github.com/askimed/nf-test)
+[![docs](https://img.shields.io/badge/docs-vibtobilab.github.io%2FMethylSeq-3f51b5.svg)](https://vibtobilab.github.io/MethylSeq/)
+
+**Documentation: [vibtobilab.github.io/MethylSeq](https://vibtobilab.github.io/MethylSeq/)**
 
 ## Introduction
 
@@ -72,7 +75,7 @@ nextflow run main.nf --input samplesheet.csv --outdir <OUTDIR> --genome GRCh37 -
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_;
 > see [docs](https://nf-co.re/usage/configuration#custom-configuration-files).
 
-For more details and further functionality, please refer to the [usage documentation](https://nf-co.re/methylseq/2.6.0/docs/usage), the [parameter documentation](https://nf-co.re/methylseq/2.6.0/parameters) and the section below for the parameters that have been added to the modifed version of the pipeline.
+For more details and further functionality, please refer to the [usage](https://vibtobilab.github.io/MethylSeq/usage/) and [parameters](https://vibtobilab.github.io/MethylSeq/parameters/) pages of the documentation and the section below for the parameters that have been added to the modified version of the pipeline.
 
 ## Parameters included in the modified version
 
@@ -82,7 +85,7 @@ The original [nf-core/methylseq pipeline](https://nf-co.re/methylseq/2.6.0/) has
 
 #### `--remove_optic_duplicates`
 
-If specified, it removes the optical duplicates. It can be used together with `--sequencer` (see below).
+If specified (by default: true), it removes the optical duplicates. It can be used together with `--sequencer` (see below).
 
 #### `--sequencer`
 
@@ -120,7 +123,7 @@ Minimum number of counts to define a new CpG (def. 1). More than 1 value can be 
 
 To see the results of an example test run with a full size dataset refer to the [results](https://nf-co.re/methylseq/results) tab on the nf-core website pipeline page.
 For more details about the output files and reports, please refer to the
-[output documentation](https://nf-co.re/methylseq/output).
+[output page](https://vibtobilab.github.io/MethylSeq/output/) of the documentation.
 
 ## Credits
 

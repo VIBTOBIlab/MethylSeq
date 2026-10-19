@@ -1,0 +1,118 @@
+site_name: MethylSeq
+site_description: Nextflow pipeline for the analysis of bisulfite sequencing data (WGBS, RRBS and cfRRBS)
+site_url: https://vibtobilab.github.io/MethylSeq/
+repo_url: https://github.com/VIBTOBIlab/MethylSeq
+repo_name: VIBTOBIlab/MethylSeq
+edit_uri: ""
+copyright: Copyright &copy; VIBTOBIlab
+
+docs_dir: docs
+exclude_docs: |
+  README.md
+  requirements.txt
+  hooks/
+  images/*.ai
+  images/*.mmd
+  images/nf-core-methylseq_logo_*.png
+  images/methylseq_logo.png
+
+nav:
+  - Home: index.md
+  - Usage: usage.md
+  - Parameters: parameters.md
+  - Output: output.md
+  - About:
+      - Citations: citations.md
+      - Changelog: changelog.md
+
+theme:
+  name: material
+  icon:
+    logo: material/dna
+    repo: fontawesome/brands/github
+  favicon: images/favicon.svg
+  features:
+    - content.code.copy
+    - content.tabs.link
+    - navigation.footer
+    - navigation.instant
+    - navigation.sections
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.suggest
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: red
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: red
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/VIBTOBIlab/MethylSeq
+      name: MethylSeq on GitHub
+    - icon: fontawesome/solid/code-branch
+      link: https://nf-co.re/methylseq/2.6.0
+      name: Original nf-core/methylseq pipeline
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  # GitHub-style anchors (e.g. `--rrbs` -> #--rrbs), so links work on GitHub and on the site
+  - toc:
+      permalink: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  # Nested lists indented by 2 or 3 spaces, as formatted by prettier (Python-Markdown expects 4)
+  - mdx_truly_sane_lists:
+      nested_indent: 2
+  - pymdownx.details
+  # Material icons (e.g. :material-rocket-launch:) for the cards of the home page
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  # Content tabs (e.g. Docker / Singularity)
+  - pymdownx.tabbed:
+      alternate_style: true
+  # Include CHANGELOG.md and CITATIONS.md from the root of the repository
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
+
+# Generates the parameters page from nextflow_schema.json
+hooks:
+  - docs/hooks/schema_params.py
+
+watch:
+  - nextflow_schema.json
+  - CHANGELOG.md
+  - CITATIONS.md
+
+validation:
+  links:
+    anchors: warn

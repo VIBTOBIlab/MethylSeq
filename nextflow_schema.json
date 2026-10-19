@@ -397,27 +397,29 @@
             }
         },
         "pic_mark_opt_dupl_options": {
-            "title": "PicMarkOptDupl options",
+            "title": "Optical duplicates removal options",
             "type": "object",
-            "description": "",
+            "description": "Parameters for the removal of optical duplicates with Picard MarkDuplicates (Bismark workflow only).",
             "default": "",
             "properties": {
                 "remove_optic_duplicates": {
                     "type": "boolean",
                     "description": "Mark and remove optical duplicates using PicardMarkDuplicates.",
-                    "fa_icon": "fas fa-angle-double-down"
+                    "fa_icon": "fas fa-angle-double-down",
+                    "default": true
                 },
                 "sequencer": {
                     "type": "string",
                     "description": "Type of sequencing machine used.",
-                    "enum": ["NovaSeq", "HiSeq", "NextSeq"]
+                    "enum": ["NovaSeq", "HiSeq", "NextSeq"],
+                    "default": "NovaSeq"
                 }
             }
         },
         "methurator_options": {
             "title": "methurator options",
             "type": "object",
-            "description": "",
+            "description": "Parameters for the CpG-level sequencing saturation analysis with methurator.",
             "default": "",
             "properties": {
                 "t_max": {
@@ -690,6 +692,12 @@
         },
         {
             "$ref": "#/definitions/bismark_options"
+        },
+        {
+            "$ref": "#/definitions/pic_mark_opt_dupl_options"
+        },
+        {
+            "$ref": "#/definitions/methurator_options"
         },
         {
             "$ref": "#/definitions/bwa_meth_options"
