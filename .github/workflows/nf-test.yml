@@ -73,12 +73,10 @@ jobs:
         profile: [conda, docker, singularity]
         isMain:
           - ${{ github.base_ref == 'master' || github.base_ref == 'main' }}
-        # Exclude conda and singularity on dev
+        # Exclude conda on dev (only run on PRs to main)
         exclude:
           - isMain: false
             profile: "conda"
-          - isMain: false
-            profile: "singularity"
         NXF_VER:
           - "24.04.4"
           - "latest-everything"
