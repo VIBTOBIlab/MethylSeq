@@ -423,7 +423,8 @@
             "default": "",
             "properties": {
                 "t_max": {
-                    "type": "string",
+                    "type": "integer",
+                    "default": 10,
                     "description": "Maximum extrapolation factor (t) value."
                 },
                 "minimum_coverage": {
@@ -433,7 +434,7 @@
                 },
                 "run_methurator": {
                     "type": "boolean",
-                    "default": "true",
+                    "default": true,
                     "description": "Run methurator sequencing saturation curve (def. true)."
                 }
             }

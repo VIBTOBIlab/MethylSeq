@@ -23,7 +23,7 @@ hide:
 
 </div>
 
-MethylSeq is the TOBI lab version of the [nf-core/methylseq](https://nf-co.re/methylseq/2.6.0) pipeline (version 2.6.0). It trims and aligns bisulfite sequencing reads, extracts the methylation calls and summarises the quality control of all samples in a MultiQC report. On top of the original pipeline, it can remove optical duplicates, filter reads with an incomplete bisulfite conversion and estimate the CpG-level sequencing saturation with [methurator](https://vibtobilab.github.io/methurator/latest/).
+MethylSeq is the TOBI lab version of the [nf-core/methylseq](https://nf-co.re/methylseq/2.6.0) pipeline (version 2.6.0). It trims and aligns bisulfite sequencing reads, extracts the methylation calls and summarises the quality control of all samples in a MultiQC report. It can also remove optical duplicates, filter reads with an incomplete bisulfite conversion and estimate the CpG-level sequencing saturation with [methurator](https://vibtobilab.github.io/methurator/latest/).
 
 <div class="grid cards ms-cards" markdown>
 
@@ -39,7 +39,7 @@ MethylSeq is the TOBI lab version of the [nf-core/methylseq](https://nf-co.re/me
 
   ***
 
-  Samplesheet, aligners, RRBS and the modules added to the original pipeline.
+  Samplesheet, aligners, library types and the optional steps of the pipeline.
 
   [:octicons-arrow-right-24: Usage](usage.md)
 

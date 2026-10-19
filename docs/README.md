@@ -5,7 +5,7 @@ The documentation is published at [vibtobilab.github.io/MethylSeq](https://vibto
 - [Home](index.md)
   - An overview of the pipeline and a quick start.
 - [Usage](usage.md)
-  - How the pipeline works, how to run it and the modules added to nf-core/methylseq.
+  - How the pipeline works, how to run it and how to configure its optional steps.
 - [Parameters](parameters.md)
   - All the parameters of the pipeline, generated from `nextflow_schema.json` when the website is built.
 - [Output](output.md)

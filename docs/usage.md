@@ -8,7 +8,7 @@ MethylSeq is two pipelines in one, chosen with `--aligner`:
 - `bismark_hisat`: Bismark with [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as the aligner. HISAT2 also supports splice-aware alignment, e.g. for [SLAM-seq](https://science.sciencemag.org/content/360/6390/800) experiments, with a file of known splice sites given with `--known_splices`.
 - `bwameth`: [bwa-meth](https://github.com/brentp/bwa-meth) for the alignment and [MethylDackel](https://github.com/dpryan79/methyldackel) for the methylation calls.
 
-The modules added to the original [nf-core/methylseq](https://nf-co.re/methylseq/2.6.0) pipeline are described in [Modules added to nf-core/methylseq](#modules-added-to-nf-coremethylseq). All the parameters are listed on the [parameters](parameters.md) page.
+All the parameters are listed on the [parameters](parameters.md) page.
 
 ## Samplesheet
 
@@ -69,19 +69,15 @@ The library preparation determines how the reads are trimmed and aligned. The pr
 
     With `--rrbs`, Trim Galore! removes the filled-in cytosines at the MspI sites, and the deduplication and Preseq are skipped, since the reads of an RRBS library start at the same positions. The optical duplicates are still removed (see [`--remove_optic_duplicates`](#--remove_optic_duplicates)).
 
-## Modules added to nf-core/methylseq
-
-The original nf-core/methylseq pipeline has been extended with modules that are important to process RRBS and cfRRBS samples.
-
-### Removal of optical duplicates
+## Removal of optical duplicates
 
 Optical duplicates are copies of the same cluster on the flow cell, which are not removed by the deduplication of RRBS data. In the Bismark workflow, they are marked and removed with Picard MarkDuplicates before the deduplication.
 
-#### `--remove_optic_duplicates`
+### `--remove_optic_duplicates`
 
 Remove the optical duplicates (default: `true`). Use `--remove_optic_duplicates false` to keep them.
 
-#### `--sequencer`
+### `--sequencer`
 
 Sequencer used, which sets the maximum distance between optical duplicates (`--OPTICAL_DUPLICATE_PIXEL_DISTANCE`) of Picard MarkDuplicates:
 
@@ -91,35 +87,35 @@ Sequencer used, which sets the maximum distance between optical duplicates (`--O
 | `HiSeq` | 2500 |
 | `NextSeq` | 100 |
 
-### Filtering of reads with an incomplete conversion
+## Filtering of reads with an incomplete conversion
 
 Reads with a high methylation in non-CG context (CHG and CHH), where methylation is expected to be low (usually < 5%), most likely come from an incomplete bisulfite conversion. In the Bismark workflow, they can be removed with [`filter_non_conversion`](https://felixkrueger.github.io/Bismark/bismark/filter_nonconverted_reads/) after the alignment.
 
-#### `--filter_non_conversion`
+### `--filter_non_conversion`
 
 Filter out the reads with an incomplete conversion (default: `false`).
 
-#### `--minimum_count`
+### `--minimum_count`
 
 Minimum number of cytosines in non-CG context in a read before the `--percentage_cutoff` filter is applied (default: `3`).
 
-#### `--percentage_cutoff`
+### `--percentage_cutoff`
 
 Minimum methylation percentage in non-CG context for a read to be filtered out (default: `90`).
 
-### CpG-level sequencing saturation
+## CpG-level sequencing saturation
 
 [methurator](https://vibtobilab.github.io/methurator/latest/) estimates how many new CpGs would be covered with more sequencing, from the deduplicated alignments of each sample. With `--rrbs`, it runs in RRBS mode.
 
-#### `--run_methurator`
+### `--run_methurator`
 
 Run the sequencing saturation analysis (default: `true`). Use `--run_methurator false` to skip it.
 
-#### `--t_max`
+### `--t_max`
 
 Maximum extrapolation factor `t`, i.e. up to how many times the current sequencing depth the saturation is estimated (default: `10`).
 
-#### `--minimum_coverage`
+### `--minimum_coverage`
 
 Minimum number of reads covering a CpG to count it as covered (default: `1`). Several values can be given, e.g. `'1,3,5'`, to get one curve per value.
 

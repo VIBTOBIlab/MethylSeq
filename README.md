@@ -77,16 +77,6 @@ nextflow run main.nf --input samplesheet.csv --outdir <OUTDIR> --genome GRCh37 -
 
 For more details and further functionality, please refer to the [usage](https://vibtobilab.github.io/MethylSeq/usage/) and [parameters](https://vibtobilab.github.io/MethylSeq/parameters/) pages of the documentation.
 
-## Parameters included in the modified version
-
-The original [nf-core/methylseq pipeline](https://nf-co.re/methylseq/2.6.0/) has been modified to include modules that are important when processing RRBS/cfRRBS samples:
-
-- Removal of optical duplicates (`--remove_optic_duplicates`, `--sequencer`)
-- Filtering of reads with an incomplete bisulfite conversion (`--filter_non_conversion`, `--minimum_count`, `--percentage_cutoff`)
-- CpG-level sequencing saturation with [methurator](https://vibtobilab.github.io/methurator/latest/) (`--run_methurator`, `--t_max`, `--minimum_coverage`)
-
-These parameters are described in [Modules added to nf-core/methylseq](https://vibtobilab.github.io/MethylSeq/usage/#modules-added-to-nf-coremethylseq) in the documentation.
-
 ## Pipeline output
 
 To see the results of an example test run with a full size dataset refer to the [results](https://nf-co.re/methylseq/results) tab on the nf-core website pipeline page.
