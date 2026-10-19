@@ -75,49 +75,17 @@ nextflow run main.nf --input samplesheet.csv --outdir <OUTDIR> --genome GRCh37 -
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_;
 > see [docs](https://nf-co.re/usage/configuration#custom-configuration-files).
 
-For more details and further functionality, please refer to the [usage](https://vibtobilab.github.io/MethylSeq/usage/) and [parameters](https://vibtobilab.github.io/MethylSeq/parameters/) pages of the documentation and the section below for the parameters that have been added to the modified version of the pipeline.
+For more details and further functionality, please refer to the [usage](https://vibtobilab.github.io/MethylSeq/usage/) and [parameters](https://vibtobilab.github.io/MethylSeq/parameters/) pages of the documentation.
 
 ## Parameters included in the modified version
 
-The original [nf-core/methylseq pipeline](https://nf-co.re/methylseq/2.6.0/) has been modified to include modules that are important when processing RRBS/cfRRBS samples. The pipeline has been modified by @edogiuili and is currently maintained by Edoardo Giuili ([@edogiuili](https://github.com/edogiuili)) and Sofie Van de Velde ([@sofvdvel](https://github.com/sofvdvel)).
+The original [nf-core/methylseq pipeline](https://nf-co.re/methylseq/2.6.0/) has been modified to include modules that are important when processing RRBS/cfRRBS samples:
 
-### Removal of optical duplicates
+- Removal of optical duplicates (`--remove_optic_duplicates`, `--sequencer`)
+- Filtering of reads with an incomplete bisulfite conversion (`--filter_non_conversion`, `--minimum_count`, `--percentage_cutoff`)
+- CpG-level sequencing saturation with [methurator](https://vibtobilab.github.io/methurator/latest/) (`--run_methurator`, `--t_max`, `--minimum_coverage`)
 
-#### `--remove_optic_duplicates`
-
-If specified (by default: true), it removes the optical duplicates. It can be used together with `--sequencer` (see below).
-
-#### `--sequencer`
-
-If the flag `--remove_optic_duplicates` has been specified, `--sequencer` will be by default set to **NovaSeq**. Alternatively, you can specify **HiSeq** or **NextSeq**. This will change the OpticalDupsPixelDistance within PicardMarkDuplicates step (**NovaSeq**: 12000, **HiSeq**: 2500, **NextSeq**: 100).
-
-### Filter non conversion (Bismark) module
-
-#### `--filter_non_conversion`
-
-If specified, it filters out all those reads that have a methylation value >= than a preset threshold in non-CG context where you expect a very low methylation level (<5% usually). For more information please consult the [Bismark usage](https://felixkrueger.github.io/Bismark/bismark/filter_nonconverted_reads/).
-
-#### `--minimum_count`
-
-Minimum number of methylation sites for a read to be filtered out (def. 3).
-
-#### `--percentage_cutoff`
-
-Minimum methylation percentage for a read to be filtered out (def. 90%).
-
-### CpG-level sequencing saturation using methurator
-
-#### `--run_methurator`
-
-If specified (by default: true), it will run [methurator](https://vibtobilab.github.io/methurator/latest/) to compute a CpG-level sequencing saturation analysis.
-
-#### `--t_max`
-
-Maximum extrapolation factor (t) value (def. 10).
-
-#### `--minimum_coverage`
-
-Minimum number of counts to define a new CpG (def. 1). More than 1 value can be specified (e.g. '1,3,5').
+These parameters are described in [Modules added to nf-core/methylseq](https://vibtobilab.github.io/MethylSeq/usage/#modules-added-to-nf-coremethylseq) in the documentation.
 
 ## Pipeline output
 
