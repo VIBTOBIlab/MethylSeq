@@ -50,9 +50,11 @@ runs:
       if: contains(inputs.profile, 'conda')
       uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4
       with:
-        auto-update-conda: true
+        # Pin conda: newer releases dropped `conda create --mkdir`, which Nextflow 24.04.x still passes
+        auto-update-conda: false
+        conda-version: "24.11.3"
         conda-solver: libmamba
-        channels: conda-forge
+        channels: conda-forge,bioconda
         channel-priority: strict
         conda-remove-defaults: true
 
