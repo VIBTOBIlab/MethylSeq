@@ -1,6 +1,6 @@
 # MethylSeq pipeline of TOBI lab
 
-## [v2.6.5](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.5) -
+## [v2.6.5](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.5) - 2026-10-20
 
 - Thanks to @Lucmeister55, fixed aligned BAM files not being published by the Bismark subworkflow when `--rrbs` was combined with `--remove_optical_duplicates false` (see issue [here](https://github.com/VIBTOBIlab/MethylSeq/issues/6)).
 - Add documentation site.
