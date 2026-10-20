@@ -50,9 +50,10 @@ runs:
       if: contains(inputs.profile, 'conda')
       uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4
       with:
-        # Pin conda: newer releases dropped `conda create --mkdir`, which Nextflow 24.04.x still passes
+        # Pin conda: newer releases dropped `conda create --mkdir`, which Nextflow 24.04.x still passes.
+        # Install a pinned Miniforge rather than downgrading the runner's conda (its base env pins a newer python).
+        miniforge-version: "24.11.3-0"
         auto-update-conda: false
-        conda-version: "24.11.3"
         conda-solver: libmamba
         channels: conda-forge,bioconda
         channel-priority: strict
