@@ -1,0 +1,126 @@
+%%metro title: MethylSeq
+%%metro style: nfcore
+%%metro legend: bl
+%%metro line: bismark | Bismark (default) | #2196F3
+%%metro line: bwameth | bwa-meth | #E53935
+%%metro files: reads_in | FASTQ | Samplesheet
+%%metro file: fasta_bismark | FASTA | Genome
+%%metro file: fasta_bwameth | FASTA | Genome
+%%metro file: report_out | HTML | MultiQC report
+%%metro marker: bismark_filter | circle, open
+%%metro marker: picard_optical | circle, open
+%%metro marker: bismark_c2c | circle, open
+%%metro marker: methurator | circle, open
+%%metro marker: preseq | circle, open
+%%metro marker_legend: circle, open | Optional step
+%%metro process_scope: NFCORE_METHYLSEQ:METHYLSEQ
+%%metro process: cat_fastq | CAT_FASTQ
+%%metro process: fastqc | FASTQC
+%%metro process: trimgalore | TRIMGALORE
+%%metro process: bismark_genomeprep | PREPARE_GENOME:BISMARK_GENOMEPREPARATION
+%%metro process: bwameth_index | PREPARE_GENOME:BWAMETH_INDEX
+%%metro process: samtools_faidx | PREPARE_GENOME:SAMTOOLS_FAIDX
+%%metro process: bismark_align | BISMARK:BISMARK_ALIGN
+%%metro process: bismark_filter | BISMARK:BISMARK_FILTER_NON_CONVERSION
+%%metro process: picard_optical | BISMARK:PICARD_MARKOPTICALDUPLICATES
+%%metro process: bismark_dedup | BISMARK:BISMARK_DEDUPLICATE
+%%metro process: bismark_sort | BISMARK:SAMTOOLS_SORT_.*
+%%metro process: bismark_sort | BISMARK:SAMTOOLS_INDEX
+%%metro process: bismark_methx | BISMARK:BISMARK_METHYLATIONEXTRACTOR
+%%metro process: bismark_c2c | BISMARK:BISMARK_COVERAGE2CYTOSINE
+%%metro process: bismark_report | BISMARK:BISMARK_REPORT
+%%metro process: bismark_report | BISMARK:BISMARK_SUMMARY
+%%metro process: bwameth_align | BWAMETH:BWAMETH_ALIGN
+%%metro process: bwameth_sort | BWAMETH:SAMTOOLS_SORT
+%%metro process: bwameth_sort | BWAMETH:SAMTOOLS_INDEX_ALIGNMENTS
+%%metro process: bwameth_stats | BWAMETH:SAMTOOLS_(FLAGSTAT|STATS)
+%%metro process: picard_markdup | BWAMETH:PICARD_MARKDUPLICATES
+%%metro process: picard_markdup | BWAMETH:SAMTOOLS_INDEX_DEDUPLICATED
+%%metro process: methyldackel_extract | BWAMETH:METHYLDACKEL_EXTRACT
+%%metro process: methyldackel_mbias | BWAMETH:METHYLDACKEL_MBIAS
+%%metro process: qualimap | QUALIMAP_BAMQC
+%%metro process: preseq | PRESEQ_LCEXTRAP
+%%metro process: methurator | METHURATOR_.*
+%%metro process: multiqc | MULTIQC
+
+graph LR
+    subgraph preprocessing [Pre-processing]
+        reads_in[ ]
+        cat_fastq[cat fastq]
+        fastqc[FastQC]
+        trimgalore[Trim Galore!]
+
+        reads_in -->|bismark| cat_fastq
+        reads_in -->|bwameth| cat_fastq
+        cat_fastq -->|bismark| fastqc
+        cat_fastq -->|bwameth| fastqc
+        fastqc -->|bismark| trimgalore
+        fastqc -->|bwameth| trimgalore
+    end
+
+    subgraph bismark_wf [Bismark: align and call methylation]
+        fasta_bismark[ ]
+        bismark_genomeprep[Bismark genome prep]
+        bismark_align[Bismark align]
+        bismark_filter[Filter non-conversion]
+        picard_optical[Picard optical dups]
+        bismark_dedup[Bismark deduplicate]
+        bismark_methx[Methylation extractor]
+        bismark_c2c[coverage2cytosine]
+        bismark_report[Bismark report + summary]
+        bismark_sort[SAMtools sort + index]
+
+        fasta_bismark -->|bismark| bismark_genomeprep
+        bismark_genomeprep -->|bismark| bismark_align
+        bismark_align -->|bismark| bismark_filter
+        bismark_filter -->|bismark| picard_optical
+        picard_optical -->|bismark| bismark_dedup
+        bismark_dedup -->|bismark| bismark_methx
+        bismark_methx -->|bismark| bismark_c2c
+        bismark_c2c -->|bismark| bismark_report
+        bismark_report -->|bismark| bismark_sort
+    end
+
+    subgraph bwameth_wf [bwa-meth: align and call methylation]
+        fasta_bwameth[ ]
+        samtools_faidx[SAMtools faidx]
+        bwameth_index[bwa-meth index]
+        bwameth_align[bwa-meth align]
+        bwameth_sort[SAMtools sort + index]
+        bwameth_stats[SAMtools flagstat + stats]
+        picard_markdup[Picard MarkDuplicates]
+        methyldackel_extract[MethylDackel extract]
+        methyldackel_mbias[MethylDackel mbias]
+
+        fasta_bwameth -->|bwameth| samtools_faidx
+        samtools_faidx -->|bwameth| bwameth_index
+        bwameth_index -->|bwameth| bwameth_align
+        bwameth_align -->|bwameth| bwameth_sort
+        bwameth_sort -->|bwameth| bwameth_stats
+        bwameth_stats -->|bwameth| picard_markdup
+        picard_markdup -->|bwameth| methyldackel_extract
+        methyldackel_extract -->|bwameth| methyldackel_mbias
+    end
+
+    subgraph qc_reporting [QC and reporting]
+        qualimap[Qualimap BamQC]
+        preseq[Preseq lc_extrap]
+        methurator[Methurator]
+        multiqc[MultiQC]
+        report_out[ ]
+
+        qualimap -->|bismark| preseq
+        qualimap -->|bwameth| preseq
+        preseq -->|bismark| methurator
+        preseq -->|bwameth| methurator
+        methurator -->|bismark| multiqc
+        methurator -->|bwameth| multiqc
+        multiqc -->|bismark| report_out
+        multiqc -->|bwameth| report_out
+    end
+
+    %% Inter-section edges
+    trimgalore -->|bismark| bismark_align
+    trimgalore -->|bwameth| bwameth_align
+    bismark_sort -->|bismark| qualimap
+    methyldackel_mbias -->|bwameth| qualimap

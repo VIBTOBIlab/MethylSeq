@@ -1,0 +1,3150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>MethylSeq</title>
+    <style>
+      :root {
+        --bg: #1d1d1d;
+        --panel: #161616;
+        --panel-border: #333;
+        --text: #e8e8e8;
+        --muted: #888;
+        --hover: #232323;
+        --active: #2a3a4a;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: var(--bg);
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: var(--text);
+        overflow: hidden;
+      }
+      #app {
+        display: grid;
+        grid-template-columns: 1fr 260px;
+        grid-template-rows: 44px 1fr;
+        height: 100vh;
+      }
+      header {
+        grid-column: 1 / span 2;
+        display: flex;
+        align-items: center;
+        padding: 0 14px;
+        background: var(--panel);
+        border-bottom: 1px solid var(--panel-border);
+        gap: 12px;
+      }
+      header h1 {
+        font-size: 14px;
+        font-weight: 600;
+        margin: 0;
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      header .hint {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .btn {
+        background: transparent;
+        color: #ccc;
+        border: 1px solid #444;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .btn:hover {
+        background: var(--hover);
+        color: #fff;
+      }
+      .btn.primary {
+        border-color: #555;
+        background: #2a2a2a;
+      }
+      .nf-metro-copied {
+        background: #2e4a2e !important;
+        color: #c8efc8 !important;
+        border-color: #4a8a4a !important;
+      }
+      .nf-metro-canvas {
+        position: relative;
+        overflow: hidden;
+        background: var(--bg);
+        cursor: grab;
+      }
+      .nf-metro-grabbing .nf-metro-canvas {
+        cursor: grabbing;
+      }
+      .nf-metro-canvas svg {
+        width: 100% !important;
+        height: 100% !important;
+        display: block;
+        user-select: none;
+      }
+      .nf-metro-station {
+        cursor: pointer;
+      }
+      .nf-metro-station:hover {
+        stroke-width: 3;
+      }
+      aside {
+        background: var(--panel);
+        border-left: 1px solid var(--panel-border);
+        padding: 12px;
+        overflow-y: auto;
+        font-size: 13px;
+      }
+      aside h2 {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin: 0 0 6px;
+        font-weight: 600;
+      }
+      .nf-metro-legend {
+        display: flex;
+        flex-direction: column;
+      }
+      .nf-metro-chip {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        user-select: none;
+        margin: 1px -8px;
+      }
+      .nf-metro-chip:hover {
+        background: var(--hover);
+      }
+      .nf-metro-chip-active {
+        background: var(--active);
+      }
+      .nf-metro-chip-dim {
+        opacity: 0.35;
+      }
+      .nf-metro-swatch {
+        width: 18px;
+        height: 3px;
+        border-radius: 2px;
+        flex-shrink: 0;
+      }
+      .nf-metro-chip span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .footer-help {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 16px;
+        line-height: 1.6;
+      }
+      .footer-help kbd {
+        background: #2a2a2a;
+        border: 1px solid #444;
+        padding: 1px 5px;
+        border-radius: 3px;
+        font-family: inherit;
+        font-size: 10px;
+      }
+      .nf-metro-filtering [class^="metro-line-"] {
+        opacity: 0.05;
+        transition: opacity 0.2s;
+      }
+      .nf-metro-filtering [class^="metro-line-"].nf-metro-line-active {
+        opacity: 1;
+      }
+      .nf-metro-hidden {
+        display: none !important;
+      }
+      .nf-metro-tip {
+        position: fixed;
+        pointer-events: none;
+        z-index: 50;
+        background: #1f1f1f;
+        border: 1px solid #444;
+        border-radius: 6px;
+        padding: 8px 10px;
+        font-size: 12px;
+        max-width: 240px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        opacity: 0;
+        transition: opacity 0.08s;
+      }
+      .nf-metro-tip-show {
+        opacity: 1;
+      }
+      .nf-metro-tt-title {
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 3px;
+      }
+      .nf-metro-tt-section {
+        color: var(--muted);
+        font-size: 11px;
+        margin-bottom: 6px;
+      }
+      .nf-metro-tt-line {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 2px;
+      }
+      .nf-metro-tt-line .nf-metro-swatch {
+        width: 14px;
+        height: 3px;
+      }
+      .nf-metro-embed-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+      }
+      .nf-metro-modal-open {
+        display: flex;
+      }
+      .nf-metro-modal {
+        background: #1f1f1f;
+        border: 1px solid #444;
+        border-radius: 8px;
+        padding: 20px;
+        max-width: 640px;
+        width: 90%;
+      }
+      .nf-metro-modal h3 {
+        margin: 0 0 12px;
+        font-size: 15px;
+      }
+      .nf-metro-modal p {
+        margin: 0 0 8px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .nf-metro-modal pre {
+        background: #0d0d0d;
+        border: 1px solid #333;
+        border-radius: 4px;
+        padding: 10px;
+        font-size: 11px;
+        overflow-x: auto;
+        margin: 4px 0 12px;
+        max-height: 200px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      .nf-metro-modal .row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+      .nf-metro-modal .row label {
+        font-size: 11px;
+        color: var(--muted);
+        flex: 1;
+      }
+      .nf-metro-modal-close {
+        float: right;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>MethylSeq</h1>
+        <span class="hint">drag to pan, scroll to zoom, click a line to focus</span>
+        <button class="btn nf-metro-reset">Reset</button>
+        <button class="btn primary nf-metro-embed-btn">Embed&hellip;</button>
+      </header>
+      <main class="nf-metro-canvas">
+        <?xml version="1.0" encoding="UTF-8"?>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          width="2206"
+          height="460"
+          viewBox="0 0 2206 460"
+          style="color-scheme: light dark"
+        >
+          <defs></defs>
+          <metadata id="diagram-manifest" data-schema-version="1.0">
+            <![CDATA[{"groups":[{"color":"#2196F3","id":"bismark","label":"Bismark
+            (default)"},{"color":"#E53935","id":"bwameth","label":"bwa-meth"}],"height":460,"match":{"flags":"i","target":"fqProcessName","type":"regex"},"nodes":[{"groups":["bismark","bwameth"],"h":14.0,"id":"reads_in","label":"reads_in","patterns":[],"r":5.0,"region":"preprocessing","rx":5.0,"w":10.0,"x":80.0,"y":180.4},{"groups":["bismark","bwameth"],"h":14.0,"id":"cat_fastq","label":"cat
+            fastq","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?CAT_FASTQ$"],"r":5.0,"region":"preprocessing","rx":5.0,"w":10.0,"x":178.5,"y":180.4},{"groups":["bismark","bwameth"],"h":14.0,"id":"fastqc","label":"FastQC","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?FASTQC$"],"r":5.0,"region":"preprocessing","rx":5.0,"w":10.0,"x":277.0,"y":180.4},{"groups":["bismark","bwameth"],"h":14.0,"id":"trimgalore","label":"Trim
+            Galore!","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?TRIMGALORE$"],"r":5.0,"region":"preprocessing","rx":5.0,"w":10.0,"x":375.5,"y":180.4},{"groups":["bismark"],"h":10.0,"id":"fasta_bismark","label":"fasta_bismark","patterns":[],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":533.5,"y":120.0},{"groups":["bismark"],"h":10.0,"id":"bismark_genomeprep","label":"Bismark
+            genome
+            prep","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?PREPARE_GENOME:BISMARK_GENOMEPREPARATION$"],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":632.0,"y":120.0},{"groups":["bismark"],"h":10.0,"id":"bismark_align","label":"Bismark
+            align","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:BISMARK_ALIGN$"],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":789.6,"y":178.4},{"groups":["bismark"],"h":10.0,"id":"bismark_filter","label":"Filter
+            non-conversion","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:BISMARK_FILTER_NON_CONVERSION$"],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":888.1,"y":178.4},{"groups":["bismark"],"h":10.0,"id":"picard_optical","label":"Picard
+            optical
+            dups","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:PICARD_MARKOPTICALDUPLICATES$"],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":986.6,"y":178.4},{"groups":["bismark"],"h":10.0,"id":"bismark_dedup","label":"Bismark
+            deduplicate","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:BISMARK_DEDUPLICATE$"],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":1085.1,"y":178.4},{"groups":["bismark"],"h":10.0,"id":"bismark_methx","label":"Methylation
+            extractor","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:BISMARK_METHYLATIONEXTRACTOR$"],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":1183.6,"y":178.4},{"groups":["bismark"],"h":10.0,"id":"bismark_c2c","label":"coverage2cytosine","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:BISMARK_COVERAGE2CYTOSINE$"],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":1282.1,"y":178.4},{"groups":["bismark"],"h":10.0,"id":"bismark_report","label":"Bismark
+            report +
+            summary","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:BISMARK_REPORT$","(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:BISMARK_SUMMARY$"],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":1380.6,"y":178.4},{"groups":["bismark"],"h":10.0,"id":"bismark_sort","label":"SAMtools
+            sort +
+            index","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:SAMTOOLS_SORT_\\.\\*$","(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:SAMTOOLS_INDEX$"],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":1479.1,"y":178.4},{"groups":["bwameth"],"h":10.0,"id":"fasta_bwameth","label":"fasta_bwameth","patterns":[],"r":5.0,"region":"bwameth_wf","rx":5.0,"w":10.0,"x":533.5,"y":328.4},{"groups":["bwameth"],"h":10.0,"id":"samtools_faidx","label":"SAMtools
+            faidx","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?PREPARE_GENOME:SAMTOOLS_FAIDX$"],"r":5.0,"region":"bwameth_wf","rx":5.0,"w":10.0,"x":632.0,"y":328.4},{"groups":["bwameth"],"h":10.0,"id":"bwameth_index","label":"bwa-meth
+            index","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?PREPARE_GENOME:BWAMETH_INDEX$"],"r":5.0,"region":"bwameth_wf","rx":5.0,"w":10.0,"x":730.5,"y":328.4},{"groups":["bwameth"],"h":10.0,"id":"bwameth_align","label":"bwa-meth
+            align","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BWAMETH:BWAMETH_ALIGN$"],"r":5.0,"region":"bwameth_wf","rx":5.0,"w":10.0,"x":892.0,"y":386.8},{"groups":["bwameth"],"h":10.0,"id":"bwameth_sort","label":"SAMtools
+            sort +
+            index","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BWAMETH:SAMTOOLS_SORT$","(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BWAMETH:SAMTOOLS_INDEX_ALIGNMENTS$"],"r":5.0,"region":"bwameth_wf","rx":5.0,"w":10.0,"x":990.5,"y":386.8},{"groups":["bwameth"],"h":10.0,"id":"bwameth_stats","label":"SAMtools
+            flagstat +
+            stats","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BWAMETH:SAMTOOLS_\\(FLAGSTAT\\|STATS\\)$"],"r":5.0,"region":"bwameth_wf","rx":5.0,"w":10.0,"x":1089.0,"y":386.8},{"groups":["bwameth"],"h":10.0,"id":"picard_markdup","label":"Picard
+            MarkDuplicates","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BWAMETH:PICARD_MARKDUPLICATES$","(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BWAMETH:SAMTOOLS_INDEX_DEDUPLICATED$"],"r":5.0,"region":"bwameth_wf","rx":5.0,"w":10.0,"x":1187.5,"y":386.8},{"groups":["bwameth"],"h":10.0,"id":"methyldackel_extract","label":"MethylDackel
+            extract","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BWAMETH:METHYLDACKEL_EXTRACT$"],"r":5.0,"region":"bwameth_wf","rx":5.0,"w":10.0,"x":1286.0,"y":386.8},{"groups":["bwameth"],"h":10.0,"id":"methyldackel_mbias","label":"MethylDackel
+            mbias","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BWAMETH:METHYLDACKEL_MBIAS$"],"r":5.0,"region":"bwameth_wf","rx":5.0,"w":10.0,"x":1384.5,"y":386.8},{"groups":["bismark","bwameth"],"h":14.0,"id":"qualimap","label":"Qualimap
+            BamQC","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?QUALIMAP_BAMQC$"],"r":5.0,"region":"qc_reporting","rx":5.0,"w":10.0,"x":1694.6,"y":180.4},{"groups":["bismark","bwameth"],"h":14.0,"id":"preseq","label":"Preseq
+            lc_extrap","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?PRESEQ_LCEXTRAP$"],"r":5.0,"region":"qc_reporting","rx":5.0,"w":10.0,"x":1793.1,"y":180.4},{"groups":["bismark","bwameth"],"h":14.0,"id":"methurator","label":"Methurator","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?METHURATOR_\\.\\*$"],"r":5.0,"region":"qc_reporting","rx":5.0,"w":10.0,"x":1891.6,"y":180.4},{"groups":["bismark","bwameth"],"h":14.0,"id":"multiqc","label":"MultiQC","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?MULTIQC$"],"r":5.0,"region":"qc_reporting","rx":5.0,"w":10.0,"x":1990.1,"y":180.4},{"groups":["bismark","bwameth"],"h":14.0,"id":"report_out","label":"report_out","patterns":[],"r":5.0,"region":"qc_reporting","rx":5.0,"w":10.0,"x":2088.6,"y":180.4}],"regions":[{"id":"preprocessing","label":"Pre-processing"},{"id":"bismark_wf","label":"Bismark:
+            align and call methylation"},{"id":"bwameth_wf","label":"bwa-meth: align and call
+            methylation"},{"id":"qc_reporting","label":"QC and
+            reporting"}],"title":"MethylSeq","version":"1.0","width":2206}]]>
+          </metadata>
+          <style>
+            .nf-metro-bg {
+              fill: var(--nfm-map-bg, light-dark(#f5f5f5, #2b2b2b));
+            }
+            .nf-metro-title {
+              fill: var(--nfm-map-title-color, light-dark(#111111, #ffffff));
+            }
+            .nf-metro-station-label {
+              fill: var(--nfm-map-label-color, light-dark(#333333, #e0e0e0));
+            }
+            .nf-metro-section-box {
+              fill: var(--nfm-map-section-fill, light-dark(#ededed, #373737));
+              stroke: var(--nfm-map-section-stroke, light-dark(#e6e6e6, #595959));
+            }
+            .nf-metro-section-label {
+              fill: var(--nfm-map-section-label-color, light-dark(#666666, #c8c8c8));
+            }
+            .nf-metro-group-label {
+              fill: var(--nfm-map-section-label-color, light-dark(#666666, #c8c8c8));
+            }
+            .nf-metro-group-underline {
+              stroke: var(--nfm-map-section-label-color, light-dark(#666666, #c8c8c8));
+            }
+            .nf-metro-legend-bg {
+              fill: var(--nfm-map-legend-bg, light-dark(rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0.3)));
+            }
+            .nf-metro-legend-text {
+              fill: var(--nfm-map-legend-text-color, light-dark(#333333, #e0e0e0));
+            }
+            .nf-metro-marker-stroke {
+              stroke: var(--nfm-map-marker-stroke, light-dark(#333333, #f0f0f0));
+            }
+            .nf-metro-label-halo {
+              fill: var(--nfm-map-bg, light-dark(#f5f5f5, #2b2b2b));
+              stroke: var(--nfm-map-bg, light-dark(#f5f5f5, #2b2b2b));
+            }
+          </style>
+          <rect x="0" y="0" width="2206" height="460" fill="#2b2b2b" class="nf-metro-bg" />
+          <text
+            x="60.0"
+            y="30.0"
+            font-size="24.0"
+            fill="#ffffff"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            class="nf-metro-title"
+          >
+            MethylSeq
+          </text>
+          <rect
+            x="22.0"
+            y="128.39999999999998"
+            width="411.5"
+            height="100.00000000000003"
+            rx="8"
+            ry="8"
+            fill="#373737"
+            stroke="#595959"
+            stroke-width="1.0"
+            class="nf-metro-section-box"
+            data-section-id="preprocessing"
+            data-section-lines="bismark,bwameth"
+          />
+          <circle
+            cx="33.0"
+            cy="113.39999999999998"
+            r="11"
+            fill="#333333"
+            class="nf-metro-section-num-circle"
+            data-section-id="preprocessing"
+          />
+          <text
+            x="33.0"
+            y="113.39999999999998"
+            font-size="12"
+            fill="#ffffff"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dy="0.3em"
+            data-section-id="preprocessing"
+          >
+            1
+          </text>
+          <text
+            x="49.0"
+            y="113.39999999999998"
+            font-size="16.0"
+            fill="#c8c8c8"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            dy="0.3em"
+            class="nf-metro-section-label"
+            data-section-id="preprocessing"
+          >
+            Pre-processing
+          </text>
+          <rect
+            x="475.5"
+            y="70.0"
+            width="1102.1"
+            height="158.4"
+            rx="8"
+            ry="8"
+            fill="#373737"
+            stroke="#595959"
+            stroke-width="1.0"
+            class="nf-metro-section-box"
+            data-section-id="bismark_wf"
+            data-section-lines="bismark"
+          />
+          <circle
+            cx="486.5"
+            cy="55.0"
+            r="11"
+            fill="#333333"
+            class="nf-metro-section-num-circle"
+            data-section-id="bismark_wf"
+          />
+          <text
+            x="486.5"
+            y="55.0"
+            font-size="12"
+            fill="#ffffff"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dy="0.3em"
+            data-section-id="bismark_wf"
+          >
+            2
+          </text>
+          <text
+            x="502.5"
+            y="55.0"
+            font-size="16.0"
+            fill="#c8c8c8"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            dy="0.3em"
+            class="nf-metro-section-label"
+            data-section-id="bismark_wf"
+          >
+            Bismark: align and call methylation
+          </text>
+          <rect
+            x="475.5"
+            y="278.4"
+            width="994.0"
+            height="158.4"
+            rx="8"
+            ry="8"
+            fill="#373737"
+            stroke="#595959"
+            stroke-width="1.0"
+            class="nf-metro-section-box"
+            data-section-id="bwameth_wf"
+            data-section-lines="bwameth"
+          />
+          <circle
+            cx="486.5"
+            cy="263.4"
+            r="11"
+            fill="#333333"
+            class="nf-metro-section-num-circle"
+            data-section-id="bwameth_wf"
+          />
+          <text
+            x="486.5"
+            y="263.4"
+            font-size="12"
+            fill="#ffffff"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dy="0.3em"
+            data-section-id="bwameth_wf"
+          >
+            3
+          </text>
+          <text
+            x="502.5"
+            y="263.4"
+            font-size="16.0"
+            fill="#c8c8c8"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            dy="0.3em"
+            class="nf-metro-section-label"
+            data-section-id="bwameth_wf"
+          >
+            bwa-meth: align and call methylation
+          </text>
+          <rect
+            x="1627.6"
+            y="128.39999999999998"
+            width="519.0"
+            height="100.00000000000003"
+            rx="8"
+            ry="8"
+            fill="#373737"
+            stroke="#595959"
+            stroke-width="1.0"
+            class="nf-metro-section-box"
+            data-section-id="qc_reporting"
+            data-section-lines="bismark,bwameth"
+          />
+          <circle
+            cx="1638.6"
+            cy="113.39999999999998"
+            r="11"
+            fill="#333333"
+            class="nf-metro-section-num-circle"
+            data-section-id="qc_reporting"
+          />
+          <text
+            x="1638.6"
+            y="113.39999999999998"
+            font-size="12"
+            fill="#ffffff"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dy="0.3em"
+            data-section-id="qc_reporting"
+          >
+            4
+          </text>
+          <text
+            x="1654.6"
+            y="113.39999999999998"
+            font-size="16.0"
+            fill="#c8c8c8"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            dy="0.3em"
+            class="nf-metro-section-label"
+            data-section-id="qc_reporting"
+          >
+            QC and reporting
+          </text>
+          <path
+            d="M80.0,182.39999999999998 L178.5,182.39999999999998"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M178.5,182.39999999999998 L277.0,182.39999999999998"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M277.0,182.39999999999998 L375.5,182.39999999999998"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M533.5,328.4 L632.0,328.4"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M632.0,328.4 L730.5,328.4"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M730.5,328.4 L789.0,328.4 Q799.0,328.4,803.5693498139703,337.2950009711955 L824.4306501860297,377.9049990288044 Q829.0,386.79999999999995,839.0,386.79999999999995 L892.0,386.79999999999995"
+            stroke="#E53935"
+            stroke-width="3.0"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M892.0,386.79999999999995 L990.5,386.79999999999995"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M990.5,386.79999999999995 L1089.0,386.79999999999995"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M1089.0,386.79999999999995 L1187.5,386.79999999999995"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M1187.5,386.79999999999995 L1286.0,386.79999999999995"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M1286.0,386.79999999999995 L1384.5,386.79999999999995"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M1694.6,182.39999999999998 L1793.1,182.39999999999998"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M1793.1,182.39999999999998 L1891.6,182.39999999999998"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M1891.6,182.39999999999998 L1990.1,182.39999999999998"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M1990.1,182.39999999999998 L2088.6,182.39999999999998"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M375.5,182.39999999999998 L433.5,182.39999999999998"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M475.5,386.79999999999995 L892.0,386.79999999999995"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M1384.5,386.79999999999995 L1469.5,386.79999999999995"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M1627.6,182.39999999999998 L1694.6,182.39999999999998"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M433.5,182.39999999999998 L443.5,182.39999999999998"
+            stroke="#E53935"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M443.5,182.39999999999998 L444.5,182.39999999999998 Q454.5,182.39999999999998,454.5,192.39999999999998 L454.5,376.79999999999995 Q454.5,386.79999999999995,464.5,386.79999999999995 L475.5,386.79999999999995"
+            stroke="#E53935"
+            stroke-width="3.0"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M1469.5,386.79999999999995 L1592.6,386.79999999999995 Q1602.6,386.79999999999995,1602.6,376.79999999999995 L1602.6,192.39999999999998 Q1602.6,182.39999999999998,1612.6,182.39999999999998 L1627.6,182.39999999999998"
+            stroke="#E53935"
+            stroke-width="3.0"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="metro-line-bwameth"
+            data-line-id="bwameth"
+          />
+          <path
+            d="M80.0,178.39999999999998 L178.5,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M178.5,178.39999999999998 L277.0,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M277.0,178.39999999999998 L375.5,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M533.5,120.0 L632.0,120.0"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M632.0,120.0 L691.1,120.0 Q701.1,120.0,705.6693498139704,128.89500097119554 L726.5306501860297,169.50499902880443 Q731.1,178.39999999999998,741.1,178.39999999999998 L789.6,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M789.6,178.39999999999998 L888.1,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M888.1,178.39999999999998 L986.6,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M986.6,178.39999999999998 L1085.1,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M1085.1,178.39999999999998 L1183.6,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M1183.6,178.39999999999998 L1282.1,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M1282.1,178.39999999999998 L1380.6,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M1380.6,178.39999999999998 L1479.1,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M1694.6,178.39999999999998 L1793.1,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M1793.1,178.39999999999998 L1891.6,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M1891.6,178.39999999999998 L1990.1,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M1990.1,178.39999999999998 L2088.6,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M375.5,178.39999999999998 L433.5,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M475.5,178.39999999999998 L789.6,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M1479.1,178.39999999999998 L1577.6,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M1627.6,178.39999999999998 L1694.6,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M433.5,178.39999999999998 L443.5,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M443.5,178.39999999999998 L475.5,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <path
+            d="M1577.6,178.39999999999998 L1627.6,178.39999999999998"
+            stroke="#2196F3"
+            stroke-width="3.0"
+            stroke-linecap="round"
+            class="metro-line-bismark"
+            data-line-id="bismark"
+          />
+          <g
+            class="nf-metro-station-group"
+            data-node-id="reads_in"
+            data-node-cx="80.0"
+            data-node-cy="180.4"
+            data-node-r="5.0"
+            data-node-groups="bismark,bwameth"
+            data-node-region="preprocessing"
+            data-node-w="10.0"
+            data-node-h="14.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="75.0"
+              y="173.39999999999998"
+              width="10.0"
+              height="14.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="reads_in"
+              data-station-lines="bismark,bwameth"
+              data-station-label="reads_in"
+              data-section-id="preprocessing"
+              data-section-name="Pre-processing"
+            />
+            <g data-station-id="reads_in">
+              <path
+                d="M38.8,160.2 L56.8,160.2 L64.8,168.2 L64.8,190.2 Q64.8,192.2,62.8,192.2 L38.8,192.2 Q36.8,192.2,36.8,190.2 L36.8,162.2 Q36.8,160.2,38.8,160.2 Z"
+                fill="#ffffff"
+                stroke="#333333"
+                stroke-width="1.5"
+                stroke-linejoin="round"
+              />
+              <path d="M56.8,160.2 L56.8,168.2 L64.8,168.2 Z" fill="#333333" opacity="0.15" stroke="none" />
+              <path
+                d="M56.8,160.2 L56.8,168.2 L64.8,168.2"
+                fill="none"
+                stroke="#333333"
+                stroke-width="0.8999999999999999"
+              />
+              <path
+                d="M43.0,164.39999999999998 L61.0,164.39999999999998 L69.0,172.39999999999998 L69.0,194.39999999999998 Q69.0,196.39999999999998,67.0,196.39999999999998 L43.0,196.39999999999998 Q41.0,196.39999999999998,41.0,194.39999999999998 L41.0,166.39999999999998 Q41.0,164.39999999999998,43.0,164.39999999999998 Z"
+                fill="#ffffff"
+                stroke="#333333"
+                stroke-width="1.5"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M61.0,164.39999999999998 L61.0,172.39999999999998 L69.0,172.39999999999998 Z"
+                fill="#333333"
+                opacity="0.15"
+                stroke="none"
+              />
+              <path
+                d="M61.0,164.39999999999998 L61.0,172.39999999999998 L69.0,172.39999999999998"
+                fill="none"
+                stroke="#333333"
+                stroke-width="0.8999999999999999"
+              />
+              <text
+                x="55.0"
+                y="181.59999999999997"
+                font-size="7.5"
+                fill="#000000"
+                font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+                font-weight="bold"
+                text-anchor="middle"
+                dy="0.3em"
+              >
+                FASTQ
+              </text>
+              <text
+                x="55.0"
+                y="200.39999999999998"
+                font-size="7.8"
+                fill="#e0e0e0"
+                font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+                font-weight="bold"
+                text-anchor="middle"
+                dominant-baseline="hanging"
+                class="nf-metro-station-label"
+              >
+                Samplesheet
+              </text>
+            </g>
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="cat_fastq"
+            data-node-cx="178.5"
+            data-node-cy="180.4"
+            data-node-r="5.0"
+            data-node-groups="bismark,bwameth"
+            data-node-region="preprocessing"
+            data-node-w="10.0"
+            data-node-h="14.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="173.5"
+              y="173.39999999999998"
+              width="10.0"
+              height="14.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="cat_fastq"
+              data-station-lines="bismark,bwameth"
+              data-station-label="cat fastq"
+              data-section-id="preprocessing"
+              data-section-name="Pre-processing"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="fastqc"
+            data-node-cx="277.0"
+            data-node-cy="180.4"
+            data-node-r="5.0"
+            data-node-groups="bismark,bwameth"
+            data-node-region="preprocessing"
+            data-node-w="10.0"
+            data-node-h="14.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="272.0"
+              y="173.39999999999998"
+              width="10.0"
+              height="14.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="fastqc"
+              data-station-lines="bismark,bwameth"
+              data-station-label="FastQC"
+              data-section-id="preprocessing"
+              data-section-name="Pre-processing"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="trimgalore"
+            data-node-cx="375.5"
+            data-node-cy="180.4"
+            data-node-r="5.0"
+            data-node-groups="bismark,bwameth"
+            data-node-region="preprocessing"
+            data-node-w="10.0"
+            data-node-h="14.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="370.5"
+              y="173.39999999999998"
+              width="10.0"
+              height="14.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="trimgalore"
+              data-station-lines="bismark,bwameth"
+              data-station-label="Trim Galore!"
+              data-section-id="preprocessing"
+              data-section-name="Pre-processing"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="fasta_bismark"
+            data-node-cx="533.5"
+            data-node-cy="120.0"
+            data-node-r="5.0"
+            data-node-groups="bismark"
+            data-node-region="bismark_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="528.5"
+              y="115.0"
+              width="10.0"
+              height="10.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="fasta_bismark"
+              data-station-lines="bismark"
+              data-station-label="fasta_bismark"
+              data-section-id="bismark_wf"
+              data-section-name="Bismark: align and call methylation"
+            />
+            <g data-station-id="fasta_bismark">
+              <path
+                d="M496.5,104.0 L514.5,104.0 L522.5,112.0 L522.5,134.0 Q522.5,136.0,520.5,136.0 L496.5,136.0 Q494.5,136.0,494.5,134.0 L494.5,106.0 Q494.5,104.0,496.5,104.0 Z"
+                fill="#ffffff"
+                stroke="#333333"
+                stroke-width="1.5"
+                stroke-linejoin="round"
+              />
+              <path d="M514.5,104.0 L514.5,112.0 L522.5,112.0 Z" fill="#333333" opacity="0.15" stroke="none" />
+              <path
+                d="M514.5,104.0 L514.5,112.0 L522.5,112.0"
+                fill="none"
+                stroke="#333333"
+                stroke-width="0.8999999999999999"
+              />
+              <text
+                x="508.5"
+                y="121.2"
+                font-size="7.5"
+                fill="#000000"
+                font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+                font-weight="bold"
+                text-anchor="middle"
+                dy="0.3em"
+              >
+                FASTA
+              </text>
+              <text
+                x="508.5"
+                y="140.0"
+                font-size="7.8"
+                fill="#e0e0e0"
+                font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+                font-weight="bold"
+                text-anchor="middle"
+                dominant-baseline="hanging"
+                class="nf-metro-station-label"
+              >
+                Genome
+              </text>
+            </g>
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="bismark_genomeprep"
+            data-node-cx="632.0"
+            data-node-cy="120.0"
+            data-node-r="5.0"
+            data-node-groups="bismark"
+            data-node-region="bismark_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="627.0"
+              y="115.0"
+              width="10.0"
+              height="10.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="bismark_genomeprep"
+              data-station-lines="bismark"
+              data-station-label="Bismark genome prep"
+              data-section-id="bismark_wf"
+              data-section-name="Bismark: align and call methylation"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="bismark_align"
+            data-node-cx="789.6"
+            data-node-cy="178.4"
+            data-node-r="5.0"
+            data-node-groups="bismark"
+            data-node-region="bismark_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="784.6"
+              y="173.39999999999998"
+              width="10.0"
+              height="10.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="bismark_align"
+              data-station-lines="bismark"
+              data-station-label="Bismark align"
+              data-section-id="bismark_wf"
+              data-section-name="Bismark: align and call methylation"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="bismark_filter"
+            data-node-cx="888.1"
+            data-node-cy="178.4"
+            data-node-r="5.0"
+            data-node-groups="bismark"
+            data-node-region="bismark_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="883.1"
+              y="173.39999999999998"
+              width="10.0"
+              height="10.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#2b2b2b"
+              stroke="#f0f0f0"
+              stroke-width="1.5"
+              class="nf-metro-station nf-metro-marker-stroke"
+              data-station-id="bismark_filter"
+              data-station-lines="bismark"
+              data-station-label="Filter non-conversion"
+              data-section-id="bismark_wf"
+              data-section-name="Bismark: align and call methylation"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="picard_optical"
+            data-node-cx="986.6"
+            data-node-cy="178.4"
+            data-node-r="5.0"
+            data-node-groups="bismark"
+            data-node-region="bismark_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="981.6"
+              y="173.39999999999998"
+              width="10.0"
+              height="10.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#2b2b2b"
+              stroke="#f0f0f0"
+              stroke-width="1.5"
+              class="nf-metro-station nf-metro-marker-stroke"
+              data-station-id="picard_optical"
+              data-station-lines="bismark"
+              data-station-label="Picard optical dups"
+              data-section-id="bismark_wf"
+              data-section-name="Bismark: align and call methylation"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="bismark_dedup"
+            data-node-cx="1085.1"
+            data-node-cy="178.4"
+            data-node-r="5.0"
+            data-node-groups="bismark"
+            data-node-region="bismark_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="1080.1"
+              y="173.39999999999998"
+              width="10.0"
+              height="10.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="bismark_dedup"
+              data-station-lines="bismark"
+              data-station-label="Bismark deduplicate"
+              data-section-id="bismark_wf"
+              data-section-name="Bismark: align and call methylation"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="bismark_methx"
+            data-node-cx="1183.6"
+            data-node-cy="178.4"
+            data-node-r="5.0"
+            data-node-groups="bismark"
+            data-node-region="bismark_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="1178.6"
+              y="173.39999999999998"
+              width="10.0"
+              height="10.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="bismark_methx"
+              data-station-lines="bismark"
+              data-station-label="Methylation extractor"
+              data-section-id="bismark_wf"
+              data-section-name="Bismark: align and call methylation"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="bismark_c2c"
+            data-node-cx="1282.1"
+            data-node-cy="178.4"
+            data-node-r="5.0"
+            data-node-groups="bismark"
+            data-node-region="bismark_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="1277.1"
+              y="173.39999999999998"
+              width="10.0"
+              height="10.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#2b2b2b"
+              stroke="#f0f0f0"
+              stroke-width="1.5"
+              class="nf-metro-station nf-metro-marker-stroke"
+              data-station-id="bismark_c2c"
+              data-station-lines="bismark"
+              data-station-label="coverage2cytosine"
+              data-section-id="bismark_wf"
+              data-section-name="Bismark: align and call methylation"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="bismark_report"
+            data-node-cx="1380.6"
+            data-node-cy="178.4"
+            data-node-r="5.0"
+            data-node-groups="bismark"
+            data-node-region="bismark_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="1375.6"
+              y="173.39999999999998"
+              width="10.0"
+              height="10.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="bismark_report"
+              data-station-lines="bismark"
+              data-station-label="Bismark report + summary"
+              data-section-id="bismark_wf"
+              data-section-name="Bismark: align and call methylation"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="bismark_sort"
+            data-node-cx="1479.1"
+            data-node-cy="178.4"
+            data-node-r="5.0"
+            data-node-groups="bismark"
+            data-node-region="bismark_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="1474.1"
+              y="173.39999999999998"
+              width="10.0"
+              height="10.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="bismark_sort"
+              data-station-lines="bismark"
+              data-station-label="SAMtools sort + index"
+              data-section-id="bismark_wf"
+              data-section-name="Bismark: align and call methylation"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="fasta_bwameth"
+            data-node-cx="533.5"
+            data-node-cy="328.4"
+            data-node-r="5.0"
+            data-node-groups="bwameth"
+            data-node-region="bwameth_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="528.5"
+              y="323.4"
+              width="10.0"
+              height="10.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="fasta_bwameth"
+              data-station-lines="bwameth"
+              data-station-label="fasta_bwameth"
+              data-section-id="bwameth_wf"
+              data-section-name="bwa-meth: align and call methylation"
+            />
+            <g data-station-id="fasta_bwameth">
+              <path
+                d="M496.5,312.4 L514.5,312.4 L522.5,320.4 L522.5,342.4 Q522.5,344.4,520.5,344.4 L496.5,344.4 Q494.5,344.4,494.5,342.4 L494.5,314.4 Q494.5,312.4,496.5,312.4 Z"
+                fill="#ffffff"
+                stroke="#333333"
+                stroke-width="1.5"
+                stroke-linejoin="round"
+              />
+              <path d="M514.5,312.4 L514.5,320.4 L522.5,320.4 Z" fill="#333333" opacity="0.15" stroke="none" />
+              <path
+                d="M514.5,312.4 L514.5,320.4 L522.5,320.4"
+                fill="none"
+                stroke="#333333"
+                stroke-width="0.8999999999999999"
+              />
+              <text
+                x="508.5"
+                y="329.59999999999997"
+                font-size="7.5"
+                fill="#000000"
+                font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+                font-weight="bold"
+                text-anchor="middle"
+                dy="0.3em"
+              >
+                FASTA
+              </text>
+              <text
+                x="508.5"
+                y="348.4"
+                font-size="7.8"
+                fill="#e0e0e0"
+                font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+                font-weight="bold"
+                text-anchor="middle"
+                dominant-baseline="hanging"
+                class="nf-metro-station-label"
+              >
+                Genome
+              </text>
+            </g>
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="samtools_faidx"
+            data-node-cx="632.0"
+            data-node-cy="328.4"
+            data-node-r="5.0"
+            data-node-groups="bwameth"
+            data-node-region="bwameth_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="627.0"
+              y="323.4"
+              width="10.0"
+              height="10.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="samtools_faidx"
+              data-station-lines="bwameth"
+              data-station-label="SAMtools faidx"
+              data-section-id="bwameth_wf"
+              data-section-name="bwa-meth: align and call methylation"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="bwameth_index"
+            data-node-cx="730.5"
+            data-node-cy="328.4"
+            data-node-r="5.0"
+            data-node-groups="bwameth"
+            data-node-region="bwameth_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="725.5"
+              y="323.4"
+              width="10.0"
+              height="10.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="bwameth_index"
+              data-station-lines="bwameth"
+              data-station-label="bwa-meth index"
+              data-section-id="bwameth_wf"
+              data-section-name="bwa-meth: align and call methylation"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="bwameth_align"
+            data-node-cx="892.0"
+            data-node-cy="386.8"
+            data-node-r="5.0"
+            data-node-groups="bwameth"
+            data-node-region="bwameth_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="887.0"
+              y="381.79999999999995"
+              width="10.0"
+              height="10.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="bwameth_align"
+              data-station-lines="bwameth"
+              data-station-label="bwa-meth align"
+              data-section-id="bwameth_wf"
+              data-section-name="bwa-meth: align and call methylation"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="bwameth_sort"
+            data-node-cx="990.5"
+            data-node-cy="386.8"
+            data-node-r="5.0"
+            data-node-groups="bwameth"
+            data-node-region="bwameth_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="985.5"
+              y="381.79999999999995"
+              width="10.0"
+              height="10.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="bwameth_sort"
+              data-station-lines="bwameth"
+              data-station-label="SAMtools sort + index"
+              data-section-id="bwameth_wf"
+              data-section-name="bwa-meth: align and call methylation"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="bwameth_stats"
+            data-node-cx="1089.0"
+            data-node-cy="386.8"
+            data-node-r="5.0"
+            data-node-groups="bwameth"
+            data-node-region="bwameth_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="1084.0"
+              y="381.79999999999995"
+              width="10.0"
+              height="10.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="bwameth_stats"
+              data-station-lines="bwameth"
+              data-station-label="SAMtools flagstat + stats"
+              data-section-id="bwameth_wf"
+              data-section-name="bwa-meth: align and call methylation"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="picard_markdup"
+            data-node-cx="1187.5"
+            data-node-cy="386.8"
+            data-node-r="5.0"
+            data-node-groups="bwameth"
+            data-node-region="bwameth_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="1182.5"
+              y="381.79999999999995"
+              width="10.0"
+              height="10.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="picard_markdup"
+              data-station-lines="bwameth"
+              data-station-label="Picard MarkDuplicates"
+              data-section-id="bwameth_wf"
+              data-section-name="bwa-meth: align and call methylation"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="methyldackel_extract"
+            data-node-cx="1286.0"
+            data-node-cy="386.8"
+            data-node-r="5.0"
+            data-node-groups="bwameth"
+            data-node-region="bwameth_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="1281.0"
+              y="381.79999999999995"
+              width="10.0"
+              height="10.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="methyldackel_extract"
+              data-station-lines="bwameth"
+              data-station-label="MethylDackel extract"
+              data-section-id="bwameth_wf"
+              data-section-name="bwa-meth: align and call methylation"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="methyldackel_mbias"
+            data-node-cx="1384.5"
+            data-node-cy="386.8"
+            data-node-r="5.0"
+            data-node-groups="bwameth"
+            data-node-region="bwameth_wf"
+            data-node-w="10.0"
+            data-node-h="10.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="1379.5"
+              y="381.79999999999995"
+              width="10.0"
+              height="10.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="methyldackel_mbias"
+              data-station-lines="bwameth"
+              data-station-label="MethylDackel mbias"
+              data-section-id="bwameth_wf"
+              data-section-name="bwa-meth: align and call methylation"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="qualimap"
+            data-node-cx="1694.6"
+            data-node-cy="180.4"
+            data-node-r="5.0"
+            data-node-groups="bismark,bwameth"
+            data-node-region="qc_reporting"
+            data-node-w="10.0"
+            data-node-h="14.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="1689.6"
+              y="173.39999999999998"
+              width="10.0"
+              height="14.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="qualimap"
+              data-station-lines="bismark,bwameth"
+              data-station-label="Qualimap BamQC"
+              data-section-id="qc_reporting"
+              data-section-name="QC and reporting"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="preseq"
+            data-node-cx="1793.1"
+            data-node-cy="180.4"
+            data-node-r="5.0"
+            data-node-groups="bismark,bwameth"
+            data-node-region="qc_reporting"
+            data-node-w="10.0"
+            data-node-h="14.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="1788.1"
+              y="173.39999999999998"
+              width="10.0"
+              height="14.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#2b2b2b"
+              stroke="#f0f0f0"
+              stroke-width="1.5"
+              class="nf-metro-station nf-metro-marker-stroke"
+              data-station-id="preseq"
+              data-station-lines="bismark,bwameth"
+              data-station-label="Preseq lc_extrap"
+              data-section-id="qc_reporting"
+              data-section-name="QC and reporting"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="methurator"
+            data-node-cx="1891.6"
+            data-node-cy="180.4"
+            data-node-r="5.0"
+            data-node-groups="bismark,bwameth"
+            data-node-region="qc_reporting"
+            data-node-w="10.0"
+            data-node-h="14.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="1886.6"
+              y="173.39999999999998"
+              width="10.0"
+              height="14.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#2b2b2b"
+              stroke="#f0f0f0"
+              stroke-width="1.5"
+              class="nf-metro-station nf-metro-marker-stroke"
+              data-station-id="methurator"
+              data-station-lines="bismark,bwameth"
+              data-station-label="Methurator"
+              data-section-id="qc_reporting"
+              data-section-name="QC and reporting"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="multiqc"
+            data-node-cx="1990.1"
+            data-node-cy="180.4"
+            data-node-r="5.0"
+            data-node-groups="bismark,bwameth"
+            data-node-region="qc_reporting"
+            data-node-w="10.0"
+            data-node-h="14.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="1985.1"
+              y="173.39999999999998"
+              width="10.0"
+              height="14.0"
+              rx="5.0"
+              ry="5.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="multiqc"
+              data-station-lines="bismark,bwameth"
+              data-station-label="MultiQC"
+              data-section-id="qc_reporting"
+              data-section-name="QC and reporting"
+            />
+          </g>
+          <g
+            class="nf-metro-station-group"
+            data-node-id="report_out"
+            data-node-cx="2088.6"
+            data-node-cy="180.4"
+            data-node-r="5.0"
+            data-node-groups="bismark,bwameth"
+            data-node-region="qc_reporting"
+            data-node-w="10.0"
+            data-node-h="14.0"
+            data-node-rx="5.0"
+          >
+            <rect
+              x="2083.6"
+              y="173.39999999999998"
+              width="10.0"
+              height="14.0"
+              fill="#ffffff"
+              stroke="#333333"
+              stroke-width="1.5"
+              class="nf-metro-station"
+              data-station-id="report_out"
+              data-station-lines="bismark,bwameth"
+              data-station-label="report_out"
+              data-section-id="qc_reporting"
+              data-section-name="QC and reporting"
+            />
+            <g data-station-id="report_out">
+              <path
+                d="M2101.6,164.39999999999998 L2119.6,164.39999999999998 L2127.6,172.39999999999998 L2127.6,194.39999999999998 Q2127.6,196.39999999999998,2125.6,196.39999999999998 L2101.6,196.39999999999998 Q2099.6,196.39999999999998,2099.6,194.39999999999998 L2099.6,166.39999999999998 Q2099.6,164.39999999999998,2101.6,164.39999999999998 Z"
+                fill="#ffffff"
+                stroke="#333333"
+                stroke-width="1.5"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M2119.6,164.39999999999998 L2119.6,172.39999999999998 L2127.6,172.39999999999998 Z"
+                fill="#333333"
+                opacity="0.15"
+                stroke="none"
+              />
+              <path
+                d="M2119.6,164.39999999999998 L2119.6,172.39999999999998 L2127.6,172.39999999999998"
+                fill="none"
+                stroke="#333333"
+                stroke-width="0.8999999999999999"
+              />
+              <text
+                x="2113.6"
+                y="181.59999999999997"
+                font-size="7.5"
+                fill="#000000"
+                font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+                font-weight="bold"
+                text-anchor="middle"
+                dy="0.3em"
+              >
+                HTML
+              </text>
+              <text
+                x="2113.6"
+                y="200.39999999999998"
+                font-size="7.8"
+                fill="#e0e0e0"
+                font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+                font-weight="bold"
+                text-anchor="middle"
+                dominant-baseline="hanging"
+                class="nf-metro-station-label"
+              >
+                MultiQC report
+              </text>
+            </g>
+          </g>
+          <text
+            x="1694.6"
+            y="193.39999999999998"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+          >
+            Qualimap BamQC
+          </text>
+          <text
+            x="1694.6"
+            y="193.39999999999998"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+            data-station-id="qualimap"
+            class="nf-metro-station-label"
+          >
+            Qualimap BamQC
+          </text>
+          <text
+            x="632.0"
+            y="106.0"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="auto"
+          >
+            Bismark genome prep
+          </text>
+          <text
+            x="632.0"
+            y="106.0"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="auto"
+            data-station-id="bismark_genomeprep"
+            class="nf-metro-station-label"
+          >
+            Bismark genome prep
+          </text>
+          <text
+            x="632.0"
+            y="314.4"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="auto"
+          >
+            SAMtools faidx
+          </text>
+          <text
+            x="632.0"
+            y="314.4"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="auto"
+            data-station-id="samtools_faidx"
+            class="nf-metro-station-label"
+          >
+            SAMtools faidx
+          </text>
+          <text
+            x="178.5"
+            y="164.39999999999998"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="auto"
+          >
+            cat fastq
+          </text>
+          <text
+            x="178.5"
+            y="164.39999999999998"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="auto"
+            data-station-id="cat_fastq"
+            class="nf-metro-station-label"
+          >
+            cat fastq
+          </text>
+          <text
+            x="1793.1"
+            y="164.39999999999998"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="auto"
+          >
+            Preseq lc_extrap
+          </text>
+          <text
+            x="1793.1"
+            y="164.39999999999998"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="auto"
+            data-station-id="preseq"
+            class="nf-metro-station-label"
+          >
+            Preseq lc_extrap
+          </text>
+          <text
+            x="730.5"
+            y="339.4"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+          >
+            bwa-meth index
+          </text>
+          <text
+            x="730.5"
+            y="339.4"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+            data-station-id="bwameth_index"
+            class="nf-metro-station-label"
+          >
+            bwa-meth index
+          </text>
+          <text
+            x="277.0"
+            y="193.39999999999998"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+          >
+            FastQC
+          </text>
+          <text
+            x="277.0"
+            y="193.39999999999998"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+            data-station-id="fastqc"
+            class="nf-metro-station-label"
+          >
+            FastQC
+          </text>
+          <text
+            x="789.6"
+            y="164.39999999999998"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="auto"
+          >
+            Bismark align
+          </text>
+          <text
+            x="789.6"
+            y="164.39999999999998"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="auto"
+            data-station-id="bismark_align"
+            class="nf-metro-station-label"
+          >
+            Bismark align
+          </text>
+          <text
+            x="1891.6"
+            y="193.39999999999998"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+          >
+            Methurator
+          </text>
+          <text
+            x="1891.6"
+            y="193.39999999999998"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+            data-station-id="methurator"
+            class="nf-metro-station-label"
+          >
+            Methurator
+          </text>
+          <text
+            x="375.5"
+            y="164.39999999999998"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="auto"
+          >
+            Trim Galore!
+          </text>
+          <text
+            x="375.5"
+            y="164.39999999999998"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="auto"
+            data-station-id="trimgalore"
+            class="nf-metro-station-label"
+          >
+            Trim Galore!
+          </text>
+          <text
+            x="888.1"
+            y="189.39999999999998"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+          >
+            Filter non-conversion
+          </text>
+          <text
+            x="888.1"
+            y="189.39999999999998"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+            data-station-id="bismark_filter"
+            class="nf-metro-station-label"
+          >
+            Filter non-conversion
+          </text>
+          <text
+            x="1990.1"
+            y="164.39999999999998"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="auto"
+          >
+            MultiQC
+          </text>
+          <text
+            x="1990.1"
+            y="164.39999999999998"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="auto"
+            data-station-id="multiqc"
+            class="nf-metro-station-label"
+          >
+            MultiQC
+          </text>
+          <text
+            x="892.0"
+            y="372.79999999999995"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="auto"
+          >
+            bwa-meth align
+          </text>
+          <text
+            x="892.0"
+            y="372.79999999999995"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="auto"
+            data-station-id="bwameth_align"
+            class="nf-metro-station-label"
+          >
+            bwa-meth align
+          </text>
+          <text
+            x="986.6"
+            y="164.39999999999998"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="auto"
+          >
+            Picard optical dups
+          </text>
+          <text
+            x="986.6"
+            y="164.39999999999998"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="auto"
+            data-station-id="picard_optical"
+            class="nf-metro-station-label"
+          >
+            Picard optical dups
+          </text>
+          <text
+            x="990.5"
+            y="397.79999999999995"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+          >
+            SAMtools sort + index
+          </text>
+          <text
+            x="990.5"
+            y="397.79999999999995"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+            data-station-id="bwameth_sort"
+            class="nf-metro-station-label"
+          >
+            SAMtools sort + index
+          </text>
+          <text
+            x="1085.1"
+            y="189.39999999999998"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+          >
+            Bismark deduplicate
+          </text>
+          <text
+            x="1085.1"
+            y="189.39999999999998"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+            data-station-id="bismark_dedup"
+            class="nf-metro-station-label"
+          >
+            Bismark deduplicate
+          </text>
+          <text
+            x="1089.0"
+            y="372.79999999999995"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="auto"
+          >
+            SAMtools flagstat + stats
+          </text>
+          <text
+            x="1089.0"
+            y="372.79999999999995"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="auto"
+            data-station-id="bwameth_stats"
+            class="nf-metro-station-label"
+          >
+            SAMtools flagstat + stats
+          </text>
+          <text
+            x="1183.6"
+            y="164.39999999999998"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="auto"
+          >
+            Methylation extractor
+          </text>
+          <text
+            x="1183.6"
+            y="164.39999999999998"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="auto"
+            data-station-id="bismark_methx"
+            class="nf-metro-station-label"
+          >
+            Methylation extractor
+          </text>
+          <text
+            x="1187.5"
+            y="397.79999999999995"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+          >
+            Picard MarkDuplicates
+          </text>
+          <text
+            x="1187.5"
+            y="397.79999999999995"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+            data-station-id="picard_markdup"
+            class="nf-metro-station-label"
+          >
+            Picard MarkDuplicates
+          </text>
+          <text
+            x="1282.1"
+            y="189.39999999999998"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+          >
+            coverage2cytosine
+          </text>
+          <text
+            x="1282.1"
+            y="189.39999999999998"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+            data-station-id="bismark_c2c"
+            class="nf-metro-station-label"
+          >
+            coverage2cytosine
+          </text>
+          <text
+            x="1293.6"
+            y="372.79999999999995"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="auto"
+          >
+            MethylDackel extract
+          </text>
+          <text
+            x="1293.6"
+            y="372.79999999999995"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="auto"
+            data-station-id="methyldackel_extract"
+            class="nf-metro-station-label"
+          >
+            MethylDackel extract
+          </text>
+          <text
+            x="1388.1999999999998"
+            y="164.39999999999998"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="auto"
+          >
+            Bismark report + summary
+          </text>
+          <text
+            x="1388.1999999999998"
+            y="164.39999999999998"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="auto"
+            data-station-id="bismark_report"
+            class="nf-metro-station-label"
+          >
+            Bismark report + summary
+          </text>
+          <text
+            x="1384.5"
+            y="397.79999999999995"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+          >
+            MethylDackel mbias
+          </text>
+          <text
+            x="1384.5"
+            y="397.79999999999995"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+            data-station-id="methyldackel_mbias"
+            class="nf-metro-station-label"
+          >
+            MethylDackel mbias
+          </text>
+          <text
+            x="1479.1"
+            y="189.39999999999998"
+            font-size="13.0"
+            fill="#2b2b2b"
+            stroke="#2b2b2b"
+            stroke-width="3.0"
+            stroke-linejoin="round"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            aria-hidden="true"
+            class="nf-metro-label-halo"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+          >
+            SAMtools sort + index
+          </text>
+          <text
+            x="1479.1"
+            y="189.39999999999998"
+            font-size="13.0"
+            fill="#e0e0e0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="bold"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+            data-station-id="bismark_sort"
+            class="nf-metro-station-label"
+          >
+            SAMtools sort + index
+          </text>
+          <text
+            x="2176.0"
+            y="452.0"
+            font-size="8"
+            fill="rgba(150, 150, 150, 0.6)"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            text-anchor="end"
+          >
+            created with nf-metro v2.1.0
+          </text>
+        </svg>
+      </main>
+      <aside>
+        <h2>Lines</h2>
+        <div class="nf-metro-legend"></div>
+        <div class="footer-help">
+          <strong>Click</strong> a line to isolate it.<br />
+          <strong>Click again</strong> or <kbd>Esc</kbd> to reset.<br />
+          <strong>Drag</strong> to pan, <strong>scroll</strong> to zoom.
+        </div>
+      </aside>
+    </div>
+    <div class="nf-metro-tip"></div>
+
+    <div class="nf-metro-embed-modal">
+      <div class="nf-metro-modal">
+        <button class="btn nf-metro-modal-close">Close</button>
+        <h3>Embed snippets</h3>
+        <p>
+          <strong>Interactive HTML (inline).</strong> Self-contained snippet - paste into any HTML host (MkDocs,
+          Confluence, Notion, blog templates) and it keeps full pan / zoom / line-filter. No iframe, no hosting.
+        </p>
+        <div class="row">
+          <label>inline HTML</label>
+          <button class="btn" data-copy="inline">Copy</button>
+        </div>
+        <pre class="nf-metro-snippet-inline"></pre>
+        <p>
+          <strong>Interactive (iframe).</strong> Host this HTML file and embed the iframe. GitHub READMEs strip iframes
+          - link to a hosted page from the README instead.
+        </p>
+        <div class="row">
+          <label>iframe</label>
+          <button class="btn" data-copy="iframe">Copy</button>
+        </div>
+        <pre class="nf-metro-snippet-iframe"></pre>
+        <p>
+          <strong>Static SVG.</strong> Inline this anywhere that accepts raw HTML (or save it as .svg). No interactivity
+          but it renders even where scripts are stripped.
+        </p>
+        <div class="row">
+          <label>inline SVG</label>
+          <button class="btn" data-copy="svg">Copy</button>
+        </div>
+        <pre class="nf-metro-snippet-svg"></pre>
+      </div>
+    </div>
+
+    <script>
+      // Escapes untrusted text (directive-authored line colours/labels, and
+      // station/section labels round-tripped through getAttribute(), which decodes
+      // the SVG's own HTML-escaped entities) before it lands in an innerHTML
+      // template literal.
+      function escapeHtml(str) {
+        return String(str).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[c])
+        );
+      }
+
+      function attachMetroMap(opts) {
+        const root = opts.root;
+        const lines = opts.lines;
+        const embed = opts.embed || null;
+        const canvas = root.querySelector(".nf-metro-canvas");
+        const svg = canvas.querySelector("svg");
+        if (!svg) return {};
+
+        // ---- Pan + zoom via viewBox -----------------------------------------------
+        const vb0 = svg.viewBox.baseVal;
+        const initial = { x: vb0.x, y: vb0.y, w: vb0.width, h: vb0.height };
+        let current = { ...initial };
+
+        function setVB(x, y, w, h) {
+          current = { x, y, w, h };
+          svg.setAttribute("viewBox", `${x} ${y} ${w} ${h}`);
+        }
+        function animateVB(target, duration = 350) {
+          const start = { ...current };
+          const t0 = performance.now();
+          function frame(now) {
+            const t = Math.min(1, (now - t0) / duration);
+            const k = 1 - Math.pow(1 - t, 3);
+            setVB(
+              start.x + (target.x - start.x) * k,
+              start.y + (target.y - start.y) * k,
+              start.w + (target.w - start.w) * k,
+              start.h + (target.h - start.h) * k
+            );
+            if (t < 1) requestAnimationFrame(frame);
+          }
+          requestAnimationFrame(frame);
+        }
+
+        let drag = null;
+        canvas.addEventListener("mousedown", (e) => {
+          if (e.button !== 0) return;
+          drag = { x: e.clientX, y: e.clientY, vbX: current.x, vbY: current.y };
+          root.classList.add("nf-metro-grabbing");
+          e.preventDefault();
+        });
+        window.addEventListener("mousemove", (e) => {
+          if (!drag) return;
+          const rect = canvas.getBoundingClientRect();
+          setVB(
+            drag.vbX - (e.clientX - drag.x) * (current.w / rect.width),
+            drag.vbY - (e.clientY - drag.y) * (current.h / rect.height),
+            current.w,
+            current.h
+          );
+        });
+        window.addEventListener("mouseup", () => {
+          drag = null;
+          root.classList.remove("nf-metro-grabbing");
+        });
+
+        // Embedded mode requires a modifier so we don't hijack page scroll.
+        const requireModifier = embed === null;
+        canvas.addEventListener(
+          "wheel",
+          (e) => {
+            if (requireModifier && !(e.ctrlKey || e.metaKey)) return;
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const px = (e.clientX - rect.left) / rect.width;
+            const py = (e.clientY - rect.top) / rect.height;
+            const cx = current.x + current.w * px;
+            const cy = current.y + current.h * py;
+            const f = Math.exp(e.deltaY * 0.0015);
+            const nw = Math.min(initial.w * 3, Math.max(initial.w / 30, current.w * f));
+            const nh = Math.min(initial.h * 3, Math.max(initial.h / 30, current.h * f));
+            setVB(cx - (cx - current.x) * (nw / current.w), cy - (cy - current.y) * (nh / current.h), nw, nh);
+          },
+          { passive: false }
+        );
+
+        // ---- Line filter ----------------------------------------------------------
+        let active = null;
+        const setOf = (el, attr) => {
+          const v = el.getAttribute(attr);
+          return new Set(v ? v.split(",").filter(Boolean) : []);
+        };
+        const stationRects = svg.querySelectorAll("[data-station-lines]");
+        const sectionBoxes = svg.querySelectorAll("[data-section-lines]");
+        const stationDeps = svg.querySelectorAll("[data-station-id]:not([data-station-lines])");
+        const sectionDeps = svg.querySelectorAll(
+          "[data-section-id]:not([data-section-lines]):not([data-station-lines])"
+        );
+        const edges = svg.querySelectorAll("[data-line-id]");
+        const allStationEls = svg.querySelectorAll("[data-station-id]");
+
+        function applyFilter() {
+          const hiddenSt = new Set();
+          stationRects.forEach((el) => {
+            const hide = active !== null && !setOf(el, "data-station-lines").has(active);
+            el.classList.toggle("nf-metro-hidden", hide);
+            if (hide) hiddenSt.add(el.getAttribute("data-station-id"));
+          });
+          stationDeps.forEach((el) => {
+            el.classList.toggle("nf-metro-hidden", hiddenSt.has(el.getAttribute("data-station-id")));
+          });
+          const hiddenSec = new Set();
+          sectionBoxes.forEach((el) => {
+            const hide = active !== null && !setOf(el, "data-section-lines").has(active);
+            el.classList.toggle("nf-metro-hidden", hide);
+            if (hide) hiddenSec.add(el.getAttribute("data-section-id"));
+          });
+          sectionDeps.forEach((el) => {
+            el.classList.toggle("nf-metro-hidden", hiddenSec.has(el.getAttribute("data-section-id")));
+          });
+          edges.forEach((el) => {
+            el.classList.toggle("nf-metro-line-active", active !== null && el.getAttribute("data-line-id") === active);
+          });
+          root.classList.toggle("nf-metro-filtering", active !== null);
+        }
+
+        function visibleBBox() {
+          // Reading the rendered geometry attributes avoids forced layout from
+          // getBBox(), which dominates filter-click time on large maps.
+          let minX = Infinity,
+            minY = Infinity,
+            maxX = -Infinity,
+            maxY = -Infinity;
+          const visit = (el) => {
+            if (el.classList.contains("nf-metro-hidden")) return;
+            const x = parseFloat(el.getAttribute("x") || el.getAttribute("cx") || "NaN");
+            const y = parseFloat(el.getAttribute("y") || el.getAttribute("cy") || "NaN");
+            const w = parseFloat(el.getAttribute("width") || "0");
+            const h = parseFloat(el.getAttribute("height") || "0");
+            if (Number.isNaN(x) || Number.isNaN(y)) return;
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            maxX = Math.max(maxX, x + w);
+            maxY = Math.max(maxY, y + h);
+          };
+          stationRects.forEach(visit);
+          sectionBoxes.forEach(visit);
+          if (!isFinite(minX)) return null;
+          return { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
+        }
+
+        function zoomToVisible() {
+          const b = visibleBBox();
+          if (!b) return;
+          const pad = 40;
+          let w = b.w + pad * 2,
+            h = b.h + pad * 2;
+          const aspect = initial.w / initial.h;
+          if (w / h > aspect) h = w / aspect;
+          else w = h * aspect;
+          animateVB({
+            x: b.x + b.w / 2 - w / 2,
+            y: b.y + b.h / 2 - h / 2,
+            w,
+            h,
+          });
+        }
+
+        function updateChips() {
+          root.querySelectorAll(".nf-metro-chip").forEach((c) => {
+            const rid = c.dataset.lineId;
+            c.classList.toggle("nf-metro-chip-active", active === rid);
+            c.classList.toggle("nf-metro-chip-dim", active !== null && active !== rid);
+          });
+        }
+
+        function setActiveLine(id) {
+          active = active === id ? null : id;
+          applyFilter();
+          updateChips();
+          if (active === null) animateVB(initial);
+          else zoomToVisible();
+        }
+
+        // ---- Station selection (selectNode API) -----------------------------------
+        let activeStations = null;
+
+        function applyStationSelection() {
+          allStationEls.forEach((el) => {
+            const sid = el.getAttribute("data-station-id");
+            if (activeStations === null) {
+              el.classList.remove("nf-metro-station-selected", "nf-metro-station-dim");
+            } else {
+              const match = activeStations.has(sid);
+              el.classList.toggle("nf-metro-station-dim", !match);
+              el.classList.toggle("nf-metro-station-selected", match && el.hasAttribute("data-station-lines"));
+            }
+          });
+          root.classList.toggle("nf-metro-selecting", activeStations !== null);
+        }
+
+        // ---- Legend chips ---------------------------------------------------------
+        const legend = root.querySelector(".nf-metro-legend");
+        lines.forEach((ln) => {
+          const chip = document.createElement("div");
+          chip.className = "nf-metro-chip";
+          chip.dataset.lineId = ln.id;
+          chip.innerHTML =
+            `<div class="nf-metro-swatch" style="background:${escapeHtml(ln.color)}"></div>` +
+            `<span>${escapeHtml(ln.label)}</span>`;
+          chip.addEventListener("click", () => setActiveLine(ln.id));
+          legend.appendChild(chip);
+        });
+        root.querySelectorAll(".nf-metro-reset").forEach((b) => {
+          b.addEventListener("click", () => clearHighlight());
+        });
+
+        // ---- Tooltip --------------------------------------------------------------
+        const linesById = new Map(lines.map((l) => [l.id, l]));
+        const tip = root.querySelector(".nf-metro-tip");
+        function buildTip(rect) {
+          const label = rect.getAttribute("data-station-label") || rect.getAttribute("data-station-id");
+          const section = rect.getAttribute("data-section-name") || "";
+          const ids = (rect.getAttribute("data-station-lines") || "").split(",").filter(Boolean);
+          const lineHtml = ids
+            .map((id) => {
+              const ln = linesById.get(id);
+              if (!ln) return "";
+              return (
+                `<div class="nf-metro-tt-line">` +
+                `<div class="nf-metro-swatch" style="background:${escapeHtml(ln.color)}"></div>` +
+                `${escapeHtml(ln.label)}</div>`
+              );
+            })
+            .join("");
+          return (
+            `<div class="nf-metro-tt-title">${escapeHtml(label)}</div>` +
+            (section ? `<div class="nf-metro-tt-section">${escapeHtml(section)}</div>` : "") +
+            lineHtml
+          );
+        }
+        function positionTip(e) {
+          const pad = 14;
+          let x = e.clientX + pad,
+            y = e.clientY + pad;
+          if (x + tip.offsetWidth > window.innerWidth) {
+            x = e.clientX - tip.offsetWidth - pad;
+          }
+          if (y + tip.offsetHeight > window.innerHeight) {
+            y = e.clientY - tip.offsetHeight - pad;
+          }
+          tip.style.left = x + "px";
+          tip.style.top = y + "px";
+        }
+        // Event delegation: one listener for every station, cheap at any scale.
+        canvas.addEventListener("mouseover", (e) => {
+          const rect = e.target.closest(".nf-metro-station");
+          if (!rect || drag) return;
+          tip.innerHTML = buildTip(rect);
+          tip.classList.add("nf-metro-tip-show");
+          positionTip(e);
+        });
+        canvas.addEventListener("mousemove", (e) => {
+          if (tip.classList.contains("nf-metro-tip-show")) positionTip(e);
+        });
+        canvas.addEventListener("mouseout", (e) => {
+          const rect = e.target.closest(".nf-metro-station");
+          const to = e.relatedTarget;
+          if (rect && (!to || !to.closest || !to.closest(".nf-metro-station"))) {
+            tip.classList.remove("nf-metro-tip-show");
+          }
+        });
+
+        window.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") clearHighlight();
+        });
+
+        // ---- Embed modal (standalone only) ----------------------------------------
+        if (embed) {
+          const modal = root.querySelector(".nf-metro-embed-modal");
+          const sIframe = root.querySelector(".nf-metro-snippet-iframe");
+          const sSvg = root.querySelector(".nf-metro-snippet-svg");
+          const sInline = root.querySelector(".nf-metro-snippet-inline");
+          function openModal() {
+            sInline.textContent = embed.snippet;
+            sIframe.textContent =
+              `<iframe src="${embed.basename}" width="100%" height="640" ` +
+              `style="border:0;border-radius:8px;" loading="lazy"></iframe>`;
+            sSvg.textContent = new XMLSerializer().serializeToString(svg);
+            modal.classList.add("nf-metro-modal-open");
+          }
+          root.querySelector(".nf-metro-embed-btn").addEventListener("click", openModal);
+          root
+            .querySelector(".nf-metro-modal-close")
+            .addEventListener("click", () => modal.classList.remove("nf-metro-modal-open"));
+          modal.addEventListener("click", (e) => {
+            if (e.target === modal) modal.classList.remove("nf-metro-modal-open");
+          });
+          const srcBy = { inline: sInline, iframe: sIframe, svg: sSvg };
+          modal.querySelectorAll("[data-copy]").forEach((btn) => {
+            btn.addEventListener("click", async () => {
+              const text = srcBy[btn.dataset.copy].textContent;
+              try {
+                await navigator.clipboard.writeText(text);
+                btn.textContent = "Copied!";
+                btn.classList.add("nf-metro-copied");
+                setTimeout(() => {
+                  btn.textContent = "Copy";
+                  btn.classList.remove("nf-metro-copied");
+                }, 1400);
+              } catch (err) {
+                btn.textContent = "Press Cmd+C";
+              }
+            });
+          });
+        }
+
+        // ---- Public API -----------------------------------------------------------
+
+        let _manifestCache;
+        function getManifest() {
+          if (_manifestCache !== undefined) return _manifestCache;
+          const el = svg.querySelector("#diagram-manifest");
+          if (!el) return (_manifestCache = null);
+          try {
+            return (_manifestCache = JSON.parse(el.textContent));
+          } catch {
+            return (_manifestCache = null);
+          }
+        }
+
+        function highlightLine(id) {
+          active = id;
+          applyFilter();
+          updateChips();
+          zoomToVisible();
+        }
+
+        function selectNode(processName) {
+          const manifest = getManifest();
+          if (!manifest) return;
+          const ids = new Set();
+          for (const node of manifest.nodes || []) {
+            for (const pat of node.patterns || []) {
+              try {
+                if (new RegExp(pat, "i").test(processName)) {
+                  ids.add(node.id);
+                  break;
+                }
+              } catch {
+                /* skip invalid pattern */
+              }
+            }
+          }
+          activeStations = ids.size ? ids : null;
+          applyStationSelection();
+        }
+
+        function clearHighlight() {
+          active = null;
+          activeStations = null;
+          applyFilter();
+          applyStationSelection();
+          root.querySelectorAll(".nf-metro-chip").forEach((c) => {
+            c.classList.remove("nf-metro-chip-active", "nf-metro-chip-dim");
+          });
+          animateVB(initial);
+        }
+
+        return {
+          highlightLine,
+          clearHighlight,
+          getManifest,
+          selectNode,
+          reset: clearHighlight,
+        };
+      }
+
+      window.nfMetroApi = attachMetroMap({
+        root: document.body,
+        lines: [
+          { id: "bismark", label: "Bismark (default)", color: "#2196F3", style: "solid" },
+          { id: "bwameth", label: "bwa-meth", color: "#E53935", style: "solid" },
+        ],
+        embed: {
+          basename: "methylseq_metro.html",
+          snippet:
+            '<div class="nfmm-m3f0c4475 nf-metro-root">\n<style>\n.nfmm-m3f0c4475 { display: block; width: 100%; background: #1d1d1d;\n  border: 1px solid #2a2a2a; border-radius: 8px; overflow: hidden;\n  font-family: \'Helvetica Neue\', Helvetica, Arial, sans-serif;\n  color: #e8e8e8; line-height: 1.4; position: relative; }\n.nfmm-m3f0c4475 .nf-metro-canvas { position: relative; }\n.nfmm-m3f0c4475 .nf-metro-canvas svg { display: block; width: 100%; height: auto;\n  user-select: none; cursor: grab; }\n.nfmm-m3f0c4475.nf-metro-grabbing .nf-metro-canvas svg { cursor: grabbing; }\n.nfmm-m3f0c4475 .nf-metro-station { cursor: pointer; }\n.nfmm-m3f0c4475 .nf-metro-station:hover { stroke-width: 3; }\n.nfmm-m3f0c4475 .nf-metro-legend { display: flex; flex-wrap: wrap; gap: 4px 6px;\n  padding: 8px 10px; background: #161616; border-top: 1px solid #2a2a2a;\n  font-size: 11px; }\n.nfmm-m3f0c4475 .nf-metro-chip { display: inline-flex; align-items: center; gap: 6px;\n  padding: 3px 8px; border-radius: 12px; cursor: pointer; color: #ccc;\n  user-select: none; white-space: nowrap; background: #1f1f1f;\n  border: 1px solid #2f2f2f; }\n.nfmm-m3f0c4475 .nf-metro-chip:hover { background: #2a2a2a; }\n.nfmm-m3f0c4475 .nf-metro-chip-active { background: #2a3a4a; color: #fff;\n  border-color: #3a5a7a; }\n.nfmm-m3f0c4475 .nf-metro-chip-dim { opacity: 0.45; }\n.nfmm-m3f0c4475 .nf-metro-swatch { width: 14px; height: 3px; border-radius: 2px;\n  flex-shrink: 0; }\n.nfmm-m3f0c4475 .nf-metro-reset { position: absolute; top: 8px; left: 8px;\n  background: rgba(22,22,22,0.88); color: #ccc; border: 1px solid #444;\n  padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;\n  display: none; font-family: inherit; }\n.nfmm-m3f0c4475.nf-metro-filtering .nf-metro-reset { display: block; }\n.nfmm-m3f0c4475.nf-metro-filtering [class^="metro-line-"] { opacity: 0.06;\n  transition: opacity 0.2s; }\n.nfmm-m3f0c4475.nf-metro-filtering [class^="metro-line-"].nf-metro-line-active {\n  opacity: 1; }\n.nfmm-m3f0c4475 .nf-metro-hidden { display: none !important; }\n.nfmm-m3f0c4475 .nf-metro-hint { position: absolute; bottom: 6px; right: 10px;\n  font-size: 10px; color: #666; pointer-events: none; }\n.nfmm-m3f0c4475 .nf-metro-tip { position: fixed; pointer-events: none; z-index: 9999;\n  background: #1f1f1f; border: 1px solid #444; border-radius: 6px;\n  padding: 8px 10px; font-size: 12px; max-width: 240px; color: #e8e8e8;\n  box-shadow: 0 4px 12px rgba(0,0,0,0.4); opacity: 0;\n  transition: opacity 0.08s; }\n.nfmm-m3f0c4475 .nf-metro-tip-show { opacity: 1; }\n.nfmm-m3f0c4475 .nf-metro-tt-title { font-weight: 600; font-size: 13px;\n  margin-bottom: 3px; }\n.nfmm-m3f0c4475 .nf-metro-tt-section { color: #888; font-size: 11px;\n  margin-bottom: 6px; }\n.nfmm-m3f0c4475 .nf-metro-tt-line { display: flex; align-items: center;\n  gap: 6px; margin-top: 2px; }\n.nfmm-m3f0c4475 .nf-metro-tt-line .nf-metro-swatch { width: 14px; height: 3px; }\n<\/style>\n<div class="nf-metro-canvas">\n<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"\n     width="2206" height="460" viewBox="0 0 2206 460" style="color-scheme: light dark">\n<defs>\n<\/defs>\n<metadata id="diagram-manifest" data-schema-version="1.0"><![CDATA[{"groups":[{"color":"#2196F3","id":"bismark","label":"Bismark (default)"},{"color":"#E53935","id":"bwameth","label":"bwa-meth"}],"height":460,"match":{"flags":"i","target":"fqProcessName","type":"regex"},"nodes":[{"groups":["bismark","bwameth"],"h":14.0,"id":"reads_in","label":"reads_in","patterns":[],"r":5.0,"region":"preprocessing","rx":5.0,"w":10.0,"x":80.0,"y":180.4},{"groups":["bismark","bwameth"],"h":14.0,"id":"cat_fastq","label":"cat fastq","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?CAT_FASTQ$"],"r":5.0,"region":"preprocessing","rx":5.0,"w":10.0,"x":178.5,"y":180.4},{"groups":["bismark","bwameth"],"h":14.0,"id":"fastqc","label":"FastQC","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?FASTQC$"],"r":5.0,"region":"preprocessing","rx":5.0,"w":10.0,"x":277.0,"y":180.4},{"groups":["bismark","bwameth"],"h":14.0,"id":"trimgalore","label":"Trim Galore!","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?TRIMGALORE$"],"r":5.0,"region":"preprocessing","rx":5.0,"w":10.0,"x":375.5,"y":180.4},{"groups":["bismark"],"h":10.0,"id":"fasta_bismark","label":"fasta_bismark","patterns":[],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":533.5,"y":120.0},{"groups":["bismark"],"h":10.0,"id":"bismark_genomeprep","label":"Bismark genome prep","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?PREPARE_GENOME:BISMARK_GENOMEPREPARATION$"],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":632.0,"y":120.0},{"groups":["bismark"],"h":10.0,"id":"bismark_align","label":"Bismark align","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:BISMARK_ALIGN$"],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":789.6,"y":178.4},{"groups":["bismark"],"h":10.0,"id":"bismark_filter","label":"Filter non-conversion","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:BISMARK_FILTER_NON_CONVERSION$"],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":888.1,"y":178.4},{"groups":["bismark"],"h":10.0,"id":"picard_optical","label":"Picard optical dups","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:PICARD_MARKOPTICALDUPLICATES$"],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":986.6,"y":178.4},{"groups":["bismark"],"h":10.0,"id":"bismark_dedup","label":"Bismark deduplicate","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:BISMARK_DEDUPLICATE$"],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":1085.1,"y":178.4},{"groups":["bismark"],"h":10.0,"id":"bismark_methx","label":"Methylation extractor","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:BISMARK_METHYLATIONEXTRACTOR$"],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":1183.6,"y":178.4},{"groups":["bismark"],"h":10.0,"id":"bismark_c2c","label":"coverage2cytosine","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:BISMARK_COVERAGE2CYTOSINE$"],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":1282.1,"y":178.4},{"groups":["bismark"],"h":10.0,"id":"bismark_report","label":"Bismark report + summary","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:BISMARK_REPORT$","(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:BISMARK_SUMMARY$"],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":1380.6,"y":178.4},{"groups":["bismark"],"h":10.0,"id":"bismark_sort","label":"SAMtools sort + index","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:SAMTOOLS_SORT_\\\\.\\\\*$","(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BISMARK:SAMTOOLS_INDEX$"],"r":5.0,"region":"bismark_wf","rx":5.0,"w":10.0,"x":1479.1,"y":178.4},{"groups":["bwameth"],"h":10.0,"id":"fasta_bwameth","label":"fasta_bwameth","patterns":[],"r":5.0,"region":"bwameth_wf","rx":5.0,"w":10.0,"x":533.5,"y":328.4},{"groups":["bwameth"],"h":10.0,"id":"samtools_faidx","label":"SAMtools faidx","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?PREPARE_GENOME:SAMTOOLS_FAIDX$"],"r":5.0,"region":"bwameth_wf","rx":5.0,"w":10.0,"x":632.0,"y":328.4},{"groups":["bwameth"],"h":10.0,"id":"bwameth_index","label":"bwa-meth index","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?PREPARE_GENOME:BWAMETH_INDEX$"],"r":5.0,"region":"bwameth_wf","rx":5.0,"w":10.0,"x":730.5,"y":328.4},{"groups":["bwameth"],"h":10.0,"id":"bwameth_align","label":"bwa-meth align","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BWAMETH:BWAMETH_ALIGN$"],"r":5.0,"region":"bwameth_wf","rx":5.0,"w":10.0,"x":892.0,"y":386.8},{"groups":["bwameth"],"h":10.0,"id":"bwameth_sort","label":"SAMtools sort + index","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BWAMETH:SAMTOOLS_SORT$","(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BWAMETH:SAMTOOLS_INDEX_ALIGNMENTS$"],"r":5.0,"region":"bwameth_wf","rx":5.0,"w":10.0,"x":990.5,"y":386.8},{"groups":["bwameth"],"h":10.0,"id":"bwameth_stats","label":"SAMtools flagstat + stats","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BWAMETH:SAMTOOLS_\\\\(FLAGSTAT\\\\|STATS\\\\)$"],"r":5.0,"region":"bwameth_wf","rx":5.0,"w":10.0,"x":1089.0,"y":386.8},{"groups":["bwameth"],"h":10.0,"id":"picard_markdup","label":"Picard MarkDuplicates","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BWAMETH:PICARD_MARKDUPLICATES$","(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BWAMETH:SAMTOOLS_INDEX_DEDUPLICATED$"],"r":5.0,"region":"bwameth_wf","rx":5.0,"w":10.0,"x":1187.5,"y":386.8},{"groups":["bwameth"],"h":10.0,"id":"methyldackel_extract","label":"MethylDackel extract","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BWAMETH:METHYLDACKEL_EXTRACT$"],"r":5.0,"region":"bwameth_wf","rx":5.0,"w":10.0,"x":1286.0,"y":386.8},{"groups":["bwameth"],"h":10.0,"id":"methyldackel_mbias","label":"MethylDackel mbias","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?BWAMETH:METHYLDACKEL_MBIAS$"],"r":5.0,"region":"bwameth_wf","rx":5.0,"w":10.0,"x":1384.5,"y":386.8},{"groups":["bismark","bwameth"],"h":14.0,"id":"qualimap","label":"Qualimap BamQC","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?QUALIMAP_BAMQC$"],"r":5.0,"region":"qc_reporting","rx":5.0,"w":10.0,"x":1694.6,"y":180.4},{"groups":["bismark","bwameth"],"h":14.0,"id":"preseq","label":"Preseq lc_extrap","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?PRESEQ_LCEXTRAP$"],"r":5.0,"region":"qc_reporting","rx":5.0,"w":10.0,"x":1793.1,"y":180.4},{"groups":["bismark","bwameth"],"h":14.0,"id":"methurator","label":"Methurator","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?METHURATOR_\\\\.\\\\*$"],"r":5.0,"region":"qc_reporting","rx":5.0,"w":10.0,"x":1891.6,"y":180.4},{"groups":["bismark","bwameth"],"h":14.0,"id":"multiqc","label":"MultiQC","patterns":["(?:^|:)NFCORE_METHYLSEQ:METHYLSEQ:(?:.+:)?MULTIQC$"],"r":5.0,"region":"qc_reporting","rx":5.0,"w":10.0,"x":1990.1,"y":180.4},{"groups":["bismark","bwameth"],"h":14.0,"id":"report_out","label":"report_out","patterns":[],"r":5.0,"region":"qc_reporting","rx":5.0,"w":10.0,"x":2088.6,"y":180.4}],"regions":[{"id":"preprocessing","label":"Pre-processing"},{"id":"bismark_wf","label":"Bismark: align and call methylation"},{"id":"bwameth_wf","label":"bwa-meth: align and call methylation"},{"id":"qc_reporting","label":"QC and reporting"}],"title":"MethylSeq","version":"1.0","width":2206}]]><\/metadata>\n<style>.nf-metro-bg { fill: var(--nfm-map-bg, light-dark(#f5f5f5, #2b2b2b)); }\n.nf-metro-title { fill: var(--nfm-map-title-color, light-dark(#111111, #ffffff)); }\n.nf-metro-station-label { fill: var(--nfm-map-label-color, light-dark(#333333, #e0e0e0)); }\n.nf-metro-section-box { fill: var(--nfm-map-section-fill, light-dark(#ededed, #373737)); stroke: var(--nfm-map-section-stroke, light-dark(#e6e6e6, #595959)); }\n.nf-metro-section-label { fill: var(--nfm-map-section-label-color, light-dark(#666666, #c8c8c8)); }\n.nf-metro-group-label { fill: var(--nfm-map-section-label-color, light-dark(#666666, #c8c8c8)); }\n.nf-metro-group-underline { stroke: var(--nfm-map-section-label-color, light-dark(#666666, #c8c8c8)); }\n.nf-metro-legend-bg { fill: var(--nfm-map-legend-bg, light-dark(rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0.3))); }\n.nf-metro-legend-text { fill: var(--nfm-map-legend-text-color, light-dark(#333333, #e0e0e0)); }\n.nf-metro-marker-stroke { stroke: var(--nfm-map-marker-stroke, light-dark(#333333, #f0f0f0)); }\n.nf-metro-label-halo { fill: var(--nfm-map-bg, light-dark(#f5f5f5, #2b2b2b)); stroke: var(--nfm-map-bg, light-dark(#f5f5f5, #2b2b2b)); }<\/style>\n<rect x="0" y="0" width="2206" height="460" fill="#2b2b2b" class="nf-metro-bg" />\n<text x="60.0" y="30.0" font-size="24.0" fill="#ffffff" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" class="nf-metro-title">MethylSeq<\/text>\n<rect x="22.0" y="128.39999999999998" width="411.5" height="100.00000000000003" rx="8" ry="8" fill="#373737" stroke="#595959" stroke-width="1.0" class="nf-metro-section-box" data-section-id="preprocessing" data-section-lines="bismark,bwameth" />\n<circle cx="33.0" cy="113.39999999999998" r="11" fill="#333333" class="nf-metro-section-num-circle" data-section-id="preprocessing" />\n<text x="33.0" y="113.39999999999998" font-size="12" fill="#ffffff" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dy="0.3em" data-section-id="preprocessing">1<\/text>\n<text x="49.0" y="113.39999999999998" font-size="16.0" fill="#c8c8c8" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" dy="0.3em" class="nf-metro-section-label" data-section-id="preprocessing">Pre-processing<\/text>\n<rect x="475.5" y="70.0" width="1102.1" height="158.4" rx="8" ry="8" fill="#373737" stroke="#595959" stroke-width="1.0" class="nf-metro-section-box" data-section-id="bismark_wf" data-section-lines="bismark" />\n<circle cx="486.5" cy="55.0" r="11" fill="#333333" class="nf-metro-section-num-circle" data-section-id="bismark_wf" />\n<text x="486.5" y="55.0" font-size="12" fill="#ffffff" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dy="0.3em" data-section-id="bismark_wf">2<\/text>\n<text x="502.5" y="55.0" font-size="16.0" fill="#c8c8c8" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" dy="0.3em" class="nf-metro-section-label" data-section-id="bismark_wf">Bismark: align and call methylation<\/text>\n<rect x="475.5" y="278.4" width="994.0" height="158.4" rx="8" ry="8" fill="#373737" stroke="#595959" stroke-width="1.0" class="nf-metro-section-box" data-section-id="bwameth_wf" data-section-lines="bwameth" />\n<circle cx="486.5" cy="263.4" r="11" fill="#333333" class="nf-metro-section-num-circle" data-section-id="bwameth_wf" />\n<text x="486.5" y="263.4" font-size="12" fill="#ffffff" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dy="0.3em" data-section-id="bwameth_wf">3<\/text>\n<text x="502.5" y="263.4" font-size="16.0" fill="#c8c8c8" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" dy="0.3em" class="nf-metro-section-label" data-section-id="bwameth_wf">bwa-meth: align and call methylation<\/text>\n<rect x="1627.6" y="128.39999999999998" width="519.0" height="100.00000000000003" rx="8" ry="8" fill="#373737" stroke="#595959" stroke-width="1.0" class="nf-metro-section-box" data-section-id="qc_reporting" data-section-lines="bismark,bwameth" />\n<circle cx="1638.6" cy="113.39999999999998" r="11" fill="#333333" class="nf-metro-section-num-circle" data-section-id="qc_reporting" />\n<text x="1638.6" y="113.39999999999998" font-size="12" fill="#ffffff" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dy="0.3em" data-section-id="qc_reporting">4<\/text>\n<text x="1654.6" y="113.39999999999998" font-size="16.0" fill="#c8c8c8" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" dy="0.3em" class="nf-metro-section-label" data-section-id="qc_reporting">QC and reporting<\/text>\n<path d="M80.0,182.39999999999998 L178.5,182.39999999999998" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M178.5,182.39999999999998 L277.0,182.39999999999998" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M277.0,182.39999999999998 L375.5,182.39999999999998" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M533.5,328.4 L632.0,328.4" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M632.0,328.4 L730.5,328.4" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M730.5,328.4 L789.0,328.4 Q799.0,328.4,803.5693498139703,337.2950009711955 L824.4306501860297,377.9049990288044 Q829.0,386.79999999999995,839.0,386.79999999999995 L892.0,386.79999999999995" stroke="#E53935" stroke-width="3.0" fill="none" stroke-linecap="round" stroke-linejoin="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M892.0,386.79999999999995 L990.5,386.79999999999995" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M990.5,386.79999999999995 L1089.0,386.79999999999995" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M1089.0,386.79999999999995 L1187.5,386.79999999999995" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M1187.5,386.79999999999995 L1286.0,386.79999999999995" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M1286.0,386.79999999999995 L1384.5,386.79999999999995" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M1694.6,182.39999999999998 L1793.1,182.39999999999998" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M1793.1,182.39999999999998 L1891.6,182.39999999999998" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M1891.6,182.39999999999998 L1990.1,182.39999999999998" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M1990.1,182.39999999999998 L2088.6,182.39999999999998" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M375.5,182.39999999999998 L433.5,182.39999999999998" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M475.5,386.79999999999995 L892.0,386.79999999999995" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M1384.5,386.79999999999995 L1469.5,386.79999999999995" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M1627.6,182.39999999999998 L1694.6,182.39999999999998" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M433.5,182.39999999999998 L443.5,182.39999999999998" stroke="#E53935" stroke-width="3.0" stroke-linecap="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M443.5,182.39999999999998 L444.5,182.39999999999998 Q454.5,182.39999999999998,454.5,192.39999999999998 L454.5,376.79999999999995 Q454.5,386.79999999999995,464.5,386.79999999999995 L475.5,386.79999999999995" stroke="#E53935" stroke-width="3.0" fill="none" stroke-linecap="round" stroke-linejoin="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M1469.5,386.79999999999995 L1592.6,386.79999999999995 Q1602.6,386.79999999999995,1602.6,376.79999999999995 L1602.6,192.39999999999998 Q1602.6,182.39999999999998,1612.6,182.39999999999998 L1627.6,182.39999999999998" stroke="#E53935" stroke-width="3.0" fill="none" stroke-linecap="round" stroke-linejoin="round" class="metro-line-bwameth" data-line-id="bwameth" />\n<path d="M80.0,178.39999999999998 L178.5,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M178.5,178.39999999999998 L277.0,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M277.0,178.39999999999998 L375.5,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M533.5,120.0 L632.0,120.0" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M632.0,120.0 L691.1,120.0 Q701.1,120.0,705.6693498139704,128.89500097119554 L726.5306501860297,169.50499902880443 Q731.1,178.39999999999998,741.1,178.39999999999998 L789.6,178.39999999999998" stroke="#2196F3" stroke-width="3.0" fill="none" stroke-linecap="round" stroke-linejoin="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M789.6,178.39999999999998 L888.1,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M888.1,178.39999999999998 L986.6,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M986.6,178.39999999999998 L1085.1,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M1085.1,178.39999999999998 L1183.6,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M1183.6,178.39999999999998 L1282.1,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M1282.1,178.39999999999998 L1380.6,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M1380.6,178.39999999999998 L1479.1,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M1694.6,178.39999999999998 L1793.1,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M1793.1,178.39999999999998 L1891.6,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M1891.6,178.39999999999998 L1990.1,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M1990.1,178.39999999999998 L2088.6,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M375.5,178.39999999999998 L433.5,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M475.5,178.39999999999998 L789.6,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M1479.1,178.39999999999998 L1577.6,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M1627.6,178.39999999999998 L1694.6,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M433.5,178.39999999999998 L443.5,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M443.5,178.39999999999998 L475.5,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<path d="M1577.6,178.39999999999998 L1627.6,178.39999999999998" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bismark" data-line-id="bismark" />\n<g class="nf-metro-station-group" data-node-id="reads_in" data-node-cx="80.0" data-node-cy="180.4" data-node-r="5.0" data-node-groups="bismark,bwameth" data-node-region="preprocessing" data-node-w="10.0" data-node-h="14.0" data-node-rx="5.0">\n<rect x="75.0" y="173.39999999999998" width="10.0" height="14.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="reads_in" data-station-lines="bismark,bwameth" data-station-label="reads_in" data-section-id="preprocessing" data-section-name="Pre-processing" />\n<g data-station-id="reads_in">\n<path d="M38.8,160.2 L56.8,160.2 L64.8,168.2 L64.8,190.2 Q64.8,192.2,62.8,192.2 L38.8,192.2 Q36.8,192.2,36.8,190.2 L36.8,162.2 Q36.8,160.2,38.8,160.2 Z" fill="#ffffff" stroke="#333333" stroke-width="1.5" stroke-linejoin="round" />\n<path d="M56.8,160.2 L56.8,168.2 L64.8,168.2 Z" fill="#333333" opacity="0.15" stroke="none" />\n<path d="M56.8,160.2 L56.8,168.2 L64.8,168.2" fill="none" stroke="#333333" stroke-width="0.8999999999999999" />\n<path d="M43.0,164.39999999999998 L61.0,164.39999999999998 L69.0,172.39999999999998 L69.0,194.39999999999998 Q69.0,196.39999999999998,67.0,196.39999999999998 L43.0,196.39999999999998 Q41.0,196.39999999999998,41.0,194.39999999999998 L41.0,166.39999999999998 Q41.0,164.39999999999998,43.0,164.39999999999998 Z" fill="#ffffff" stroke="#333333" stroke-width="1.5" stroke-linejoin="round" />\n<path d="M61.0,164.39999999999998 L61.0,172.39999999999998 L69.0,172.39999999999998 Z" fill="#333333" opacity="0.15" stroke="none" />\n<path d="M61.0,164.39999999999998 L61.0,172.39999999999998 L69.0,172.39999999999998" fill="none" stroke="#333333" stroke-width="0.8999999999999999" />\n<text x="55.0" y="181.59999999999997" font-size="7.5" fill="#000000" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dy="0.3em">FASTQ<\/text>\n<text x="55.0" y="200.39999999999998" font-size="7.8" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" class="nf-metro-station-label">Samplesheet<\/text>\n<\/g>\n<\/g>\n<g class="nf-metro-station-group" data-node-id="cat_fastq" data-node-cx="178.5" data-node-cy="180.4" data-node-r="5.0" data-node-groups="bismark,bwameth" data-node-region="preprocessing" data-node-w="10.0" data-node-h="14.0" data-node-rx="5.0">\n<rect x="173.5" y="173.39999999999998" width="10.0" height="14.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="cat_fastq" data-station-lines="bismark,bwameth" data-station-label="cat fastq" data-section-id="preprocessing" data-section-name="Pre-processing" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="fastqc" data-node-cx="277.0" data-node-cy="180.4" data-node-r="5.0" data-node-groups="bismark,bwameth" data-node-region="preprocessing" data-node-w="10.0" data-node-h="14.0" data-node-rx="5.0">\n<rect x="272.0" y="173.39999999999998" width="10.0" height="14.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="fastqc" data-station-lines="bismark,bwameth" data-station-label="FastQC" data-section-id="preprocessing" data-section-name="Pre-processing" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="trimgalore" data-node-cx="375.5" data-node-cy="180.4" data-node-r="5.0" data-node-groups="bismark,bwameth" data-node-region="preprocessing" data-node-w="10.0" data-node-h="14.0" data-node-rx="5.0">\n<rect x="370.5" y="173.39999999999998" width="10.0" height="14.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="trimgalore" data-station-lines="bismark,bwameth" data-station-label="Trim Galore!" data-section-id="preprocessing" data-section-name="Pre-processing" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="fasta_bismark" data-node-cx="533.5" data-node-cy="120.0" data-node-r="5.0" data-node-groups="bismark" data-node-region="bismark_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="528.5" y="115.0" width="10.0" height="10.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="fasta_bismark" data-station-lines="bismark" data-station-label="fasta_bismark" data-section-id="bismark_wf" data-section-name="Bismark: align and call methylation" />\n<g data-station-id="fasta_bismark">\n<path d="M496.5,104.0 L514.5,104.0 L522.5,112.0 L522.5,134.0 Q522.5,136.0,520.5,136.0 L496.5,136.0 Q494.5,136.0,494.5,134.0 L494.5,106.0 Q494.5,104.0,496.5,104.0 Z" fill="#ffffff" stroke="#333333" stroke-width="1.5" stroke-linejoin="round" />\n<path d="M514.5,104.0 L514.5,112.0 L522.5,112.0 Z" fill="#333333" opacity="0.15" stroke="none" />\n<path d="M514.5,104.0 L514.5,112.0 L522.5,112.0" fill="none" stroke="#333333" stroke-width="0.8999999999999999" />\n<text x="508.5" y="121.2" font-size="7.5" fill="#000000" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dy="0.3em">FASTA<\/text>\n<text x="508.5" y="140.0" font-size="7.8" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" class="nf-metro-station-label">Genome<\/text>\n<\/g>\n<\/g>\n<g class="nf-metro-station-group" data-node-id="bismark_genomeprep" data-node-cx="632.0" data-node-cy="120.0" data-node-r="5.0" data-node-groups="bismark" data-node-region="bismark_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="627.0" y="115.0" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="bismark_genomeprep" data-station-lines="bismark" data-station-label="Bismark genome prep" data-section-id="bismark_wf" data-section-name="Bismark: align and call methylation" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="bismark_align" data-node-cx="789.6" data-node-cy="178.4" data-node-r="5.0" data-node-groups="bismark" data-node-region="bismark_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="784.6" y="173.39999999999998" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="bismark_align" data-station-lines="bismark" data-station-label="Bismark align" data-section-id="bismark_wf" data-section-name="Bismark: align and call methylation" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="bismark_filter" data-node-cx="888.1" data-node-cy="178.4" data-node-r="5.0" data-node-groups="bismark" data-node-region="bismark_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="883.1" y="173.39999999999998" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#2b2b2b" stroke="#f0f0f0" stroke-width="1.5" class="nf-metro-station nf-metro-marker-stroke" data-station-id="bismark_filter" data-station-lines="bismark" data-station-label="Filter non-conversion" data-section-id="bismark_wf" data-section-name="Bismark: align and call methylation" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="picard_optical" data-node-cx="986.6" data-node-cy="178.4" data-node-r="5.0" data-node-groups="bismark" data-node-region="bismark_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="981.6" y="173.39999999999998" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#2b2b2b" stroke="#f0f0f0" stroke-width="1.5" class="nf-metro-station nf-metro-marker-stroke" data-station-id="picard_optical" data-station-lines="bismark" data-station-label="Picard optical dups" data-section-id="bismark_wf" data-section-name="Bismark: align and call methylation" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="bismark_dedup" data-node-cx="1085.1" data-node-cy="178.4" data-node-r="5.0" data-node-groups="bismark" data-node-region="bismark_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="1080.1" y="173.39999999999998" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="bismark_dedup" data-station-lines="bismark" data-station-label="Bismark deduplicate" data-section-id="bismark_wf" data-section-name="Bismark: align and call methylation" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="bismark_methx" data-node-cx="1183.6" data-node-cy="178.4" data-node-r="5.0" data-node-groups="bismark" data-node-region="bismark_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="1178.6" y="173.39999999999998" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="bismark_methx" data-station-lines="bismark" data-station-label="Methylation extractor" data-section-id="bismark_wf" data-section-name="Bismark: align and call methylation" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="bismark_c2c" data-node-cx="1282.1" data-node-cy="178.4" data-node-r="5.0" data-node-groups="bismark" data-node-region="bismark_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="1277.1" y="173.39999999999998" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#2b2b2b" stroke="#f0f0f0" stroke-width="1.5" class="nf-metro-station nf-metro-marker-stroke" data-station-id="bismark_c2c" data-station-lines="bismark" data-station-label="coverage2cytosine" data-section-id="bismark_wf" data-section-name="Bismark: align and call methylation" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="bismark_report" data-node-cx="1380.6" data-node-cy="178.4" data-node-r="5.0" data-node-groups="bismark" data-node-region="bismark_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="1375.6" y="173.39999999999998" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="bismark_report" data-station-lines="bismark" data-station-label="Bismark report + summary" data-section-id="bismark_wf" data-section-name="Bismark: align and call methylation" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="bismark_sort" data-node-cx="1479.1" data-node-cy="178.4" data-node-r="5.0" data-node-groups="bismark" data-node-region="bismark_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="1474.1" y="173.39999999999998" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="bismark_sort" data-station-lines="bismark" data-station-label="SAMtools sort + index" data-section-id="bismark_wf" data-section-name="Bismark: align and call methylation" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="fasta_bwameth" data-node-cx="533.5" data-node-cy="328.4" data-node-r="5.0" data-node-groups="bwameth" data-node-region="bwameth_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="528.5" y="323.4" width="10.0" height="10.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="fasta_bwameth" data-station-lines="bwameth" data-station-label="fasta_bwameth" data-section-id="bwameth_wf" data-section-name="bwa-meth: align and call methylation" />\n<g data-station-id="fasta_bwameth">\n<path d="M496.5,312.4 L514.5,312.4 L522.5,320.4 L522.5,342.4 Q522.5,344.4,520.5,344.4 L496.5,344.4 Q494.5,344.4,494.5,342.4 L494.5,314.4 Q494.5,312.4,496.5,312.4 Z" fill="#ffffff" stroke="#333333" stroke-width="1.5" stroke-linejoin="round" />\n<path d="M514.5,312.4 L514.5,320.4 L522.5,320.4 Z" fill="#333333" opacity="0.15" stroke="none" />\n<path d="M514.5,312.4 L514.5,320.4 L522.5,320.4" fill="none" stroke="#333333" stroke-width="0.8999999999999999" />\n<text x="508.5" y="329.59999999999997" font-size="7.5" fill="#000000" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dy="0.3em">FASTA<\/text>\n<text x="508.5" y="348.4" font-size="7.8" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" class="nf-metro-station-label">Genome<\/text>\n<\/g>\n<\/g>\n<g class="nf-metro-station-group" data-node-id="samtools_faidx" data-node-cx="632.0" data-node-cy="328.4" data-node-r="5.0" data-node-groups="bwameth" data-node-region="bwameth_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="627.0" y="323.4" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="samtools_faidx" data-station-lines="bwameth" data-station-label="SAMtools faidx" data-section-id="bwameth_wf" data-section-name="bwa-meth: align and call methylation" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="bwameth_index" data-node-cx="730.5" data-node-cy="328.4" data-node-r="5.0" data-node-groups="bwameth" data-node-region="bwameth_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="725.5" y="323.4" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="bwameth_index" data-station-lines="bwameth" data-station-label="bwa-meth index" data-section-id="bwameth_wf" data-section-name="bwa-meth: align and call methylation" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="bwameth_align" data-node-cx="892.0" data-node-cy="386.8" data-node-r="5.0" data-node-groups="bwameth" data-node-region="bwameth_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="887.0" y="381.79999999999995" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="bwameth_align" data-station-lines="bwameth" data-station-label="bwa-meth align" data-section-id="bwameth_wf" data-section-name="bwa-meth: align and call methylation" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="bwameth_sort" data-node-cx="990.5" data-node-cy="386.8" data-node-r="5.0" data-node-groups="bwameth" data-node-region="bwameth_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="985.5" y="381.79999999999995" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="bwameth_sort" data-station-lines="bwameth" data-station-label="SAMtools sort + index" data-section-id="bwameth_wf" data-section-name="bwa-meth: align and call methylation" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="bwameth_stats" data-node-cx="1089.0" data-node-cy="386.8" data-node-r="5.0" data-node-groups="bwameth" data-node-region="bwameth_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="1084.0" y="381.79999999999995" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="bwameth_stats" data-station-lines="bwameth" data-station-label="SAMtools flagstat + stats" data-section-id="bwameth_wf" data-section-name="bwa-meth: align and call methylation" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="picard_markdup" data-node-cx="1187.5" data-node-cy="386.8" data-node-r="5.0" data-node-groups="bwameth" data-node-region="bwameth_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="1182.5" y="381.79999999999995" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="picard_markdup" data-station-lines="bwameth" data-station-label="Picard MarkDuplicates" data-section-id="bwameth_wf" data-section-name="bwa-meth: align and call methylation" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="methyldackel_extract" data-node-cx="1286.0" data-node-cy="386.8" data-node-r="5.0" data-node-groups="bwameth" data-node-region="bwameth_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="1281.0" y="381.79999999999995" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="methyldackel_extract" data-station-lines="bwameth" data-station-label="MethylDackel extract" data-section-id="bwameth_wf" data-section-name="bwa-meth: align and call methylation" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="methyldackel_mbias" data-node-cx="1384.5" data-node-cy="386.8" data-node-r="5.0" data-node-groups="bwameth" data-node-region="bwameth_wf" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">\n<rect x="1379.5" y="381.79999999999995" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="methyldackel_mbias" data-station-lines="bwameth" data-station-label="MethylDackel mbias" data-section-id="bwameth_wf" data-section-name="bwa-meth: align and call methylation" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="qualimap" data-node-cx="1694.6" data-node-cy="180.4" data-node-r="5.0" data-node-groups="bismark,bwameth" data-node-region="qc_reporting" data-node-w="10.0" data-node-h="14.0" data-node-rx="5.0">\n<rect x="1689.6" y="173.39999999999998" width="10.0" height="14.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="qualimap" data-station-lines="bismark,bwameth" data-station-label="Qualimap BamQC" data-section-id="qc_reporting" data-section-name="QC and reporting" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="preseq" data-node-cx="1793.1" data-node-cy="180.4" data-node-r="5.0" data-node-groups="bismark,bwameth" data-node-region="qc_reporting" data-node-w="10.0" data-node-h="14.0" data-node-rx="5.0">\n<rect x="1788.1" y="173.39999999999998" width="10.0" height="14.0" rx="5.0" ry="5.0" fill="#2b2b2b" stroke="#f0f0f0" stroke-width="1.5" class="nf-metro-station nf-metro-marker-stroke" data-station-id="preseq" data-station-lines="bismark,bwameth" data-station-label="Preseq lc_extrap" data-section-id="qc_reporting" data-section-name="QC and reporting" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="methurator" data-node-cx="1891.6" data-node-cy="180.4" data-node-r="5.0" data-node-groups="bismark,bwameth" data-node-region="qc_reporting" data-node-w="10.0" data-node-h="14.0" data-node-rx="5.0">\n<rect x="1886.6" y="173.39999999999998" width="10.0" height="14.0" rx="5.0" ry="5.0" fill="#2b2b2b" stroke="#f0f0f0" stroke-width="1.5" class="nf-metro-station nf-metro-marker-stroke" data-station-id="methurator" data-station-lines="bismark,bwameth" data-station-label="Methurator" data-section-id="qc_reporting" data-section-name="QC and reporting" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="multiqc" data-node-cx="1990.1" data-node-cy="180.4" data-node-r="5.0" data-node-groups="bismark,bwameth" data-node-region="qc_reporting" data-node-w="10.0" data-node-h="14.0" data-node-rx="5.0">\n<rect x="1985.1" y="173.39999999999998" width="10.0" height="14.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="multiqc" data-station-lines="bismark,bwameth" data-station-label="MultiQC" data-section-id="qc_reporting" data-section-name="QC and reporting" />\n<\/g>\n<g class="nf-metro-station-group" data-node-id="report_out" data-node-cx="2088.6" data-node-cy="180.4" data-node-r="5.0" data-node-groups="bismark,bwameth" data-node-region="qc_reporting" data-node-w="10.0" data-node-h="14.0" data-node-rx="5.0">\n<rect x="2083.6" y="173.39999999999998" width="10.0" height="14.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="report_out" data-station-lines="bismark,bwameth" data-station-label="report_out" data-section-id="qc_reporting" data-section-name="QC and reporting" />\n<g data-station-id="report_out">\n<path d="M2101.6,164.39999999999998 L2119.6,164.39999999999998 L2127.6,172.39999999999998 L2127.6,194.39999999999998 Q2127.6,196.39999999999998,2125.6,196.39999999999998 L2101.6,196.39999999999998 Q2099.6,196.39999999999998,2099.6,194.39999999999998 L2099.6,166.39999999999998 Q2099.6,164.39999999999998,2101.6,164.39999999999998 Z" fill="#ffffff" stroke="#333333" stroke-width="1.5" stroke-linejoin="round" />\n<path d="M2119.6,164.39999999999998 L2119.6,172.39999999999998 L2127.6,172.39999999999998 Z" fill="#333333" opacity="0.15" stroke="none" />\n<path d="M2119.6,164.39999999999998 L2119.6,172.39999999999998 L2127.6,172.39999999999998" fill="none" stroke="#333333" stroke-width="0.8999999999999999" />\n<text x="2113.6" y="181.59999999999997" font-size="7.5" fill="#000000" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dy="0.3em">HTML<\/text>\n<text x="2113.6" y="200.39999999999998" font-size="7.8" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" class="nf-metro-station-label">MultiQC report<\/text>\n<\/g>\n<\/g>\n<text x="1694.6" y="193.39999999999998" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">Qualimap BamQC<\/text>\n<text x="1694.6" y="193.39999999999998" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="qualimap" class="nf-metro-station-label">Qualimap BamQC<\/text>\n<text x="632.0" y="106.0" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">Bismark genome prep<\/text>\n<text x="632.0" y="106.0" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="bismark_genomeprep" class="nf-metro-station-label">Bismark genome prep<\/text>\n<text x="632.0" y="314.4" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">SAMtools faidx<\/text>\n<text x="632.0" y="314.4" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="samtools_faidx" class="nf-metro-station-label">SAMtools faidx<\/text>\n<text x="178.5" y="164.39999999999998" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">cat fastq<\/text>\n<text x="178.5" y="164.39999999999998" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="cat_fastq" class="nf-metro-station-label">cat fastq<\/text>\n<text x="1793.1" y="164.39999999999998" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">Preseq lc_extrap<\/text>\n<text x="1793.1" y="164.39999999999998" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="preseq" class="nf-metro-station-label">Preseq lc_extrap<\/text>\n<text x="730.5" y="339.4" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">bwa-meth index<\/text>\n<text x="730.5" y="339.4" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="bwameth_index" class="nf-metro-station-label">bwa-meth index<\/text>\n<text x="277.0" y="193.39999999999998" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">FastQC<\/text>\n<text x="277.0" y="193.39999999999998" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="fastqc" class="nf-metro-station-label">FastQC<\/text>\n<text x="789.6" y="164.39999999999998" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">Bismark align<\/text>\n<text x="789.6" y="164.39999999999998" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="bismark_align" class="nf-metro-station-label">Bismark align<\/text>\n<text x="1891.6" y="193.39999999999998" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">Methurator<\/text>\n<text x="1891.6" y="193.39999999999998" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="methurator" class="nf-metro-station-label">Methurator<\/text>\n<text x="375.5" y="164.39999999999998" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">Trim Galore!<\/text>\n<text x="375.5" y="164.39999999999998" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="trimgalore" class="nf-metro-station-label">Trim Galore!<\/text>\n<text x="888.1" y="189.39999999999998" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">Filter non-conversion<\/text>\n<text x="888.1" y="189.39999999999998" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="bismark_filter" class="nf-metro-station-label">Filter non-conversion<\/text>\n<text x="1990.1" y="164.39999999999998" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">MultiQC<\/text>\n<text x="1990.1" y="164.39999999999998" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="multiqc" class="nf-metro-station-label">MultiQC<\/text>\n<text x="892.0" y="372.79999999999995" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">bwa-meth align<\/text>\n<text x="892.0" y="372.79999999999995" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="bwameth_align" class="nf-metro-station-label">bwa-meth align<\/text>\n<text x="986.6" y="164.39999999999998" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">Picard optical dups<\/text>\n<text x="986.6" y="164.39999999999998" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="picard_optical" class="nf-metro-station-label">Picard optical dups<\/text>\n<text x="990.5" y="397.79999999999995" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">SAMtools sort + index<\/text>\n<text x="990.5" y="397.79999999999995" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="bwameth_sort" class="nf-metro-station-label">SAMtools sort + index<\/text>\n<text x="1085.1" y="189.39999999999998" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">Bismark deduplicate<\/text>\n<text x="1085.1" y="189.39999999999998" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="bismark_dedup" class="nf-metro-station-label">Bismark deduplicate<\/text>\n<text x="1089.0" y="372.79999999999995" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">SAMtools flagstat + stats<\/text>\n<text x="1089.0" y="372.79999999999995" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="bwameth_stats" class="nf-metro-station-label">SAMtools flagstat + stats<\/text>\n<text x="1183.6" y="164.39999999999998" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">Methylation extractor<\/text>\n<text x="1183.6" y="164.39999999999998" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="bismark_methx" class="nf-metro-station-label">Methylation extractor<\/text>\n<text x="1187.5" y="397.79999999999995" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">Picard MarkDuplicates<\/text>\n<text x="1187.5" y="397.79999999999995" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="picard_markdup" class="nf-metro-station-label">Picard MarkDuplicates<\/text>\n<text x="1282.1" y="189.39999999999998" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">coverage2cytosine<\/text>\n<text x="1282.1" y="189.39999999999998" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="bismark_c2c" class="nf-metro-station-label">coverage2cytosine<\/text>\n<text x="1293.6" y="372.79999999999995" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">MethylDackel extract<\/text>\n<text x="1293.6" y="372.79999999999995" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="methyldackel_extract" class="nf-metro-station-label">MethylDackel extract<\/text>\n<text x="1388.1999999999998" y="164.39999999999998" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">Bismark report + summary<\/text>\n<text x="1388.1999999999998" y="164.39999999999998" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="bismark_report" class="nf-metro-station-label">Bismark report + summary<\/text>\n<text x="1384.5" y="397.79999999999995" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">MethylDackel mbias<\/text>\n<text x="1384.5" y="397.79999999999995" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="methyldackel_mbias" class="nf-metro-station-label">MethylDackel mbias<\/text>\n<text x="1479.1" y="189.39999999999998" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">SAMtools sort + index<\/text>\n<text x="1479.1" y="189.39999999999998" font-size="13.0" fill="#e0e0e0" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="bismark_sort" class="nf-metro-station-label">SAMtools sort + index<\/text>\n<text x="2176.0" y="452.0" font-size="8" fill="rgba(150, 150, 150, 0.6)" font-family="\'Helvetica Neue\', Helvetica, Arial, sans-serif" text-anchor="end">created with nf-metro v2.1.0<\/text>\n<\/svg>\n<button class="nf-metro-reset" type="button">Reset<\/button>\n<div class="nf-metro-hint">drag pan / cmd+scroll zoom / click line to focus<\/div>\n<\/div>\n<div class="nf-metro-legend"><\/div>\n<div class="nf-metro-tip"><\/div>\n<script>\n// Escapes untrusted text (directive-authored line colours/labels, and\n// station/section labels round-tripped through getAttribute(), which decodes\n// the SVG\'s own HTML-escaped entities) before it lands in an innerHTML\n// template literal.\nfunction escapeHtml(str) {\n  return String(str).replace(/[&<>"\']/g, c => ({\n    \'&\': \'&amp;\', \'<\': \'&lt;\', \'>\': \'&gt;\', \'"\': \'&quot;\', "\'": \'&#39;\',\n  }[c]));\n}\n\nfunction attachMetroMap(opts) {\n  const root = opts.root;\n  const lines = opts.lines;\n  const embed = opts.embed || null;\n  const canvas = root.querySelector(\'.nf-metro-canvas\');\n  const svg = canvas.querySelector(\'svg\');\n  if (!svg) return {};\n\n  // ---- Pan + zoom via viewBox -----------------------------------------------\n  const vb0 = svg.viewBox.baseVal;\n  const initial = { x: vb0.x, y: vb0.y, w: vb0.width, h: vb0.height };\n  let current = { ...initial };\n\n  function setVB(x, y, w, h) {\n    current = { x, y, w, h };\n    svg.setAttribute(\'viewBox\', `${x} ${y} ${w} ${h}`);\n  }\n  function animateVB(target, duration = 350) {\n    const start = { ...current };\n    const t0 = performance.now();\n    function frame(now) {\n      const t = Math.min(1, (now - t0) / duration);\n      const k = 1 - Math.pow(1 - t, 3);\n      setVB(\n        start.x + (target.x - start.x) * k,\n        start.y + (target.y - start.y) * k,\n        start.w + (target.w - start.w) * k,\n        start.h + (target.h - start.h) * k,\n      );\n      if (t < 1) requestAnimationFrame(frame);\n    }\n    requestAnimationFrame(frame);\n  }\n\n  let drag = null;\n  canvas.addEventListener(\'mousedown\', e => {\n    if (e.button !== 0) return;\n    drag = { x: e.clientX, y: e.clientY, vbX: current.x, vbY: current.y };\n    root.classList.add(\'nf-metro-grabbing\');\n    e.preventDefault();\n  });\n  window.addEventListener(\'mousemove\', e => {\n    if (!drag) return;\n    const rect = canvas.getBoundingClientRect();\n    setVB(\n      drag.vbX - (e.clientX - drag.x) * (current.w / rect.width),\n      drag.vbY - (e.clientY - drag.y) * (current.h / rect.height),\n      current.w, current.h,\n    );\n  });\n  window.addEventListener(\'mouseup\', () => {\n    drag = null;\n    root.classList.remove(\'nf-metro-grabbing\');\n  });\n\n  // Embedded mode requires a modifier so we don\'t hijack page scroll.\n  const requireModifier = embed === null;\n  canvas.addEventListener(\'wheel\', e => {\n    if (requireModifier && !(e.ctrlKey || e.metaKey)) return;\n    e.preventDefault();\n    const rect = canvas.getBoundingClientRect();\n    const px = (e.clientX - rect.left) / rect.width;\n    const py = (e.clientY - rect.top) / rect.height;\n    const cx = current.x + current.w * px;\n    const cy = current.y + current.h * py;\n    const f = Math.exp(e.deltaY * 0.0015);\n    const nw = Math.min(initial.w * 3, Math.max(initial.w / 30, current.w * f));\n    const nh = Math.min(initial.h * 3, Math.max(initial.h / 30, current.h * f));\n    setVB(\n      cx - (cx - current.x) * (nw / current.w),\n      cy - (cy - current.y) * (nh / current.h),\n      nw, nh,\n    );\n  }, { passive: false });\n\n  // ---- Line filter ----------------------------------------------------------\n  let active = null;\n  const setOf = (el, attr) => {\n    const v = el.getAttribute(attr);\n    return new Set(v ? v.split(\',\').filter(Boolean) : []);\n  };\n  const stationRects = svg.querySelectorAll(\'[data-station-lines]\');\n  const sectionBoxes = svg.querySelectorAll(\'[data-section-lines]\');\n  const stationDeps = svg.querySelectorAll(\n    \'[data-station-id]:not([data-station-lines])\'\n  );\n  const sectionDeps = svg.querySelectorAll(\n    \'[data-section-id]:not([data-section-lines]):not([data-station-lines])\'\n  );\n  const edges = svg.querySelectorAll(\'[data-line-id]\');\n  const allStationEls = svg.querySelectorAll(\'[data-station-id]\');\n\n  function applyFilter() {\n    const hiddenSt = new Set();\n    stationRects.forEach(el => {\n      const hide = active !== null && !setOf(el, \'data-station-lines\').has(active);\n      el.classList.toggle(\'nf-metro-hidden\', hide);\n      if (hide) hiddenSt.add(el.getAttribute(\'data-station-id\'));\n    });\n    stationDeps.forEach(el => {\n      el.classList.toggle(\'nf-metro-hidden\',\n        hiddenSt.has(el.getAttribute(\'data-station-id\')));\n    });\n    const hiddenSec = new Set();\n    sectionBoxes.forEach(el => {\n      const hide = active !== null && !setOf(el, \'data-section-lines\').has(active);\n      el.classList.toggle(\'nf-metro-hidden\', hide);\n      if (hide) hiddenSec.add(el.getAttribute(\'data-section-id\'));\n    });\n    sectionDeps.forEach(el => {\n      el.classList.toggle(\'nf-metro-hidden\',\n        hiddenSec.has(el.getAttribute(\'data-section-id\')));\n    });\n    edges.forEach(el => {\n      el.classList.toggle(\'nf-metro-line-active\',\n        active !== null && el.getAttribute(\'data-line-id\') === active);\n    });\n    root.classList.toggle(\'nf-metro-filtering\', active !== null);\n  }\n\n  function visibleBBox() {\n    // Reading the rendered geometry attributes avoids forced layout from\n    // getBBox(), which dominates filter-click time on large maps.\n    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;\n    const visit = el => {\n      if (el.classList.contains(\'nf-metro-hidden\')) return;\n      const x = parseFloat(el.getAttribute(\'x\') || el.getAttribute(\'cx\') || \'NaN\');\n      const y = parseFloat(el.getAttribute(\'y\') || el.getAttribute(\'cy\') || \'NaN\');\n      const w = parseFloat(el.getAttribute(\'width\') || \'0\');\n      const h = parseFloat(el.getAttribute(\'height\') || \'0\');\n      if (Number.isNaN(x) || Number.isNaN(y)) return;\n      minX = Math.min(minX, x); minY = Math.min(minY, y);\n      maxX = Math.max(maxX, x + w); maxY = Math.max(maxY, y + h);\n    };\n    stationRects.forEach(visit);\n    sectionBoxes.forEach(visit);\n    if (!isFinite(minX)) return null;\n    return { x: minX, y: minY, w: maxX - minX, h: maxY - minY };\n  }\n\n  function zoomToVisible() {\n    const b = visibleBBox();\n    if (!b) return;\n    const pad = 40;\n    let w = b.w + pad * 2, h = b.h + pad * 2;\n    const aspect = initial.w / initial.h;\n    if (w / h > aspect) h = w / aspect; else w = h * aspect;\n    animateVB({\n      x: b.x + b.w / 2 - w / 2,\n      y: b.y + b.h / 2 - h / 2,\n      w, h,\n    });\n  }\n\n  function updateChips() {\n    root.querySelectorAll(\'.nf-metro-chip\').forEach(c => {\n      const rid = c.dataset.lineId;\n      c.classList.toggle(\'nf-metro-chip-active\', active === rid);\n      c.classList.toggle(\'nf-metro-chip-dim\', active !== null && active !== rid);\n    });\n  }\n\n  function setActiveLine(id) {\n    active = active === id ? null : id;\n    applyFilter();\n    updateChips();\n    if (active === null) animateVB(initial); else zoomToVisible();\n  }\n\n  // ---- Station selection (selectNode API) -----------------------------------\n  let activeStations = null;\n\n  function applyStationSelection() {\n    allStationEls.forEach(el => {\n      const sid = el.getAttribute(\'data-station-id\');\n      if (activeStations === null) {\n        el.classList.remove(\'nf-metro-station-selected\', \'nf-metro-station-dim\');\n      } else {\n        const match = activeStations.has(sid);\n        el.classList.toggle(\'nf-metro-station-dim\', !match);\n        el.classList.toggle(\'nf-metro-station-selected\',\n          match && el.hasAttribute(\'data-station-lines\'));\n      }\n    });\n    root.classList.toggle(\'nf-metro-selecting\', activeStations !== null);\n  }\n\n  // ---- Legend chips ---------------------------------------------------------\n  const legend = root.querySelector(\'.nf-metro-legend\');\n  lines.forEach(ln => {\n    const chip = document.createElement(\'div\');\n    chip.className = \'nf-metro-chip\';\n    chip.dataset.lineId = ln.id;\n    chip.innerHTML =\n      `<div class="nf-metro-swatch" style="background:${escapeHtml(ln.color)}"><\/div>` +\n      `<span>${escapeHtml(ln.label)}<\/span>`;\n    chip.addEventListener(\'click\', () => setActiveLine(ln.id));\n    legend.appendChild(chip);\n  });\n  root.querySelectorAll(\'.nf-metro-reset\').forEach(b => {\n    b.addEventListener(\'click\', () => clearHighlight());\n  });\n\n  // ---- Tooltip --------------------------------------------------------------\n  const linesById = new Map(lines.map(l => [l.id, l]));\n  const tip = root.querySelector(\'.nf-metro-tip\');\n  function buildTip(rect) {\n    const label = rect.getAttribute(\'data-station-label\') ||\n                  rect.getAttribute(\'data-station-id\');\n    const section = rect.getAttribute(\'data-section-name\') || \'\';\n    const ids = (rect.getAttribute(\'data-station-lines\') || \'\')\n                  .split(\',\').filter(Boolean);\n    const lineHtml = ids.map(id => {\n      const ln = linesById.get(id);\n      if (!ln) return \'\';\n      return `<div class="nf-metro-tt-line">` +\n        `<div class="nf-metro-swatch" style="background:${escapeHtml(ln.color)}"><\/div>` +\n        `${escapeHtml(ln.label)}<\/div>`;\n    }).join(\'\');\n    return `<div class="nf-metro-tt-title">${escapeHtml(label)}<\/div>` +\n      (section ? `<div class="nf-metro-tt-section">${escapeHtml(section)}<\/div>` : \'\') +\n      lineHtml;\n  }\n  function positionTip(e) {\n    const pad = 14;\n    let x = e.clientX + pad, y = e.clientY + pad;\n    if (x + tip.offsetWidth > window.innerWidth) {\n      x = e.clientX - tip.offsetWidth - pad;\n    }\n    if (y + tip.offsetHeight > window.innerHeight) {\n      y = e.clientY - tip.offsetHeight - pad;\n    }\n    tip.style.left = x + \'px\';\n    tip.style.top = y + \'px\';\n  }\n  // Event delegation: one listener for every station, cheap at any scale.\n  canvas.addEventListener(\'mouseover\', e => {\n    const rect = e.target.closest(\'.nf-metro-station\');\n    if (!rect || drag) return;\n    tip.innerHTML = buildTip(rect);\n    tip.classList.add(\'nf-metro-tip-show\');\n    positionTip(e);\n  });\n  canvas.addEventListener(\'mousemove\', e => {\n    if (tip.classList.contains(\'nf-metro-tip-show\')) positionTip(e);\n  });\n  canvas.addEventListener(\'mouseout\', e => {\n    const rect = e.target.closest(\'.nf-metro-station\');\n    const to = e.relatedTarget;\n    if (rect && (!to || !to.closest || !to.closest(\'.nf-metro-station\'))) {\n      tip.classList.remove(\'nf-metro-tip-show\');\n    }\n  });\n\n  window.addEventListener(\'keydown\', e => {\n    if (e.key === \'Escape\') clearHighlight();\n  });\n\n  // ---- Embed modal (standalone only) ----------------------------------------\n  if (embed) {\n    const modal = root.querySelector(\'.nf-metro-embed-modal\');\n    const sIframe = root.querySelector(\'.nf-metro-snippet-iframe\');\n    const sSvg = root.querySelector(\'.nf-metro-snippet-svg\');\n    const sInline = root.querySelector(\'.nf-metro-snippet-inline\');\n    function openModal() {\n      sInline.textContent = embed.snippet;\n      sIframe.textContent =\n        `<iframe src="${embed.basename}" width="100%" height="640" ` +\n        `style="border:0;border-radius:8px;" loading="lazy"><\/iframe>`;\n      sSvg.textContent = new XMLSerializer().serializeToString(svg);\n      modal.classList.add(\'nf-metro-modal-open\');\n    }\n    root.querySelector(\'.nf-metro-embed-btn\').addEventListener(\'click\', openModal);\n    root.querySelector(\'.nf-metro-modal-close\').addEventListener(\'click\',\n      () => modal.classList.remove(\'nf-metro-modal-open\'));\n    modal.addEventListener(\'click\', e => {\n      if (e.target === modal) modal.classList.remove(\'nf-metro-modal-open\');\n    });\n    const srcBy = { inline: sInline, iframe: sIframe, svg: sSvg };\n    modal.querySelectorAll(\'[data-copy]\').forEach(btn => {\n      btn.addEventListener(\'click\', async () => {\n        const text = srcBy[btn.dataset.copy].textContent;\n        try {\n          await navigator.clipboard.writeText(text);\n          btn.textContent = \'Copied!\';\n          btn.classList.add(\'nf-metro-copied\');\n          setTimeout(() => {\n            btn.textContent = \'Copy\';\n            btn.classList.remove(\'nf-metro-copied\');\n          }, 1400);\n        } catch (err) {\n          btn.textContent = \'Press Cmd+C\';\n        }\n      });\n    });\n  }\n\n  // ---- Public API -----------------------------------------------------------\n\n  let _manifestCache;\n  function getManifest() {\n    if (_manifestCache !== undefined) return _manifestCache;\n    const el = svg.querySelector(\'#diagram-manifest\');\n    if (!el) return (_manifestCache = null);\n    try { return (_manifestCache = JSON.parse(el.textContent)); }\n    catch { return (_manifestCache = null); }\n  }\n\n  function highlightLine(id) {\n    active = id;\n    applyFilter();\n    updateChips();\n    zoomToVisible();\n  }\n\n  function selectNode(processName) {\n    const manifest = getManifest();\n    if (!manifest) return;\n    const ids = new Set();\n    for (const node of (manifest.nodes || [])) {\n      for (const pat of (node.patterns || [])) {\n        try {\n          if (new RegExp(pat, \'i\').test(processName)) { ids.add(node.id); break; }\n        } catch { /* skip invalid pattern */ }\n      }\n    }\n    activeStations = ids.size ? ids : null;\n    applyStationSelection();\n  }\n\n  function clearHighlight() {\n    active = null;\n    activeStations = null;\n    applyFilter();\n    applyStationSelection();\n    root.querySelectorAll(\'.nf-metro-chip\').forEach(c => {\n      c.classList.remove(\'nf-metro-chip-active\', \'nf-metro-chip-dim\');\n    });\n    animateVB(initial);\n  }\n\n  return {\n    highlightLine, clearHighlight, getManifest, selectNode, reset: clearHighlight,\n  };\n}\n\n(function() {\n  var _root = document.currentScript.closest(\'.nfmm-m3f0c4475\');\n  var _api = attachMetroMap({ root: _root, lines: [{"id": "bismark", "label": "Bismark (default)", "color": "#2196F3", "style": "solid"}, {"id": "bwameth", "label": "bwa-meth", "color": "#E53935", "style": "solid"}], embed: null });\n  _root.dispatchEvent(new CustomEvent(\n    \'nfmetro:ready\', { detail: { api: _api }, bubbles: true }));\n})();\n<\/script>\n<\/div>\n',
+        },
+      });
+    </script>
+  </body>
+</html>

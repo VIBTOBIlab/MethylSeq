@@ -5,6 +5,9 @@
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
 [![nf-test](https://img.shields.io/badge/tested_with-nf--test-337ab7.svg)](https://github.com/askimed/nf-test)
+[![docs](https://img.shields.io/badge/docs-vibtobilab.github.io%2FMethylSeq-3f51b5.svg)](https://vibtobilab.github.io/MethylSeq/)
+
+**Documentation: [vibtobilab.github.io/MethylSeq](https://vibtobilab.github.io/MethylSeq/)**
 
 ## Introduction
 
@@ -20,6 +23,10 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 The pipeline allows you to choose between running either [Bismark](https://github.com/FelixKrueger/Bismark) or [bwa-meth](https://github.com/brentp/bwa-meth) / [MethylDackel](https://github.com/dpryan79/methyldackel).
 Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for alignment), `--aligner bismark_hisat` or `--aligner bwameth`.
+
+![MethylSeq metro map](docs/images/methylseq_metro.svg)
+
+An [interactive version of the metro map](https://htmlpreview.github.io/?https://github.com/VIBTOBIlab/MethylSeq/blob/main/docs/images/methylseq_metro.html) is also available ([source](docs/images/methylseq_metro.html)). The map was generated with [nf-metro](https://github.com/pinin4fjords/nf-metro) from [`docs/images/methylseq_metro.mmd`](docs/images/methylseq_metro.mmd).
 
 | Step                                         | Bismark workflow      | bwa-meth workflow     |
 | -------------------------------------------- | --------------------- | --------------------- |
@@ -68,55 +75,13 @@ nextflow run main.nf --input samplesheet.csv --outdir <OUTDIR> --genome GRCh37 -
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_;
 > see [docs](https://nf-co.re/usage/configuration#custom-configuration-files).
 
-For more details and further functionality, please refer to the [usage documentation](https://nf-co.re/methylseq/2.6.0/docs/usage), the [parameter documentation](https://nf-co.re/methylseq/2.6.0/parameters) and the section below for the parameters that have been added to the modifed version of the pipeline.
-
-## Parameters included in the modified version
-
-The original [nf-core/methylseq pipeline](https://nf-co.re/methylseq/2.6.0/) has been modified to include modules that are important when processing RRBS/cfRRBS samples. The pipeline has been modified by @edogiuili and is currently maintained by Edoardo Giuili ([@edogiuili](https://github.com/edogiuili)) and Sofie Van de Velde ([@sofvdvel](https://github.com/sofvdvel)).
-
-### Removal of optical duplicates
-
-#### `--remove_optic_duplicates`
-
-If specified, it removes the optical duplicates. It can be used together with `--sequencer` (see below).
-
-#### `--sequencer`
-
-If the flag `--remove_optic_duplicates` has been specified, `--sequencer` will be by default set to **NovaSeq**. Alternatively, you can specify **HiSeq** or **NextSeq**. This will change the OpticalDupsPixelDistance within PicardMarkDuplicates step (**NovaSeq**: 12000, **HiSeq**: 2500, **NextSeq**: 100).
-
-### Filter non conversion (Bismark) module
-
-#### `--filter_non_conversion`
-
-If specified, it filters out all those reads that have a methylation value >= than a preset threshold in non-CG context where you expect a very low methylation level (<5% usually). For more information please consult the [Bismark usage](https://felixkrueger.github.io/Bismark/bismark/filter_nonconverted_reads/).
-
-#### `--minimum_count`
-
-Minimum number of methylation sites for a read to be filtered out (def. 3).
-
-#### `--percentage_cutoff`
-
-Minimum methylation percentage for a read to be filtered out (def. 90%).
-
-### CpG-level sequencing saturation using methurator
-
-#### `--run_methurator`
-
-If specified (by default: true), it will run [methurator](https://vibtobilab.github.io/methurator/latest/) to compute a CpG-level sequencing saturation analysis.
-
-#### `--t_max`
-
-Maximum extrapolation factor (t) value (def. 10).
-
-#### `--minimum_coverage`
-
-Minimum number of counts to define a new CpG (def. 1). More than 1 value can be specified (e.g. '1,3,5').
+For more details and further functionality, please refer to the [usage](https://vibtobilab.github.io/MethylSeq/usage/) and [parameters](https://vibtobilab.github.io/MethylSeq/parameters/) pages of the documentation.
 
 ## Pipeline output
 
 To see the results of an example test run with a full size dataset refer to the [results](https://nf-co.re/methylseq/results) tab on the nf-core website pipeline page.
 For more details about the output files and reports, please refer to the
-[output documentation](https://nf-co.re/methylseq/output).
+[output page](https://vibtobilab.github.io/MethylSeq/output/) of the documentation.
 
 ## Credits
 
