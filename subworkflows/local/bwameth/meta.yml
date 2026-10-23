@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "BWAMETH"
+description: Align bisulfite sequencing reads with bwa-meth, mark duplicates with Picard and extract methylation calls with MethylDackel
+keywords:
+  - bwameth
+  - methyldackel
+  - bisulfite
+  - methylation
+  - alignment
+components:
+  - bwameth/align
+  - samtools/sort
+  - samtools/index
+  - samtools/flagstat
+  - samtools/stats
+  - picard/markduplicates
+  - methyldackel/extract
+  - methyldackel/mbias
+input:
+  - reads:
+      type: file
+      description: |
+        Channel containing the (trimmed) reads
+        Structure: [ val(meta), [ path(reads) ] ]
+      pattern: "*.{fq,fastq}.gz"
+  - bwameth_index:
+      type: directory
+      description: Channel containing the bwa-meth index directory
+  - fasta:
+      type: file
+      description: Channel containing the genome FASTA file
+      pattern: "*.{fa,fasta}"
+  - fasta_index:
+      type: file
+      description: Channel containing the genome FASTA index
+      pattern: "*.fai"
+  - skip_deduplication:
+      type: boolean
+      description: Skip Picard MarkDuplicates (e.g. for RRBS data)
+output:
+  - bam:
+      type: file
+      description: |
+        Channel containing the sorted, non-deduplicated BAM files from the aligner
+        Structure: [ val(meta), path(bam) ]
+      pattern: "*.bam"
+  - dedup:
+      type: file
+      description: |
+        Channel containing the sorted BAM files after the optional duplicate marking
+        Structure: [ val(meta), path(bam) ]
+      pattern: "*.bam"
+  - dedup_bai:
+      type: file
+      description: |
+        Channel containing the index of the dedup BAM files
+        Structure: [ val(meta), path(bai) ]
+      pattern: "*.bai"
+  - mqc:
+      type: file
+      description: Channel containing the reports used by MultiQC
+      pattern: "*.{txt,stats,flagstat,bedGraph}"
+authors:
+  - "@VIBTOBIlab/benchmarkteam"
+maintainers:
+  - "@VIBTOBIlab/benchmarkteam"

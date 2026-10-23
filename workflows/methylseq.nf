@@ -64,7 +64,6 @@ workflow METHYLSEQ {
         bismark_index,
         bwa_meth_index
     )
-    ch_versions = ch_versions.mix(PREPARE_GENOME.out.versions)
 
     //
     // Branch samples with one or multiple FastQ files per read
@@ -84,7 +83,6 @@ workflow METHYLSEQ {
         ch_fastq.multiple
     )
     def ch_cat_fastq = CAT_FASTQ.out.reads.mix(ch_fastq.single)
-    ch_versions = ch_versions.mix(CAT_FASTQ.out.versions.first())
 
     //
     // MODULE: Run FastQC
@@ -100,7 +98,6 @@ workflow METHYLSEQ {
     if (!params.skip_trimming) {
         TRIMGALORE(ch_cat_fastq)
         reads = TRIMGALORE.out.reads
-        ch_versions = ch_versions.mix(TRIMGALORE.out.versions.first())
     }
 
     //
@@ -121,7 +118,6 @@ workflow METHYLSEQ {
             params.cytosine_report || params.nomeseq,
             PREPARE_GENOME.out.fasta
         )
-        ch_versions = ch_versions.mix(BISMARK.out.versions.unique{ versions -> versions.baseName })
         ch_bam = BISMARK.out.bam
         ch_dedup = BISMARK.out.dedup
         ch_bai = BISMARK.out.dedup_bai
@@ -137,7 +133,6 @@ workflow METHYLSEQ {
             PREPARE_GENOME.out.fasta_index,
             params.skip_deduplication || params.rrbs,
         )
-        ch_versions = ch_versions.mix(BWAMETH.out.versions.unique{ versions -> versions.baseName })
         ch_bam = BWAMETH.out.bam
         ch_dedup = BWAMETH.out.dedup
         ch_bai = BWAMETH.out.dedup_bai
@@ -151,7 +146,6 @@ workflow METHYLSEQ {
         ch_dedup,
         params.bamqc_regions_file ? channel.fromPath( params.bamqc_regions_file, checkIfExists: true ).toList() : []
     )
-    ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions.first())
 
     //
     // MODULE: Run Preseq
@@ -160,7 +154,6 @@ workflow METHYLSEQ {
         PRESEQ_LCEXTRAP (
             ch_bam
         )
-        ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
     }
 
     //
@@ -215,7 +208,7 @@ workflow METHYLSEQ {
     def ch_multiqc_report = channel.empty()
     if (!params.skip_multiqc) {
         ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
-        def ch_summary_params = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
+        def ch_summary_params = paramsSummaryMap(parameters_schema: "nextflow_schema.json")
         def ch_workflow_summary = channel.value(paramsSummaryMultiqc(ch_summary_params))
         ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
         def ch_multiqc_custom_methods_description = multiqc_methods_description

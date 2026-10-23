@@ -3,30 +3,54 @@
         "content": [
             {
                 "BWAMETH_ALIGN": {
-                    "bwameth": "0.2.2"
+                    "bwameth": "0.2.9",
+                    "samtools": "1.22.1"
                 },
                 "BWAMETH_INDEX": {
-                    "bwameth": "0.2.2"
+                    "bwameth": "0.2.9"
                 },
                 "CAT_FASTQ": {
-                    "cat": 8.3
+                    "cat": 9.5
                 },
                 "FASTQC": {
-                    "fastqc": "0.12.1"
+                    "fastqc": "0.13.0"
+                },
+                "METHYLDACKEL_EXTRACT": {
+                    "methyldackel": "0.6.1"
+                },
+                "METHYLDACKEL_MBIAS": {
+                    "methyldackel": "0.6.1"
+                },
+                "PICARD_MARKDUPLICATES": {
+                    "picard": "3.5.0"
                 },
                 "QUALIMAP_BAMQC": {
-                    "qualimap": "2.2.2-dev"
+                    "qualimap": 2.3
+                },
+                "SAMTOOLS_FLAGSTAT": {
+                    "samtools": 1.24
+                },
+                "SAMTOOLS_INDEX_ALIGNMENTS": {
+                    "samtools": 1.24
+                },
+                "SAMTOOLS_INDEX_DEDUPLICATED": {
+                    "samtools": 1.24
+                },
+                "SAMTOOLS_SORT": {
+                    "samtools": 1.24
+                },
+                "SAMTOOLS_STATS": {
+                    "samtools": 1.24
                 },
                 "TRIMGALORE": {
-                    "trimgalore": "0.6.7",
-                    "cutadapt": 3.4
+                    "trimgalore": "2.3.0"
                 },
                 "Workflow": {
                     "VIBTOBIlab/MethylSeq": "v3.0.0"
                 }
             }
         ],
-        "timestamp": "2026-10-23T11:13:05.735898",
+        "timestamp": "2026-10-23T15:21:42.59353",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.0"
@@ -46,26 +70,45 @@
         "content": [
             {
                 "BWAMETH_ALIGN": {
-                    "bwameth": "0.2.2"
+                    "bwameth": "0.2.9",
+                    "samtools": "1.22.1"
                 },
                 "BWAMETH_INDEX": {
-                    "bwameth": "0.2.2"
+                    "bwameth": "0.2.9"
                 },
                 "CAT_FASTQ": {
-                    "cat": 8.3
+                    "cat": 9.5
                 },
                 "FASTQC": {
-                    "fastqc": "0.12.1"
+                    "fastqc": "0.13.0"
+                },
+                "METHYLDACKEL_EXTRACT": {
+                    "methyldackel": "0.6.1"
+                },
+                "METHYLDACKEL_MBIAS": {
+                    "methyldackel": "0.6.1"
                 },
                 "QUALIMAP_BAMQC": {
-                    "qualimap": "2.2.2-dev"
+                    "qualimap": 2.3
+                },
+                "SAMTOOLS_FLAGSTAT": {
+                    "samtools": 1.24
+                },
+                "SAMTOOLS_INDEX_ALIGNMENTS": {
+                    "samtools": 1.24
+                },
+                "SAMTOOLS_SORT": {
+                    "samtools": 1.24
+                },
+                "SAMTOOLS_STATS": {
+                    "samtools": 1.24
                 },
                 "Workflow": {
                     "VIBTOBIlab/MethylSeq": "v3.0.0"
                 }
             }
         ],
-        "timestamp": "2026-10-23T11:14:56.275097",
+        "timestamp": "2026-10-23T15:33:38.794828",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.0"
@@ -74,12 +117,11 @@
     "single_end": {
         "content": [
             "Ecoli.flagstat:md5,f520e87cc4050799a0dbed72909572ec",
-            "Ecoli.stats:md5,c09155913e0164da9010a0840618cf1f",
+            "Ecoli.stats:md5,b72e5e9ce9314e5ca96bfa892dac53dd",
             "SRR389222.flagstat:md5,f5a2dd6c9532bbfb8fe78aad010d8737",
-            "SRR389222.stats:md5,cc81b8c56d038e437a99d9c04b61ce2d",
+            "SRR389222.stats:md5,13cbefccd873a388c5c15ad103ff915a",
             [
                 [
-                    "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
                     "genome.fa.bwameth.c2t:md5,e51d48ed28fa0c26e2f9c9f13d09403b",
                     "genome.fa.bwameth.c2t.amb:md5,010a242c6764efb30141868a45d698b3",
                     "genome.fa.bwameth.c2t.ann:md5,09b4db3d87a2d4dac9e10e807f377110",
@@ -96,21 +138,20 @@
             "genome_results.txt:md5,d1a1b49086982318f0f94ba7059f71a3",
             "genome_results.txt:md5,c786cc367645cee286360707e2624dca"
         ],
-        "timestamp": "2026-01-09T01:03:29.367226",
+        "timestamp": "2026-10-23T15:21:42.998382",
         "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.0"
         }
     },
     "single_end_rrbs": {
         "content": [
             "Ecoli.flagstat:md5,7c3bae0f9c700dde88785a7e94c6ae2c",
-            "Ecoli.stats:md5,46eaf2559610c864bc4d27a08a0645b4",
+            "Ecoli.stats:md5,77618e92791661497ee4004defcf0cde",
             "SRR389222.flagstat:md5,a90f1bdcb30f4d0597ccf69fe0b37b1f",
-            "SRR389222.stats:md5,b99800367e21a0c7c0d87e5fe29d9609",
+            "SRR389222.stats:md5,a429e69b6ed7b107fc573a94548e07da",
             [
                 [
-                    "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
                     "genome.fa.bwameth.c2t:md5,e51d48ed28fa0c26e2f9c9f13d09403b",
                     "genome.fa.bwameth.c2t.amb:md5,010a242c6764efb30141868a45d698b3",
                     "genome.fa.bwameth.c2t.ann:md5,09b4db3d87a2d4dac9e10e807f377110",
@@ -127,10 +168,10 @@
             "genome_results.txt:md5,cd545aa1ee209a1683374bfb5731ab0c",
             "genome_results.txt:md5,199902f9d8f10f73bcb0a1ce29ceca5d"
         ],
-        "timestamp": "2026-01-09T01:05:55.519083",
+        "timestamp": "2026-10-23T15:33:39.234124",
         "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.0"
         }
     }
 }

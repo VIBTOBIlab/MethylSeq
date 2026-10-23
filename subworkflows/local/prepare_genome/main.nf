@@ -16,7 +16,6 @@ workflow PREPARE_GENOME {
     bwa_meth_index // string: path to the bwa-meth index
 
     main:
-    ch_versions      = channel.empty()
     ch_fasta         = channel.empty()
     ch_bismark_index = channel.empty()
     ch_bwameth_index = channel.empty()
@@ -40,9 +39,8 @@ workflow PREPARE_GENOME {
                 ch_bismark_index = channel.value(file(bismark_index))
             }
         } else {
-            BISMARK_GENOMEPREPARATION(ch_fasta)
-            ch_bismark_index = BISMARK_GENOMEPREPARATION.out.index
-            ch_versions = ch_versions.mix(BISMARK_GENOMEPREPARATION.out.versions)
+            BISMARK_GENOMEPREPARATION(ch_fasta.map { fasta_file -> [ [:], fasta_file ] })
+            ch_bismark_index = BISMARK_GENOMEPREPARATION.out.index.map { _meta, index -> index }
         }
 
     }
@@ -54,14 +52,13 @@ workflow PREPARE_GENOME {
          */
         if (bwa_meth_index) {
             if (bwa_meth_index.endsWith('.tar.gz')) {
-                ch_bismark_index = UNTAR ( [ [:], file(bwa_meth_index) ] ).untar.map { _meta, index -> index }
+                ch_bwameth_index = UNTAR ( [ [:], file(bwa_meth_index) ] ).untar.map { _meta, index -> index }
             } else {
-                ch_bismark_index = channel.value(file(bwa_meth_index))
+                ch_bwameth_index = channel.value(file(bwa_meth_index))
             }
         } else {
-            BWAMETH_INDEX(ch_fasta)
-            ch_bwameth_index = BWAMETH_INDEX.out.index
-            ch_versions = ch_versions.mix(BWAMETH_INDEX.out.versions)
+            BWAMETH_INDEX(ch_fasta.map { fasta_file -> [ [:], fasta_file ] }, false)
+            ch_bwameth_index = BWAMETH_INDEX.out.index.map { _meta, index -> index }
         }
     }
 
@@ -71,9 +68,8 @@ workflow PREPARE_GENOME {
     if (fasta_index) {
         ch_fasta_index = channel.value(file(fasta_index))
     } else {
-        SAMTOOLS_FAIDX([[:], ch_fasta])
-        ch_fasta_index = SAMTOOLS_FAIDX.out.fai.map{ _meta, fai -> fai }
-        ch_versions = ch_versions.mix(SAMTOOLS_FAIDX.out.versions)
+        SAMTOOLS_FAIDX(ch_fasta.map { fasta_file -> [ [:], fasta_file, [] ] }, false)
+        ch_fasta_index = SAMTOOLS_FAIDX.out.fai.map { _meta, fai -> fai }
     }
 
     emit:
@@ -81,6 +77,5 @@ workflow PREPARE_GENOME {
     bismark_index = ch_bismark_index          // channel: path(genome.fasta)
     bwameth_index = ch_bwameth_index          // channel: path(genome.fasta)
     fasta_index   = ch_fasta_index            // channel: path(genome.fasta)
-    versions      = ch_versions               // channel: [ versions.yml ]
 
 }

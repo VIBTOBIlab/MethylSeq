@@ -24,19 +24,20 @@ workflow BISMARK {
     fasta              // channel: /path/to/fasta
 
     main:
-    versions = channel.empty()
     picard_metrics = channel.empty()
 
+    def ch_fasta = fasta.map { fasta_file -> [ [:], fasta_file ] }
+    def ch_bismark_index = bismark_index.map { index -> [ [:], index ] }
 
     /*
      * Align with bismark
      */
     BISMARK_ALIGN (
         reads,
-        bismark_index
+        ch_fasta,
+        ch_bismark_index
     )
     alignments = BISMARK_ALIGN.out.bam
-    versions = versions.mix(BISMARK_ALIGN.out.versions)
 
     /*
      * If filter_non_conversion flag has been specified,
@@ -47,16 +48,16 @@ workflow BISMARK {
             alignments
         )
         alignments = BISMARK_FILTER_NON_CONVERSION.out.filter_bam
-        versions = versions.mix(BISMARK_FILTER_NON_CONVERSION.out.versions)
     }
 
     /*
      * Sort the raw, aligned BAM file
      */
     SAMTOOLS_SORT_ALIGNED (
-        BISMARK_ALIGN.out.bam
+        BISMARK_ALIGN.out.bam,
+        [ [:], [], [] ],
+        ''
     )
-    versions = versions.mix(SAMTOOLS_SORT_ALIGNED.out.versions)
 
     /*
      * Remove optical duplicates if specified
@@ -72,7 +73,6 @@ workflow BISMARK {
         )
         alignments = PICARD_MARKOPTICALDUPLICATES.out.bam
         picard_metrics = PICARD_MARKOPTICALDUPLICATES.out.metrics
-        versions = versions.mix(PICARD_MARKOPTICALDUPLICATES.out.versions)
     }
 
     if (skip_deduplication) {
@@ -84,7 +84,6 @@ workflow BISMARK {
         BISMARK_DEDUPLICATE( alignments )
         alignments = BISMARK_DEDUPLICATE.out.bam
         alignment_reports = BISMARK_ALIGN.out.report.join(BISMARK_DEDUPLICATE.out.report)
-        versions = versions.mix(BISMARK_DEDUPLICATE.out.versions)
     }
 
     /*
@@ -92,9 +91,8 @@ workflow BISMARK {
      */
     BISMARK_METHYLATIONEXTRACTOR (
         alignments,
-        bismark_index
+        ch_bismark_index
     )
-    versions = versions.mix(BISMARK_METHYLATIONEXTRACTOR.out.versions)
 
     /*
      * Run coverage2cytosine
@@ -102,9 +100,9 @@ workflow BISMARK {
     if (cytosine_report) {
         BISMARK_COVERAGE2CYTOSINE (
             BISMARK_METHYLATIONEXTRACTOR.out.coverage,
-            bismark_index
+            ch_fasta,
+            ch_bismark_index
         )
-        versions = versions.mix(BISMARK_COVERAGE2CYTOSINE.out.versions)
     }
 
     /*
@@ -115,7 +113,6 @@ workflow BISMARK {
             .join(BISMARK_METHYLATIONEXTRACTOR.out.report)
             .join(BISMARK_METHYLATIONEXTRACTOR.out.mbias)
     )
-    versions = versions.mix(BISMARK_REPORT.out.versions)
 
     /*
      * Generate bismark summary report
@@ -127,21 +124,20 @@ workflow BISMARK {
         BISMARK_METHYLATIONEXTRACTOR.out.report.collect{ _meta, report -> report }.ifEmpty([]),
         BISMARK_METHYLATIONEXTRACTOR.out.mbias.collect{ _meta, mbias -> mbias }.ifEmpty([])
     )
-    versions = versions.mix(BISMARK_SUMMARY.out.versions)
 
     /*
      * Sort potentially deduplicated output BAM
      */
     SAMTOOLS_SORT_DEDUPLICATED (
-        alignments
+        alignments,
+        [ [:], [], [] ],
+        ''
     )
-    versions = versions.mix(SAMTOOLS_SORT_DEDUPLICATED.out.versions)
 
     /*
      * Run samtools index on potentially deduplicated alignment
      */
     SAMTOOLS_INDEX (SAMTOOLS_SORT_DEDUPLICATED.out.bam)
-    versions = versions.mix(SAMTOOLS_INDEX.out.versions)
 
     /*
      * Collect MultiQC inputs
@@ -158,7 +154,6 @@ workflow BISMARK {
     emit:
     bam        = SAMTOOLS_SORT_ALIGNED.out.bam            // channel: [ val(meta), [ bam ] ] ## sorted, non-deduplicated (raw) BAM from aligner
     dedup      = SAMTOOLS_SORT_DEDUPLICATED.out.bam       // channel: [ val(meta), [ bam ] ] ## sorted, **potentially** deduplicated BAM
-    dedup_bai  = SAMTOOLS_INDEX.out.bai                   // channel: [ val(meta), [ bai ] ] ## dedup bam index
+    dedup_bai  = SAMTOOLS_INDEX.out.index                 // channel: [ val(meta), [ bai ] ] ## dedup bam index
     mqc        = multiqc_files                            // path: *{html,txt}
-    versions                                              // path: *.version.txt
 }

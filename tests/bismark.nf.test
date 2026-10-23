@@ -238,4 +238,42 @@ nextflow_pipeline {
             )
         }
     }
+
+    test("Bismark Filter Non-Conversion") {
+        when {
+            params {
+                aligner               = "bismark"
+                filter_non_conversion = true
+                save_align_intermeds  = true
+                run_methurator        = false
+                outdir                = "$outputDir"
+            }
+        }
+
+        then {
+            def filtered = path("$outputDir/bismark/filter_non_converted").list().collect { file -> file.fileName.toString() }.sort()
+            def versions = path("$outputDir/pipeline_info/methylseq_software_mqc_versions.yml").text
+            assertAll(
+                { assert workflow.success },
+                // One filtered BAM and one filtering report per sample
+                { assert filtered.findAll { name -> name.endsWith(".nonCG_filtered.bam") }.size() == 2 },
+                { assert filtered.findAll { name -> name.endsWith(".non-conversion_filtering.txt") }.size() == 2 },
+                { assert filtered.any { name -> name.startsWith("Ecoli") } },
+                { assert filtered.any { name -> name.startsWith("SRR389222") } },
+                // The local modules report their versions through the versions topic
+                { assert versions.contains("BISMARK_FILTER_NON_CONVERSION") },
+                { assert versions.contains("SAMTOOLS_QUERYNAME_SORT") },
+                { assert versions.contains("PICARD_MARKOPTICALDUPLICATES") },
+                { assert snapshot(
+                            filtered,
+                            path("$outputDir/bismark/methylation_calls/bedGraph/Ecoli.markdup.deduplicated.bedGraph.gz"),
+                            path("$outputDir/bismark/methylation_calls/bedGraph/SRR389222.markdup.deduplicated.bedGraph.gz"),
+                            path("$outputDir/bismark/methylation_calls/mbias/Ecoli.markdup.deduplicated.M-bias.txt"),
+                            path("$outputDir/bismark/methylation_calls/mbias/SRR389222.markdup.deduplicated.M-bias.txt"),
+                            path("$outputDir/bismark/methylation_calls/methylation_coverage/Ecoli.markdup.deduplicated.bismark.cov.gz"),
+                            path("$outputDir/bismark/methylation_calls/methylation_coverage/SRR389222.markdup.deduplicated.bismark.cov.gz")).match("filter_non_conversion") },
+                { assert snapshot(removeNextflowVersion("$outputDir/pipeline_info/methylseq_software_mqc_versions.yml")).match("filter_non_conversion_software_versions") }
+            )
+        }
+    }
 }

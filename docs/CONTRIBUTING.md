@@ -162,4 +162,8 @@ If you update images or graphics, follow the nf-core [style guidelines](https://
 
 ## Pipeline specific contribution guidelines
 
-<!-- TODO nf-core: Add any pipeline specific contribution guidelines here, such as coding styles, procedures, checklists etc. -->
+- **Parameters**: declare every parameter used by the pipeline code as a typed parameter in the `params` block of `main.nf`, and add it to `nextflow_schema.json`. Declare it in `nextflow.config` as well, with the same default, only when a config setting reads it while the config is loaded (e.g. `enabled:` in a `publishDir` of `conf/modules.config`). Parameters used inside `ext.args` closures only need the declaration in `main.nf`.
+- **Pass parameters explicitly**: use `params` in the entry workflow and pass values to subworkflows as inputs where possible.
+- **Software versions**: modules report their versions through the `versions` topic channel (`tuple val("${task.process}"), val('tool'), eval('tool --version'), topic: versions`), local modules included. Do not add `versions.yml` outputs.
+- **nf-core modules**: do not edit files in `modules/nf-core/` or `subworkflows/nf-core/` by hand. Set options with `ext.args`/`ext.prefix` in `conf/modules.config`, or use `nf-core modules patch` if a change is unavoidable.
+- **Before opening a pull request**: run `nextflow lint .`, `nf-core pipelines lint` and the nf-test suite (`nf-test test tests/ --profile +docker`), and add a line to `CHANGELOG.md`.

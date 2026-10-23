@@ -2,10 +2,10 @@ process BISMARK_FILTER_NON_CONVERSION {
     tag "$meta.id"
     label 'process_high'
 
-    conda "bioconda::bismark=0.25.0"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/bismark:0.25.0--hdfd78af_0' :
-        'biocontainers/bismark:0.25.0--hdfd78af_0' }"
+    conda "${moduleDir}/environment.yml"
+    container "${ workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container ?
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/bd/bddea334e6ccbce005ce540214747acf822b040185d2198220dcfbb4b258c331/data' :
+        'community.wave.seqera.io/library/bismark:3.1.0--9557d6ab108a83e4' }"
 
     input:
     tuple val(meta), path(bam)
@@ -14,7 +14,7 @@ process BISMARK_FILTER_NON_CONVERSION {
     tuple val(meta), path("*.nonCG_filtered.bam"), emit: filter_bam
     path "*.nonCG_removed_seqs.bam"
     path "*.non-conversion_filtering.txt", emit: report
-    path "versions.yml" , emit: versions
+    tuple val("${task.process}"), val('bismark'), eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'"), emit: versions_bismark, topic: versions
 
     script:
     def args = ''
@@ -26,11 +26,6 @@ process BISMARK_FILTER_NON_CONVERSION {
     $args \\
     --percentage_cutoff ${params.percentage_cutoff} \\
     --minimum_count ${params.minimum_count} \\
-    ${bam} \\
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        bismark: \$(echo \$(bismark -v 2>&1) | sed 's/^.*Bismark Version: v//; s/Copyright.*\$//')
-    END_VERSIONS
+    ${bam}
     """
 }

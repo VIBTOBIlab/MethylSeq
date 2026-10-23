@@ -5,15 +5,41 @@
 - Updated the pipeline to the nf-core/tools template v4.1.0 (non-nf-core, `VIBTOBIlab` organisation) through a new `TEMPLATE` branch, so later template updates can be applied with `nf-core pipelines sync`.
 - Nextflow `>=26.04.0` is now required, the pipeline passes `nextflow lint` (strict syntax) with Nextflow 26.10.
 - Pipeline parameters are declared as typed parameters in `main.nf`, so values given on the command line (e.g. `--clip_r1 3`, `--rrbs`) keep their type with recent Nextflow versions.
-- Replaced the `lib/` Groovy helpers with the `PIPELINE_INITIALISATION` / `PIPELINE_COMPLETION` subworkflows, and `nf-validation` with `nf-schema` (v2.7.2). `nextflow_schema.json` now uses JSON schema draft 2020-12.
+- Replaced the `lib/` Groovy helpers with the `PIPELINE_INITIALISATION` / `PIPELINE_COMPLETION` subworkflows, and `nf-validation` with `nf-schema` (v3.0.0). `nextflow_schema.json` now uses JSON schema draft 2020-12.
 - Software versions are collected with the `versions` topic channel and saved to `pipeline_info/methylseq_software_mqc_versions.yml`, replacing `CUSTOM_DUMPSOFTWAREVERSIONS`.
-- Updated the FastQC and MultiQC modules to the versions shipped with the template.
-- Moved the in-house modules `bismark/filter_non_conversion`, `picard/markopticalduplicates` and `samtools/queryname_sort` to `modules/local/`, and the local subworkflows to `subworkflows/local/<name>/main.nf`. The local change to `samtools/sort` is now tracked as an nf-core patch file.
+- Updated all nf-core modules to their latest versions. This includes major tool updates (see [Results compared to v2.6.5](#results-compared-to-v265) for their effect on the outputs): Bismark 0.24.0 → 3.1.0 (the Rust rewrite of Bismark), Trim Galore 0.6.7 → 2.3.0, Picard 3.0.0 → 3.5.0, samtools 1.17 → 1.24, Qualimap 2.2.2d → 2.3, bwa-meth 0.2.2 → 0.2.9, MethylDackel 0.6.0 → 0.6.1, FastQC 0.12.1 → 0.13.0 and Preseq 3.1.2 → 3.2.0. The Picard MarkDuplicates metrics file of the bwa-meth workflow is now named `<sample>.markdup.sorted.metrics.txt`, and the bwa-meth index is saved to `bwameth/reference_genome/BwamethIndex/`.
+- Replaced the local methurator modules with the nf-core `methurator/gtestimator` and `methurator/plot` modules (methurator 2.1.1 → 2.2.0).
+- Moved the in-house modules `bismark/filter_non_conversion`, `picard/markopticalduplicates` and `samtools/queryname_sort` to `modules/local/`, and the local subworkflows to `subworkflows/local/<name>/main.nf`. Removed the deprecated `when:` sections from the local modules. The local modules `bismark/filter_non_conversion` and `samtools/queryname_sort` now use the same containers as the updated nf-core modules (Bismark 3.1.0, samtools 1.24), `picard/markopticalduplicates` stays on Picard 3.0.0. All local modules report their versions through the `versions` topic channel. The `samtools/sort` output names (`<input>.sorted.bam`) are now set with `ext.prefix` instead of a local change to the module.
 - Fixed `METHURATOR_GTESTIMATOR` receiving the BAM and BAI files of a sample from two separate channels, which could pair a BAM with the index of another sample.
 - Fixed `--known_splices` referencing an undefined variable for `--aligner bismark_hisat`.
+- Fixed `--bwa_meth_index` being passed to the Bismark index channel, so a provided bwa-meth index was never used.
+- Fixed `pipeline_info/methylseq_software_mqc_versions.yml` only listing some of the processes.
 - Removed the `--hook_url` parameter (dropped from the nf-core template), the unused `test_ci`, `test_full` and `gitpod` profiles, and the old validation parameters (`validationShowHiddenParams`, `validationFailUnrecognisedParams`, `validationLenientMode`). `--test_data_base` is replaced by `--pipelines_testdata_base_path`.
 - Added the `--help_full` and `--show_hidden` parameters, and the `arm64`, `emulate_amd64` and `wave` profiles (the `arm` profile is kept as an alias of `emulate_amd64`).
-- Moved the pipeline tests to `tests/<aligner>.nf.test` and use the `nft-utils` plugin instead of `tests/lib/UTILS.groovy`.
+- Moved the pipeline tests to `tests/<aligner>.nf.test` and use the `nft-utils` plugin instead of `tests/lib/UTILS.groovy`. Added a test for `--filter_non_conversion`.
+
+### Results compared to v2.6.5
+
+Checked by comparing the nf-test snapshots of v2.6.5 and v3.0.0 (test profile; Bismark, Bismark HISAT2 and bwa-meth, with the default, RRBS, NOMe-seq and `--clip_r1` settings).
+
+Unchanged, identical to v2.6.5:
+
+- Bismark and Bismark HISAT2: methylation bedGraphs (`*.bedGraph.gz`), coverage files (`*.bismark.cov.gz`), M-bias reports (`*.M-bias.txt`), NOMe-seq coverage files from coverage2cytosine (`*.NOMe.{CpG,GpC}.cov.gz`) and the Bismark genome index.
+- bwa-meth: MethylDackel methylation calls (`*_CpG.bedGraph`) and M-bias files, `samtools flagstat` reports and the bwa-meth index files.
+- All aligners: merged FASTQ files (`cat`) and the Qualimap BamQC results (`genome_results.txt`).
+- The alignments themselves: the read records of the deduplicated BAM files are identical, only the BAM headers (and, for bwa-meth, some optional SAM tags) differ.
+
+Changed, with the same results:
+
+- Bismark per-read methylation calls (`methylation_calls/{CpG,CHG,CHH}_{OT,OB}_*.txt.gz`) and splitting reports (`*_splitting_report.txt`): only the line with the Bismark extractor version differs (`v0.24.0` → `v0.25.1`), all methylation calls are identical.
+- Software versions (`pipeline_info/methylseq_software_mqc_versions.yml`): new tool versions, and every process is now listed.
+
+Changed:
+
+- `samtools stats` reports (`bwameth/alignments/samtools_stats/*.stats`): samtools 1.24 reports some summary statistics differently from samtools 1.17 for the same alignments (e.g. `average length`, the inward/outward oriented pair counts and an extra note on the `is sorted` line).
+- Methurator summaries (`methurator/summaries/<sample>/methurator_summary.yml`): the summaries now record methurator 2.2.0 (was 2.1.1), the command, input files and options are unchanged. The saturation estimates vary between runs by design (random downsampling), also with the same version and inputs, so they cannot be compared exactly between v2.6.5 and v3.0.0.
+- QC reports (FastQC, Trim Galore, Qualimap HTML, Bismark alignment, deduplication and summary reports, MultiQC): new tool versions, different layout and version or date information.
+- Renamed outputs: `bwameth/deduplicated/picard_metrics/<sample>.markdup.sorted.metrics.txt` (was `<sample>.markdup.sorted.MarkDuplicates.metrics.txt`) and `bwameth/reference_genome/BwamethIndex/` (was `bwameth/reference_genome/bwameth/`, without the copy of `genome.fa`).
 
 ## [v2.6.5](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/2.6.5) - 2026-10-20
 

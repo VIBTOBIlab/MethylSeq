@@ -55,8 +55,8 @@ nextflow_pipeline {
                 { assert new File("$outputDir/trimgalore/logs/Ecoli_1.fastq.gz_trimming_report.txt").exists() },
                 { assert new File("$outputDir/trimgalore/logs/Ecoli_2.fastq.gz_trimming_report.txt").exists() },
                 { assert new File("$outputDir/trimgalore/logs/SRR389222.fastq.gz_trimming_report.txt").exists() },
-                { assert new File("$outputDir/bwameth/deduplicated/picard_metrics/Ecoli.markdup.sorted.MarkDuplicates.metrics.txt").exists() },
-                { assert new File("$outputDir/bwameth/deduplicated/picard_metrics/SRR389222.markdup.sorted.MarkDuplicates.metrics.txt").exists() }
+                { assert new File("$outputDir/bwameth/deduplicated/picard_metrics/Ecoli.markdup.sorted.metrics.txt").exists() },
+                { assert new File("$outputDir/bwameth/deduplicated/picard_metrics/SRR389222.markdup.sorted.metrics.txt").exists() }
             )
         }
     }

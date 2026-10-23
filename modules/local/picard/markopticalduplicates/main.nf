@@ -2,8 +2,8 @@ process PICARD_MARKOPTICALDUPLICATES {
     tag "$meta.id"
     label 'process_medium'
 
-    conda "bioconda::picard=3.0.0"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+    conda "${moduleDir}/environment.yml"
+    container "${ workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/picard:3.0.0--hdfd78af_1' :
         'biocontainers/picard:3.0.0--hdfd78af_1' }"
 
@@ -15,7 +15,7 @@ process PICARD_MARKOPTICALDUPLICATES {
     tuple val(meta), path("*.bam")        , emit: bam
     tuple val(meta), path("*.bai")        , optional:true, emit: bai
     tuple val(meta), path("*.metrics.txt"), emit: metrics
-    path  "versions.yml"                  , emit: versions
+    tuple val("${task.process}"), val('picard'), eval("picard MarkDuplicates --version 2>&1 | sed -n 's/.*Version://p'"), topic: versions, emit: versions_picard
 
     script:
     def args = task.ext.args ?: ''
@@ -43,12 +43,7 @@ process PICARD_MARKOPTICALDUPLICATES {
         --OPTICAL_DUPLICATE_PIXEL_DISTANCE ${opt_dupl_dist} \\
         --ASSUME_SORT_ORDER queryname \\
         --READ_NAME_REGEX '[a-zA-Z0-9]+:[0-9]+:[a-zA-Z0-9]+:[0-9]+:([0-9]+):([0-9]+):([0-9]+)_[0-9]+:[a-zA-Z0-9]+:[0-9]+:[a-zA-Z0-9]+[+][a-zA-Z0-9]+' \\
-        --COMPRESSION_LEVEL 5 \\
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        picard: \$(echo \$(picard MarkDuplicates --version 2>&1) | grep -o 'Version:.*' | cut -f2- -d:)
-    END_VERSIONS
+        --COMPRESSION_LEVEL 5
     """
 
     stub:
@@ -57,10 +52,5 @@ process PICARD_MARKOPTICALDUPLICATES {
     touch ${prefix}.bam
     touch ${prefix}.bam.bai
     touch ${prefix}.MarkDuplicates.metrics.txt
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        picard: \$(echo \$(picard MarkDuplicates --version 2>&1) | grep -o 'Version:.*' | cut -f2- -d:)
-    END_VERSIONS
     """
 }

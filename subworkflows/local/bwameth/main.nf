@@ -20,50 +20,50 @@ workflow BWAMETH {
     skip_deduplication  // boolean: whether to deduplicate alignments
 
     main:
-    versions = channel.empty()
+    def ch_fasta = fasta.map { fasta_file -> [ [:], fasta_file ] }
+    // combine() returns a queue channel: first() turns it back into a value channel used by every sample
+    def ch_fasta_fai = fasta.combine(fasta_index).map { fasta_file, fai -> [ [:], fasta_file, fai ] }.first()
 
     /*
      * Align with bwameth
      */
     BWAMETH_ALIGN (
         reads,
-        bwameth_index
+        ch_fasta,
+        bwameth_index.map { index -> [ [:], index ] }
     )
-    versions = versions.mix(BWAMETH_ALIGN.out.versions)
 
     /*
      * Sort raw output BAM
      */
-    SAMTOOLS_SORT (BWAMETH_ALIGN.out.bam)
-    versions = versions.mix(SAMTOOLS_SORT.out.versions)
+    SAMTOOLS_SORT (
+        BWAMETH_ALIGN.out.bam,
+        [ [:], [], [] ],
+        ''
+    )
 
     /*
      * Run samtools index on alignment
      */
     SAMTOOLS_INDEX_ALIGNMENTS (SAMTOOLS_SORT.out.bam)
-    versions = versions.mix(SAMTOOLS_INDEX_ALIGNMENTS.out.versions)
 
     /*
      * Run samtools flagstat and samtools stats
      */
-    SAMTOOLS_FLAGSTAT( BWAMETH_ALIGN.out.bam.join(SAMTOOLS_INDEX_ALIGNMENTS.out.bai) )
-    SAMTOOLS_STATS( BWAMETH_ALIGN.out.bam.join(SAMTOOLS_INDEX_ALIGNMENTS.out.bai), [] )
-    versions = versions.mix(SAMTOOLS_FLAGSTAT.out.versions)
-    versions = versions.mix(SAMTOOLS_STATS.out.versions)
+    SAMTOOLS_FLAGSTAT( BWAMETH_ALIGN.out.bam.join(SAMTOOLS_INDEX_ALIGNMENTS.out.index) )
+    SAMTOOLS_STATS( BWAMETH_ALIGN.out.bam.join(SAMTOOLS_INDEX_ALIGNMENTS.out.index), [ [:], [], [] ] )
 
     if (skip_deduplication) {
         alignments = SAMTOOLS_SORT.out.bam
-        bam_index = SAMTOOLS_INDEX_ALIGNMENTS.out.bai
+        bam_index = SAMTOOLS_INDEX_ALIGNMENTS.out.index
         picard_metrics = channel.empty()
-        picard_version = channel.empty()
     } else {
         /*
         * Run Picard MarkDuplicates
         */
         PICARD_MARKDUPLICATES (
             SAMTOOLS_SORT.out.bam,
-            fasta,
-            fasta_index
+            ch_fasta_fai
         )
         /*
          * Run samtools index on deduplicated alignment
@@ -71,10 +71,8 @@ workflow BWAMETH {
         SAMTOOLS_INDEX_DEDUPLICATED (PICARD_MARKDUPLICATES.out.bam)
 
         alignments = PICARD_MARKDUPLICATES.out.bam
-        bam_index = SAMTOOLS_INDEX_DEDUPLICATED.out.bai
+        bam_index = SAMTOOLS_INDEX_DEDUPLICATED.out.index
         picard_metrics = PICARD_MARKDUPLICATES.out.metrics
-        picard_version = PICARD_MARKDUPLICATES.out.versions
-        versions = versions.mix(PICARD_MARKDUPLICATES.out.versions)
     }
 
 
@@ -84,16 +82,12 @@ workflow BWAMETH {
 
     METHYLDACKEL_EXTRACT(
         alignments.join(bam_index),
-        fasta,
-        fasta_index
+        ch_fasta_fai
     )
     METHYLDACKEL_MBIAS(
         alignments.join(bam_index),
-        fasta,
-        fasta_index
+        ch_fasta_fai
     )
-    versions = versions.mix(METHYLDACKEL_EXTRACT.out.versions)
-    versions = versions.mix(METHYLDACKEL_MBIAS.out.versions)
 
     /*
      * Collect MultiQC inputs
@@ -110,5 +104,4 @@ workflow BWAMETH {
     dedup                = alignments             // channel: [ val(meta), [ bam ] ] ## sorted, **potentially** deduplicated BAM
     dedup_bai            = bam_index              // channel: [ val(meta), [ bai ] ] ## dedup bam index
     mqc                  = multiqc_files          // path: *{html,txt}
-    versions                                      // path: *.version.txt
 }

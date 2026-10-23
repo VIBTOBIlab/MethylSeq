@@ -2,10 +2,10 @@ process SAMTOOLS_QUERYNAME_SORT {
     tag "$meta.id"
     label 'process_medium'
 
-    conda "bioconda::samtools=1.17"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/samtools:1.17--h00cdaf9_0' :
-        'biocontainers/samtools:1.17--h00cdaf9_0' }"
+    conda "${moduleDir}/environment.yml"
+    container "${ workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container ?
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/c2/c2f02ceb8cbe5aa37930dcbc0de6f1d07dfb292178c7e780c44ab2f556bf829f/data' :
+        'community.wave.seqera.io/library/htslib_samtools:1.24--8a3ddf262165ba23' }"
 
     input:
     tuple val(meta), path(bam)
@@ -13,7 +13,7 @@ process SAMTOOLS_QUERYNAME_SORT {
     output:
     tuple val(meta), path("*.bam"), emit: bam
     tuple val(meta), path("*.csi"), emit: csi, optional: true
-    path  "versions.yml"          , emit: versions
+    tuple val("${task.process}"), val('samtools'), eval("samtools version | sed '1!d;s/.* //'"), topic: versions, emit: versions_samtools
 
     script:
     def args = task.ext.args ?: ''
@@ -27,21 +27,11 @@ process SAMTOOLS_QUERYNAME_SORT {
         -o ${bam.baseName}.sorted.bam \\
         -T $prefix \\
         $bam
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//')
-    END_VERSIONS
     """
 
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     touch ${prefix}.bam
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//')
-    END_VERSIONS
     """
 }

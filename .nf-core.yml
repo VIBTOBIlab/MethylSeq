@@ -5,6 +5,7 @@ nf_core_version: 4.1.0
 lint:
   files_unchanged:
     - CODE_OF_CONDUCT.md
+    - LICENSE
     - assets/nf-core-methylseq_logo_light.png
     - docs/images/nf-core-methylseq_logo_light.png
     - docs/images/nf-core-methylseq_logo_dark.png
@@ -21,6 +22,8 @@ lint:
   # nf-core/tools does not support typed parameters yet (https://nf-co.re/blog/2026/parameter-types)
   nextflow_config: false
   schema_params: false
+  # The pipeline keeps its established name VIBTOBIlab/MethylSeq
+  pipeline_name_conventions: false
   multiqc_config:
     - report_comment
   files_exist:
@@ -33,6 +36,7 @@ lint:
     - .github/workflows/awsfulltest.yml
     - conf/test_full.config
     - tests/default.nf.test
+    - ro-crate-metadata.json
     - assets/nf-core-MethylSeq_logo_light.png
     - docs/images/nf-core-MethylSeq_logo_light.png
     - docs/images/nf-core-MethylSeq_logo_dark.png

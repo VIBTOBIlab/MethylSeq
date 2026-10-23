@@ -1,0 +1,69 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "BISMARK"
+description: Align bisulfite sequencing reads with Bismark, optionally filter non-converted reads and mark optical duplicates, deduplicate and extract methylation calls
+keywords:
+  - bismark
+  - bisulfite
+  - methylation
+  - alignment
+  - deduplication
+components:
+  - bismark/align
+  - bismark/deduplicate
+  - bismark/methylationextractor
+  - bismark/coverage2cytosine
+  - bismark/report
+  - bismark/summary
+  - samtools/sort
+  - samtools/index
+  # Local modules, named as nf-core lint derives them from the process names
+  - bismark/filter/non/conversion
+  - picard/markopticalduplicates
+  - samtools/queryname/sort
+input:
+  - reads:
+      type: file
+      description: |
+        Channel containing the (trimmed) reads
+        Structure: [ val(meta), [ path(reads) ] ]
+      pattern: "*.{fq,fastq}.gz"
+  - bismark_index:
+      type: directory
+      description: Channel containing the Bismark index directory
+  - skip_deduplication:
+      type: boolean
+      description: Skip deduplicate_bismark (e.g. for RRBS data)
+  - cytosine_report:
+      type: boolean
+      description: Run coverage2cytosine on the methylation coverage files
+  - fasta:
+      type: file
+      description: Channel containing the genome FASTA file
+      pattern: "*.{fa,fasta}"
+output:
+  - bam:
+      type: file
+      description: |
+        Channel containing the sorted, non-deduplicated BAM files from the aligner
+        Structure: [ val(meta), path(bam) ]
+      pattern: "*.bam"
+  - dedup:
+      type: file
+      description: |
+        Channel containing the sorted BAM files after the optional filtering and deduplication steps
+        Structure: [ val(meta), path(bam) ]
+      pattern: "*.bam"
+  - dedup_bai:
+      type: file
+      description: |
+        Channel containing the index of the dedup BAM files
+        Structure: [ val(meta), path(bai) ]
+      pattern: "*.bai"
+  - mqc:
+      type: file
+      description: Channel containing the reports used by MultiQC
+      pattern: "*.{html,txt}"
+authors:
+  - "@VIBTOBIlab/benchmarkteam"
+maintainers:
+  - "@VIBTOBIlab/benchmarkteam"
