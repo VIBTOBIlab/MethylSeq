@@ -72,6 +72,7 @@ nextflow_pipeline {
                 aligner         = "bismark"
                 bismark_index   = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz"
                 cytosine_report = true
+                run_methurator  = false
                 outdir          = "$outputDir"
             }
         }

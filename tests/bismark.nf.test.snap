@@ -134,12 +134,12 @@
     },
     "Params: default with methurator": {
         "content": [
-            "a7d26ebd7f821c01327abc24cbf12beb"
+            "27130ef27903a827340ac350de4d7013"
         ],
-        "timestamp": "2026-05-06T11:18:14.590465",
+        "timestamp": "2026-10-23T13:23:23.869666",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.0"
         }
     },
     "clip_r1_software_versions": {
