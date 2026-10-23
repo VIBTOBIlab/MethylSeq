@@ -20,12 +20,8 @@ include { MULTIQC                } from '../modules/nf-core/multiqc/main'
 include { TRIMGALORE             } from '../modules/nf-core/trimgalore/main'
 include { QUALIMAP_BAMQC         } from '../modules/nf-core/qualimap/bamqc/main'
 include { PRESEQ_LCEXTRAP        } from '../modules/nf-core/preseq/lcextrap/main'
-
-//
-// MODULE: Local modules
-//
-include { METHURATOR_GTESTIMATOR } from '../modules/local/methurator/gt_estimator/main'
-include { METHURATOR_PLOT        } from '../modules/local/methurator/plot/main'
+include { METHURATOR_GTESTIMATOR } from '../modules/nf-core/methurator/gtestimator/main'
+include { METHURATOR_PLOT        } from '../modules/nf-core/methurator/plot/main'
 
 //
 // FUNCTIONS
@@ -173,16 +169,15 @@ workflow METHYLSEQ {
     if (params.run_methurator) {
 
         METHURATOR_GTESTIMATOR (
-            ch_dedup.join(ch_bai),
-            PREPARE_GENOME.out.fasta,
-            PREPARE_GENOME.out.fasta_index
+            ch_dedup
+                .join(ch_bai)
+                .combine(PREPARE_GENOME.out.fasta)
+                .combine(PREPARE_GENOME.out.fasta_index)
         )
-        ch_versions = ch_versions.mix(METHURATOR_GTESTIMATOR.out.versions.first())
 
         METHURATOR_PLOT (
             METHURATOR_GTESTIMATOR.out.summary_report
         )
-        ch_versions = ch_versions.mix(METHURATOR_PLOT.out.versions.first())
     }
 
     //

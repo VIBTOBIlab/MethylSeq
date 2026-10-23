@@ -1,23 +1,65 @@
 {
     "single_end_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={MethylSeq=2.6.5}}"
+            {
+                "BISMARK_ALIGN": {
+                    "bismark": "0.24.0"
+                },
+                "BISMARK_GENOMEPREPARATION": {
+                    "bismark": "0.24.0"
+                },
+                "CAT_FASTQ": {
+                    "cat": 8.3
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "QUALIMAP_BAMQC": {
+                    "qualimap": "2.2.2-dev"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "0.6.7",
+                    "cutadapt": 3.4
+                },
+                "Workflow": {
+                    "VIBTOBIlab/MethylSeq": "v3.0.0"
+                }
+            }
         ],
+        "timestamp": "2026-10-23T12:10:22.823633",
         "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
-        },
-        "timestamp": "2026-04-07T15:36:28.985012"
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.0"
+        }
     },
     "single_end_rrbs_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, Workflow={MethylSeq=2.6.5}}"
+            {
+                "BISMARK_ALIGN": {
+                    "bismark": "0.24.0"
+                },
+                "BISMARK_GENOMEPREPARATION": {
+                    "bismark": "0.24.0"
+                },
+                "CAT_FASTQ": {
+                    "cat": 8.3
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "QUALIMAP_BAMQC": {
+                    "qualimap": "2.2.2-dev"
+                },
+                "Workflow": {
+                    "VIBTOBIlab/MethylSeq": "v3.0.0"
+                }
+            }
         ],
+        "timestamp": "2026-10-23T12:15:49.140727",
         "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
-        },
-        "timestamp": "2026-04-07T20:38:21.613297"
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.0"
+        }
     },
     "single_end": {
         "content": [
@@ -47,11 +89,11 @@
             "genome_results.txt:md5,456375c981a011086777b9e95e37fd5f",
             "genome_results.txt:md5,8082da0a68a25efda4f849f50614a4da"
         ],
+        "timestamp": "2026-01-09T00:52:03.583748",
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
-        },
-        "timestamp": "2026-01-09T00:52:03.583748"
+        }
     },
     "single_end_rrbs": {
         "content": [
@@ -81,10 +123,10 @@
             "genome_results.txt:md5,db78192aed75c53ce6a5f08de215a476",
             "genome_results.txt:md5,e9e7a596ff3b0092f8d60a9ed44ce93e"
         ],
+        "timestamp": "2026-01-09T00:57:54.215645",
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
-        },
-        "timestamp": "2026-01-09T00:57:54.215645"
+        }
     }
 }

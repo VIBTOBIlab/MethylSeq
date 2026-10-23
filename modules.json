@@ -60,6 +60,16 @@
                         "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
                         "installed_by": ["modules"]
                     },
+                    "methurator/gtestimator": {
+                        "branch": "master",
+                        "git_sha": "c565f1b27c06a1e8b726e2a646d4c822ae3b514a",
+                        "installed_by": ["modules"]
+                    },
+                    "methurator/plot": {
+                        "branch": "master",
+                        "git_sha": "c565f1b27c06a1e8b726e2a646d4c822ae3b514a",
+                        "installed_by": ["modules"]
+                    },
                     "methyldackel/extract": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",

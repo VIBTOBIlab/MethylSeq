@@ -17,9 +17,6 @@ process PICARD_MARKOPTICALDUPLICATES {
     tuple val(meta), path("*.metrics.txt"), emit: metrics
     path  "versions.yml"                  , emit: versions
 
-    when:
-    task.ext.when == null || task.ext.when
-
     script:
     def args = task.ext.args ?: ''
     def avail_mem = 3072
