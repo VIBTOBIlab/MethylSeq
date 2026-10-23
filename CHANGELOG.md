@@ -1,6 +1,6 @@
 # MethylSeq pipeline of TOBI lab
 
-## Unreleased
+## [v3.0.0](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/3.0.0) - 2026-10-23
 
 - Updated the pipeline to the nf-core/tools template v4.1.0 (non-nf-core, `VIBTOBIlab` organisation) through a new `TEMPLATE` branch, so later template updates can be applied with `nf-core pipelines sync`.
 - Nextflow `>=25.10.4` is now required, the pipeline passes `nextflow lint` (strict syntax) with Nextflow 26.10.
@@ -15,17 +15,17 @@
 - Added the `--help_full` and `--show_hidden` parameters, and the `arm64`, `emulate_amd64` and `wave` profiles (the `arm` profile is kept as an alias of `emulate_amd64`).
 - Moved the pipeline tests to `tests/<aligner>.nf.test` and use the `nft-utils` plugin instead of `tests/lib/UTILS.groovy`.
 
-## [v2.6.5](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.5) - 2026-10-20
+## [v2.6.5](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/2.6.5) - 2026-10-20
 
 - Thanks to @Lucmeister55, fixed aligned BAM files not being published by the Bismark subworkflow when `--rrbs` was combined with `--remove_optical_duplicates false` (see issue [here](https://github.com/VIBTOBIlab/MethylSeq/issues/6)).
 - Add documentation site.
 - Add nf-metro map.
 
-## [v2.6.4](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.4) - 2026-05-19
+## [v2.6.4](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/2.6.4) - 2026-05-19
 
 - Added the `.bai` and `.fai` files to the methurator process. These index files are required because, without them, methurator could fail to complete properly or produce errors due to the missing indexes.
 
-## [v2.6.3](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.3) - 2026-04-08
+## [v2.6.3](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/2.6.3) - 2026-04-08
 
 - Updated MultiQC to version v1.33
 - Added a second Picard Markduplicates for BwaMeth subworkflow and changed the name of the previous one with PicardMarkOpticalDuplicates for the Bismark subworkflow.
@@ -34,7 +34,7 @@
 - Substitute the sequencing saturation analysis on RRBS samples previously run using custom scripts with [methurator package](https://github.com/VIBTOBIlab/methurator/tree/main).
 - Fixed a bug for the PREPARE_GENOME() workflow to automatically fetch the FASTA file if not provided by the user.
 
-## [v2.6.2](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.2) - 2025-07-15
+## [v2.6.2](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/2.6.2) - 2025-07-15
 
 ### In-house modifications applied to nf-core/methylseq pipeline version [v2.6.0](https://github.com/nf-core/methylseq/releases/tag/2.6.0)
 
