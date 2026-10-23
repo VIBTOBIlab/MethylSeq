@@ -1,6 +1,6 @@
 {
-    "name": "nf-core/methylseq",
-    "homePage": "https://github.com/nf-core/methylseq",
+    "name": "VIBTOBIlab/MethylSeq",
+    "homePage": "https://github.com/VIBTOBIlab/MethylSeq",
     "repos": {
         "https://github.com/nf-core/modules.git": {
             "modules": {
@@ -55,14 +55,9 @@
                         "git_sha": "5c460c5a4736974abde2843294f35307ee2b0e5e",
                         "installed_by": ["modules"]
                     },
-                    "custom/dumpsoftwareversions": {
-                        "branch": "master",
-                        "git_sha": "37dee863936732fe7e05dc598bf6e183a8e7ef73",
-                        "installed_by": ["modules"]
-                    },
                     "fastqc": {
                         "branch": "master",
-                        "git_sha": "65ad3e0b9a4099592e1102e92e10455dc661cf53",
+                        "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
                         "installed_by": ["modules"]
                     },
                     "methyldackel/extract": {
@@ -77,7 +72,7 @@
                     },
                     "multiqc": {
                         "branch": "master",
-                        "git_sha": "642a0d8afe373ac45244a7947fb8a6c0a5a312d4",
+                        "git_sha": "98403d15b0e50edae1f3fec5eae5e24982f1fade",
                         "installed_by": ["modules"]
                     },
                     "picard/markduplicates": {
@@ -93,11 +88,6 @@
                     "qualimap/bamqc": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
-                        "installed_by": ["modules"]
-                    },
-                    "qualimap/bamqccram": {
-                        "branch": "master",
-                        "git_sha": "603ecbd9f45300c9788f197d2a15a005685b4220",
                         "installed_by": ["modules"]
                     },
                     "samtools/faidx": {
@@ -118,7 +108,8 @@
                     "samtools/sort": {
                         "branch": "master",
                         "git_sha": "a0f7be95788366c1923171e358da7d049eb440f9",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/samtools/sort/samtools-sort.diff"
                     },
                     "samtools/stats": {
                         "branch": "master",
@@ -134,6 +125,25 @@
                         "branch": "master",
                         "git_sha": "8fc1d24c710ebe1d5de0f2447ec9439fd3d9d66a",
                         "installed_by": ["modules"]
+                    }
+                }
+            },
+            "subworkflows": {
+                "nf-core": {
+                    "utils_nextflow_pipeline": {
+                        "branch": "master",
+                        "git_sha": "c2b22d85f30a706a3073387f30380704fcae013b",
+                        "installed_by": ["subworkflows"]
+                    },
+                    "utils_nfcore_pipeline": {
+                        "branch": "master",
+                        "git_sha": "a3fb7351b1fdb2b1de282b765816bbea190e86a8",
+                        "installed_by": ["subworkflows"]
+                    },
+                    "utils_nfschema_plugin": {
+                        "branch": "master",
+                        "git_sha": "a7b27fd25bfa8dcc07d299e88bd790585901a436",
+                        "installed_by": ["subworkflows"]
                     }
                 }
             }

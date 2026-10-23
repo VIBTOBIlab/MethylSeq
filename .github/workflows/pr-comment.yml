@@ -15,6 +15,9 @@ name: Post PR comment
 on:
   workflow_run:
     workflows:
+      - "nf-core linting"
+      - "nf-core template version comment"
+      - "nf-core branch protection"
       - "Run nf-test"
 
 permissions:

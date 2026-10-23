@@ -1,5 +1,20 @@
 # MethylSeq pipeline of TOBI lab
 
+## Unreleased
+
+- Updated the pipeline to the nf-core/tools template v4.1.0 (non-nf-core, `VIBTOBIlab` organisation) through a new `TEMPLATE` branch, so later template updates can be applied with `nf-core pipelines sync`.
+- Nextflow `>=25.10.4` is now required, the pipeline passes `nextflow lint` (strict syntax) with Nextflow 26.10.
+- Pipeline parameters are declared as typed parameters in `main.nf`, so values given on the command line (e.g. `--clip_r1 3`, `--rrbs`) keep their type with recent Nextflow versions.
+- Replaced the `lib/` Groovy helpers with the `PIPELINE_INITIALISATION` / `PIPELINE_COMPLETION` subworkflows, and `nf-validation` with `nf-schema` (v2.7.2). `nextflow_schema.json` now uses JSON schema draft 2020-12.
+- Software versions are collected with the `versions` topic channel and saved to `pipeline_info/methylseq_software_mqc_versions.yml`, replacing `CUSTOM_DUMPSOFTWAREVERSIONS`.
+- Updated the FastQC and MultiQC modules to the versions shipped with the template.
+- Moved the in-house modules `bismark/filter_non_conversion`, `picard/markopticalduplicates` and `samtools/queryname_sort` to `modules/local/`, and the local subworkflows to `subworkflows/local/<name>/main.nf`. The local change to `samtools/sort` is now tracked as an nf-core patch file.
+- Fixed `METHURATOR_GTESTIMATOR` receiving the BAM and BAI files of a sample from two separate channels, which could pair a BAM with the index of another sample.
+- Fixed `--known_splices` referencing an undefined variable for `--aligner bismark_hisat`.
+- Removed the `--hook_url` parameter (dropped from the nf-core template), the unused `test_ci`, `test_full` and `gitpod` profiles, and the old validation parameters (`validationShowHiddenParams`, `validationFailUnrecognisedParams`, `validationLenientMode`). `--test_data_base` is replaced by `--pipelines_testdata_base_path`.
+- Added the `--help_full` and `--show_hidden` parameters, and the `arm64`, `emulate_amd64` and `wave` profiles (the `arm` profile is kept as an alias of `emulate_amd64`).
+- Moved the pipeline tests to `tests/<aligner>.nf.test` and use the `nft-utils` plugin instead of `tests/lib/UTILS.groovy`.
+
 ## [v2.6.5](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/v2.6.5) - 2026-10-20
 
 - Thanks to @Lucmeister55, fixed aligned BAM files not being published by the Bismark subworkflow when `--rrbs` was combined with `--remove_optical_duplicates false` (see issue [here](https://github.com/VIBTOBIlab/MethylSeq/issues/6)).

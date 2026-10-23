@@ -1,10 +1,10 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://raw.githubusercontent.com/nf-core/methylseq/master/nextflow_schema.json",
-    "title": "nf-core/methylseq pipeline parameters",
-    "description": "Methylation (Bisulfite-Sequencing) Best Practice analysis pipeline, part of the nf-core community.",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/VIBTOBIlab/MethylSeq/main/nextflow_schema.json",
+    "title": "VIBTOBIlab/MethylSeq pipeline parameters",
+    "description": "Methylation (Bisulfite-Sequencing) analysis pipeline using Bismark or bwa-meth + MethylDackel.",
     "type": "object",
-    "definitions": {
+    "$defs": {
         "input_output_options": {
             "title": "Input/output options",
             "type": "object",
@@ -20,7 +20,7 @@
                     "pattern": "^\\S+\\.csv$",
                     "schema": "assets/schema_input.json",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
-                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row. See [usage docs](https://nf-co.re//usage#samplesheet-input).",
+                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row. See [usage docs](https://vibtobilab.github.io/MethylSeq/usage/#samplesheet-input).",
                     "fa_icon": "fas fa-file-csv"
                 },
                 "outdir": {
@@ -40,13 +40,6 @@
                     "type": "string",
                     "description": "MultiQC report title. Printed as page header, used for filename if not otherwise specified.",
                     "fa_icon": "fas fa-file-signature"
-                },
-                "test_data_base": {
-                    "type": "string",
-                    "default": "https://raw.githubusercontent.com/nf-core/test-datasets/methylseq",
-                    "description": "Base path / URL for data used in the test profiles",
-                    "help_text": "Warning: The `-profile test` samplesheet file itself contains remote paths. Setting this parameter does not alter the contents of that file.",
-                    "hidden": true
                 }
             }
         },
@@ -128,7 +121,7 @@
                 "igenomes_base": {
                     "type": "string",
                     "description": "Directory / URL base for iGenomes references.",
-                    "default": "s3://ngi-igenomes/igenomes",
+                    "default": "s3://ngi-igenomes/igenomes/",
                     "fa_icon": "fas fa-cloud-download-alt",
                     "hidden": true
                 },
@@ -568,10 +561,8 @@
             "help_text": "These options are common to all nf-core pipelines and allow you to customise some of the core preferences for how the pipeline runs.\n\nTypically these options would be set in a Nextflow config file loaded for all pipeline runs, such as `~/.nextflow/config`.",
             "properties": {
                 "help": {
-                    "type": "boolean",
-                    "description": "Display help text.",
-                    "fa_icon": "fas fa-question-circle",
-                    "hidden": true
+                    "type": ["boolean", "string"],
+                    "description": "Display the help message."
                 },
                 "version": {
                     "type": "boolean",
@@ -616,13 +607,6 @@
                     "fa_icon": "fas fa-palette",
                     "hidden": true
                 },
-                "hook_url": {
-                    "type": "string",
-                    "description": "Incoming hook URL for messaging service",
-                    "fa_icon": "fas fa-people-group",
-                    "help_text": "Incoming hook URL for messaging service. Currently, MS Teams and Slack are supported.",
-                    "hidden": true
-                },
                 "multiqc_config": {
                     "type": "string",
                     "format": "file-path",
@@ -648,72 +632,72 @@
                     "fa_icon": "fas fa-check-square",
                     "hidden": true
                 },
-                "validationShowHiddenParams": {
-                    "type": "boolean",
-                    "fa_icon": "far fa-eye-slash",
-                    "description": "Show all params when using `--help`",
-                    "hidden": true,
-                    "help_text": "By default, parameters set as _hidden_ in the schema are not shown on the command line when a user runs with `--help`. Specifying this option will tell the pipeline to show all parameters."
-                },
-                "validationFailUnrecognisedParams": {
-                    "type": "boolean",
+                "pipelines_testdata_base_path": {
+                    "type": "string",
                     "fa_icon": "far fa-check-circle",
-                    "description": "Validation of parameters fails when an unrecognised parameter is found.",
-                    "hidden": true,
-                    "help_text": "By default, when an unrecognised parameter is found, it returns a warinig."
+                    "description": "Base URL or local path to location of pipeline test dataset files",
+                    "default": "https://raw.githubusercontent.com/nf-core/test-datasets/",
+                    "hidden": true
                 },
-                "validationLenientMode": {
+                "trace_report_suffix": {
+                    "type": "string",
+                    "fa_icon": "far calendar",
+                    "description": "Suffix to add to the trace report filename. Default is the date and time in the format yyyy-MM-dd_HH-mm-ss.",
+                    "hidden": true
+                },
+                "help_full": {
                     "type": "boolean",
-                    "fa_icon": "far fa-check-circle",
-                    "description": "Validation of parameters in lenient more.",
-                    "hidden": true,
-                    "help_text": "Allows string values that are parseable as numbers or booleans. For further information see [JSONSchema docs](https://github.com/everit-org/json-schema#lenient-mode)."
+                    "description": "Display the full detailed help message."
+                },
+                "show_hidden": {
+                    "type": "boolean",
+                    "description": "Display hidden parameters in the help message (only works when --help or --help_full are provided)."
                 }
             }
         }
     },
     "allOf": [
         {
-            "$ref": "#/definitions/input_output_options"
+            "$ref": "#/$defs/input_output_options"
         },
         {
-            "$ref": "#/definitions/save_intermediate_files"
+            "$ref": "#/$defs/save_intermediate_files"
         },
         {
-            "$ref": "#/definitions/reference_genome_options"
+            "$ref": "#/$defs/reference_genome_options"
         },
         {
-            "$ref": "#/definitions/alignment_options"
+            "$ref": "#/$defs/alignment_options"
         },
         {
-            "$ref": "#/definitions/special_library_types"
+            "$ref": "#/$defs/special_library_types"
         },
         {
-            "$ref": "#/definitions/adapter_trimming"
+            "$ref": "#/$defs/adapter_trimming"
         },
         {
-            "$ref": "#/definitions/bismark_options"
+            "$ref": "#/$defs/bismark_options"
         },
         {
-            "$ref": "#/definitions/pic_mark_opt_dupl_options"
+            "$ref": "#/$defs/pic_mark_opt_dupl_options"
         },
         {
-            "$ref": "#/definitions/methurator_options"
+            "$ref": "#/$defs/methurator_options"
         },
         {
-            "$ref": "#/definitions/bwa_meth_options"
+            "$ref": "#/$defs/bwa_meth_options"
         },
         {
-            "$ref": "#/definitions/qualimap_options"
+            "$ref": "#/$defs/qualimap_options"
         },
         {
-            "$ref": "#/definitions/skip_pipeline_steps"
+            "$ref": "#/$defs/skip_pipeline_steps"
         },
         {
-            "$ref": "#/definitions/generic_options"
+            "$ref": "#/$defs/institutional_config_options"
         },
         {
-            "$ref": "#/definitions/institutional_config_options"
+            "$ref": "#/$defs/generic_options"
         }
     ]
 }

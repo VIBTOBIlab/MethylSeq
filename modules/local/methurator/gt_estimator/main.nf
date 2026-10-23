@@ -9,8 +9,7 @@ process METHURATOR_GTESTIMATOR {
         'biocontainers/methurator:2.1.1--pyhdfd78af_0' }"
 
     input:
-    tuple val(meta), path(bam)
-    tuple val(meta), path(bai)
+    tuple val(meta), path(bam), path(bai)
     path fasta
     path fai
 

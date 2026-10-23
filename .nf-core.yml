@@ -1,8 +1,44 @@
 repository_type: pipeline
+
+nf_core_version: 4.1.0
+
 lint:
   files_unchanged:
-    - .gitattributes
+    - CODE_OF_CONDUCT.md
+    - assets/nf-core-methylseq_logo_light.png
+    - docs/images/nf-core-methylseq_logo_light.png
+    - docs/images/nf-core-methylseq_logo_dark.png
+    - .github/ISSUE_TEMPLATE/bug_report.yml
+    - .github/PULL_REQUEST_TEMPLATE.md
+    - assets/email_template.txt
+    - docs/README.md
+    - .prettierignore
+  # nf-core/tools does not support typed parameters yet (https://nf-co.re/blog/2026/parameter-types)
+  nextflow_config: false
+  schema_params: false
+  multiqc_config:
+    - report_comment
   files_exist:
-    - bin/markdown_to_html.py
-  actions_ci: False
-  multiqc_config: False
+    - CODE_OF_CONDUCT.md
+    - assets/nf-core-methylseq_logo_light.png
+    - docs/images/nf-core-methylseq_logo_light.png
+    - docs/images/nf-core-methylseq_logo_dark.png
+    - .github/ISSUE_TEMPLATE/config.yml
+    - .github/workflows/awstest.yml
+    - .github/workflows/awsfulltest.yml
+    - conf/test_full.config
+    - tests/default.nf.test
+
+template:
+  org: VIBTOBIlab
+  name: MethylSeq
+  description: Methylation (Bisulfite-Sequencing) analysis pipeline using Bismark
+    or bwa-meth + MethylDackel.
+  author: Phil Ewels, Edoardo Giuili
+  version: 2.6.5
+  force: false
+  outdir: .
+  skip_features:
+    - gpu
+    - rocrate
+  is_nfcore: false

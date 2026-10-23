@@ -12,7 +12,7 @@ keywords:
 tools:
   - methurator:
       description: |
-        methurator is a Python package designed to estimate sequencing saturation 
+        methurator is a Python package designed to estimate sequencing saturation
         for reduced-representation bisulfite sequencing (RRBS) data.
       homepage: https://github.com/VIBTOBIlab/methurator
       documentation: https://github.com/VIBTOBIlab/methurator/README.md
