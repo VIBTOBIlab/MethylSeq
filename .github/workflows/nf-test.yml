@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - dev
+      - dev-refactoring # TODO: remove once dev-refactoring is merged into dev
   pull_request:
     paths-ignore:
       - "docs/**"
