@@ -1,4 +1,7 @@
-# MethylSeq: Output
+---
+title: Output
+description: The results produced by the pipeline and how to interpret them.
+---
 
 ## Introduction
 
@@ -27,17 +30,17 @@ The files depend on the workflow that is run: `<aligner>` in the paths below is 
 
 ## Merged FastQ files
 
-<details markdown="1">
+<details>
 <summary>Output files</summary>
 
 - `cat/`
-  - `<sample>.merged.fastq.gz`: concatenated FastQ files of a sample sequenced more than once (see [multiple runs of the same sample](usage.md#multiple-runs-of-the-same-sample)).
+  - `<sample>.merged.fastq.gz`: concatenated FastQ files of a sample sequenced more than once (see [multiple runs of the same sample](/MethylSeq/usage/#multiple-runs-of-the-same-sample)).
 
 </details>
 
 ## FastQC
 
-<details markdown="1">
+<details>
 <summary>Output files</summary>
 
 - `fastqc/`
@@ -48,19 +51,21 @@ The files depend on the workflow that is run: `<aligner>` in the paths below is 
 
 [FastQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) gives general quality metrics of the sequenced reads: the distribution of the quality scores, the per base sequence content (%A/T/G/C), the adapter contamination and the overrepresented sequences. See the [FastQC help pages](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/) for more information.
 
-![MultiQC - FastQC sequence counts plot](images/mqc_fastqc_counts.png)
+![MultiQC - FastQC sequence counts plot](../../assets/mqc_fastqc_counts.png)
 
-![MultiQC - FastQC mean quality scores plot](images/mqc_fastqc_quality.png)
+![MultiQC - FastQC mean quality scores plot](../../assets/mqc_fastqc_quality.png)
 
-![MultiQC - FastQC adapter content plot](images/mqc_fastqc_adapter.png)
+![MultiQC - FastQC adapter content plot](../../assets/mqc_fastqc_adapter.png)
 
-!!! note
+:::note
 
-    These plots are generated from the raw reads, which may contain adapter sequences and low-quality regions. The FastQC reports of the trimmed reads are in `trimgalore/fastqc/`.
+These plots are generated from the raw reads, which may contain adapter sequences and low-quality regions. The FastQC reports of the trimmed reads are in `trimgalore/fastqc/`.
+
+:::
 
 ## Trim Galore!
 
-<details markdown="1">
+<details>
 <summary>Output files</summary>
 
 - `trimgalore/`
@@ -74,7 +79,7 @@ The files depend on the workflow that is run: `<aligner>` in the paths below is 
 
 ## Reference genome
 
-<details markdown="1">
+<details>
 <summary>Output files</summary>
 
 - `<aligner>/reference_genome/`
@@ -86,7 +91,7 @@ The files depend on the workflow that is run: `<aligner>` in the paths below is 
 
 Bismark and bwa-meth convert _in silico_ all the cytosines of the reads to thymines and align them to a three-letter reference genome, which avoids a methylation-specific alignment bias.
 
-<details markdown="1">
+<details>
 <summary>Output files: Bismark workflow</summary>
 
 - `<aligner>/alignments/`
@@ -96,7 +101,7 @@ Bismark and bwa-meth convert _in silico_ all the cytosines of the reads to thymi
 
 </details>
 
-<details markdown="1">
+<details>
 <summary>Output files: bwa-meth workflow</summary>
 
 - `<aligner>/alignments/`
@@ -108,7 +113,7 @@ Bismark and bwa-meth convert _in silico_ all the cytosines of the reads to thymi
 
 ## Filtering of reads with an incomplete conversion
 
-<details markdown="1">
+<details>
 <summary>Output files</summary>
 
 - `<aligner>/filter_non_converted/`
@@ -117,11 +122,11 @@ Bismark and bwa-meth convert _in silico_ all the cytosines of the reads to thymi
 
 </details>
 
-Only run in the Bismark workflow with `--filter_non_conversion` (see [filtering of reads with an incomplete conversion](usage.md#filtering-of-reads-with-an-incomplete-conversion)).
+Only run in the Bismark workflow with `--filter_non_conversion` (see [filtering of reads with an incomplete conversion](/MethylSeq/usage/#filtering-of-reads-with-an-incomplete-conversion)).
 
 ## Removal of optical duplicates
 
-<details markdown="1">
+<details>
 <summary>Output files</summary>
 
 - `<aligner>/picard_markoptical_deduplicated/`
@@ -132,13 +137,13 @@ Only run in the Bismark workflow with `--filter_non_conversion` (see [filtering 
 
 </details>
 
-Only run in the Bismark workflow, unless `--remove_optic_duplicates false` is given (see [removal of optical duplicates](usage.md#removal-of-optical-duplicates)).
+Only run in the Bismark workflow, unless `--remove_optic_duplicates false` is given (see [removal of optical duplicates](/MethylSeq/usage/#removal-of-optical-duplicates)).
 
 ## Deduplication
 
 Duplicated reads, with the same alignment positions, are technical copies of the same DNA fragment. This step is skipped with `--rrbs` or `--skip_deduplication`.
 
-<details markdown="1">
+<details>
 <summary>Output files: Bismark workflow</summary>
 
 - `<aligner>/deduplicated/`
@@ -147,7 +152,7 @@ Duplicated reads, with the same alignment positions, are technical copies of the
 
 </details>
 
-<details markdown="1">
+<details>
 <summary>Output files: bwa-meth workflow</summary>
 
 - `<aligner>/deduplicated/`
@@ -156,13 +161,15 @@ Duplicated reads, with the same alignment positions, are technical copies of the
 
 </details>
 
-!!! note
+:::note
 
-    In the bwa-meth workflow, Picard MarkDuplicates only marks the duplicated reads, without removing them from the BAM file.
+In the bwa-meth workflow, Picard MarkDuplicates only marks the duplicated reads, without removing them from the BAM file.
+
+:::
 
 ## Sorted and indexed alignments
 
-<details markdown="1">
+<details>
 <summary>Output files</summary>
 
 - `<aligner>/sorted_indexed_reads/`
@@ -181,7 +188,7 @@ The file names contain the strand the reads aligned to:
 - `CTOT`: complementary to the original top strand
 - `CTOB`: complementary to the original bottom strand
 
-<details markdown="1">
+<details>
 <summary>Output files: Bismark workflow</summary>
 
 - `<aligner>/methylation_calls/`
@@ -197,11 +204,13 @@ The file names contain the strand the reads aligned to:
 
 </details>
 
-!!! note
+:::note
 
-    `CTOT` and `CTOB` are only aligned with `--non_directional`.
+`CTOT` and `CTOB` are only aligned with `--non_directional`.
 
-<details markdown="1">
+:::
+
+<details>
 <summary>Output files: bwa-meth workflow</summary>
 
 - `methyldackel/`
@@ -213,7 +222,7 @@ The file names contain the strand the reads aligned to:
 
 ## Bismark reports
 
-<details markdown="1">
+<details>
 <summary>Output files</summary>
 
 - `<aligner>/reports/`
@@ -225,7 +234,7 @@ The file names contain the strand the reads aligned to:
 
 ## Qualimap
 
-<details markdown="1">
+<details>
 <summary>Output files</summary>
 
 - `qualimap/<sample>/`
@@ -238,7 +247,7 @@ The file names contain the strand the reads aligned to:
 
 ## Preseq
 
-<details markdown="1">
+<details>
 <summary>Output files</summary>
 
 - `<aligner>/preseq/`
@@ -255,7 +264,7 @@ Preseq is skipped with `--rrbs` or `--skip_preseq`.
 
 ## methurator
 
-<details markdown="1">
+<details>
 <summary>Output files</summary>
 
 - `methurator/`
@@ -268,7 +277,7 @@ Preseq is skipped with `--rrbs` or `--skip_preseq`.
 
 ## MultiQC
 
-<details markdown="1">
+<details>
 <summary>Output files</summary>
 
 - `multiqc/<aligner>/`
@@ -282,7 +291,7 @@ Preseq is skipped with `--rrbs` or `--skip_preseq`.
 
 ## Pipeline information
 
-<details markdown="1">
+<details>
 <summary>Output files</summary>
 
 - `pipeline_info/`

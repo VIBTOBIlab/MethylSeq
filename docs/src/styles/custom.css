@@ -1,0 +1,29 @@
+/* Indigo accent, as the DNA logo (src/assets/methylseq-logo-*.svg) */
+:root {
+  --sl-color-accent-low: #1b1f4a;
+  --sl-color-accent: #5c6bc0;
+  --sl-color-accent-high: #c5cae9;
+}
+
+:root[data-theme="light"] {
+  --sl-color-accent-low: #e8eaf6;
+  --sl-color-accent: #3f51b5;
+  --sl-color-accent-high: #1a237e;
+}
+
+/* Keep the parameter names of the tables (e.g. --remove_optic_duplicates) on one line */
+.sl-markdown-content table td:first-child code {
+  white-space: nowrap;
+}
+
+/* Home page: badges on one centred, wrapping row */
+.ms-badges p {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.ms-badges img {
+  display: block;
+}

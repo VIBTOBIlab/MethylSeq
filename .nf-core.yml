@@ -40,6 +40,9 @@ lint:
     - assets/nf-core-MethylSeq_logo_light.png
     - docs/images/nf-core-MethylSeq_logo_light.png
     - docs/images/nf-core-MethylSeq_logo_dark.png
+    # The documentation is an Astro + Starlight website, with its pages in docs/src/content/docs/
+    - docs/usage.md
+    - docs/output.md
 
 template:
   org: VIBTOBIlab

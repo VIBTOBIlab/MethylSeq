@@ -1,4 +1,7 @@
-# MethylSeq: Usage
+---
+title: Usage
+description: How to run the pipeline and configure its optional steps.
+---
 
 ## Introduction
 
@@ -8,7 +11,7 @@ MethylSeq is two pipelines in one, chosen with `--aligner`:
 - `bismark_hisat`: Bismark with [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as the aligner. HISAT2 also supports splice-aware alignment, e.g. for [SLAM-seq](https://science.sciencemag.org/content/360/6390/800) experiments, with a file of known splice sites given with `--known_splices`.
 - `bwameth`: [bwa-meth](https://github.com/brentp/bwa-meth) for the alignment and [MethylDackel](https://github.com/dpryan79/methyldackel) for the methylation calls.
 
-All the parameters are listed on the [parameters](parameters.md) page.
+All the parameters are listed on the [parameters](/MethylSeq/parameters/) page.
 
 ## Samplesheet
 
@@ -45,9 +48,11 @@ CONTROL_L003,CONTROL_L003_R1.fastq.gz,CONTROL_L003_R2.fastq.gz
 CONTROL_L004,CONTROL_L004_R1.fastq.gz,CONTROL_L004_R2.fastq.gz
 ```
 
-!!! warning "Sample names are shortened"
+:::caution[Sample names are shortened]
 
-    The last `_` suffix is removed from every sample name, also when a sample has a single row: `CONTROL_S1` becomes `CONTROL`. Samples whose names only differ after the last `_` (e.g. `PATIENT_A` and `PATIENT_B`) are merged into one. Give each sample a unique name before its last `_`, e.g. `PATIENTA_S1` and `PATIENTB_S2`.
+The last `_` suffix is removed from every sample name, also when a sample has a single row: `CONTROL_S1` becomes `CONTROL`. Samples whose names only differ after the last `_` (e.g. `PATIENT_A` and `PATIENT_B`) are merged into one. Give each sample a unique name before its last `_`, e.g. `PATIENTA_S1` and `PATIENTB_S2`.
+
+:::
 
 ## Reference genome
 
@@ -65,9 +70,11 @@ The library preparation determines how the reads are trimmed and aligned. The pr
 | `--single_cell` | Single-cell bisulfite libraries. |
 | `--accel`, `--cegx`, `--epignome`, `--zymo` | Trimming presets for the Accel, CEGX, Epignome and Zymo kits. |
 
-!!! note "RRBS"
+:::note[RRBS]
 
-    With `--rrbs`, Trim Galore! removes the filled-in cytosines at the MspI sites, and the deduplication and Preseq are skipped, since the reads of an RRBS library start at the same positions. The optical duplicates are still removed (see [`--remove_optic_duplicates`](#--remove_optic_duplicates)).
+With `--rrbs`, Trim Galore! removes the filled-in cytosines at the MspI sites, and the deduplication and Preseq are skipped, since the reads of an RRBS library start at the same positions. The optical duplicates are still removed (see [`--remove_optic_duplicates`](#--remove_optic_duplicates)).
+
+:::
 
 ## Removal of optical duplicates
 
@@ -149,9 +156,11 @@ genome: GRCh38
 rrbs: true
 ```
 
-!!! warning
+:::caution
 
-    Do not use `-c <file>` to give parameters. Configuration files given with `-c` must only be used to [tune the resources](https://nf-co.re/docs/usage/configuration#tuning-workflow-resources) of the processes, other infrastructural settings or the arguments of the modules.
+Do not use `-c <file>` to give parameters. Configuration files given with `-c` must only be used to [tune the resources](https://nf-co.re/docs/usage/configuration#tuning-workflow-resources) of the processes, other infrastructural settings or the arguments of the modules.
+
+:::
 
 ### Updating the pipeline
 
@@ -167,9 +176,11 @@ Give a version of the pipeline with `-r` (e.g. `-r v2.6.4`), so that the same co
 
 ## Core Nextflow arguments
 
-!!! note
+:::note
 
-    These options are part of Nextflow and use a _single_ hyphen, while the pipeline parameters use a double hyphen.
+These options are part of Nextflow and use a _single_ hyphen, while the pipeline parameters use a double hyphen.
+
+:::
 
 ### `-profile`
 

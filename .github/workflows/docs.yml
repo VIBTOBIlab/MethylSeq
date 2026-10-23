@@ -1,6 +1,6 @@
 name: Documentation
-# Builds the documentation website with MkDocs on pull requests, and publishes it
-# to GitHub Pages on pushes to the branch below.
+# Builds the documentation website (Astro + Starlight) on pull requests, and publishes
+# it to GitHub Pages on pushes to the branch below.
 # Switch the branch to `main` once dev is released.
 on:
   push:
@@ -9,7 +9,6 @@ on:
   pull_request:
     paths:
       - "docs/**"
-      - "mkdocs.yml"
       - "nextflow_schema.json"
       - "CHANGELOG.md"
       - "CITATIONS.md"
@@ -26,25 +25,30 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          python-version: "3.13"
+          node-version: 24
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
 
-      - name: Install MkDocs
-        run: pip install -r docs/requirements.txt
+      - name: Install Astro
+        run: npm ci
 
-      # --strict fails the build on broken links and anchors
+      # Fails the build on broken links and anchors (starlight-links-validator)
       - name: Build the documentation
-        run: mkdocs build --strict
+        run: npm run build
 
       - name: Upload the website
         if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v4
         with:
-          path: site
+          path: docs/dist
 
   deploy:
     if: github.event_name != 'pull_request'
