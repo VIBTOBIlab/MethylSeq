@@ -15,7 +15,7 @@ hide:
 [Get started](#quick-start){ .md-button .md-button--primary }
 [Usage](usage.md){ .md-button }
 
-[![Nextflow](https://img.shields.io/badge/version-%E2%89%A525.10.4-green?style=flat&logo=nextflow&logoColor=white&color=%230DC09D&link=https%3A%2F%2Fnextflow.io)](https://www.nextflow.io/)
+[![Nextflow](https://img.shields.io/badge/version-%E2%89%A526.04.0-green?style=flat&logo=nextflow&logoColor=white&color=%230DC09D&link=https%3A%2F%2Fnextflow.io)](https://www.nextflow.io/)
 [![nf-core template version](https://img.shields.io/badge/nf--core_template-4.1.0-green?style=flat&logo=nfcore&logoColor=white&color=%2324B064&link=https%3A%2F%2Fnf-co.re)](https://github.com/nf-core/tools/releases/tag/4.1.0)
 [![run with conda](https://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
@@ -91,7 +91,7 @@ The pipeline runs one of two workflows, chosen with `--aligner`: [Bismark](https
 
 !!! tip "New to Nextflow?"
 
-    See [this page](https://nf-co.re/docs/usage/getting_started/installation) on how to set up Nextflow (>= 25.10.4) and Docker or Singularity. Test your setup with `-profile test,docker` before running the pipeline on your own data.
+    See [this page](https://nf-co.re/docs/usage/getting_started/installation) on how to set up Nextflow (>= 26.04.0) and Docker or Singularity. Test your setup with `-profile test,docker` before running the pipeline on your own data.
 
 1.  Prepare a [samplesheet](usage.md#samplesheet) with one row per FastQ file (single-end) or pair of FastQ files (paired-end):
 

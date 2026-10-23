@@ -13,6 +13,11 @@ lint:
     - assets/email_template.txt
     - docs/README.md
     - .prettierignore
+    - assets/nf-core-MethylSeq_logo_light.png
+    - docs/images/nf-core-MethylSeq_logo_light.png
+    - docs/images/nf-core-MethylSeq_logo_dark.png
+    # TODO: remove once the dev-refactoring push trigger is removed
+    - .github/workflows/linting.yml
   # nf-core/tools does not support typed parameters yet (https://nf-co.re/blog/2026/parameter-types)
   nextflow_config: false
   schema_params: false
@@ -28,6 +33,9 @@ lint:
     - .github/workflows/awsfulltest.yml
     - conf/test_full.config
     - tests/default.nf.test
+    - assets/nf-core-MethylSeq_logo_light.png
+    - docs/images/nf-core-MethylSeq_logo_light.png
+    - docs/images/nf-core-MethylSeq_logo_dark.png
 
 template:
   org: VIBTOBIlab

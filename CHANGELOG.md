@@ -3,7 +3,7 @@
 ## [v3.0.0](https://github.com/VIBTOBIlab/MethylSeq/releases/tag/3.0.0) - 2026-10-23
 
 - Updated the pipeline to the nf-core/tools template v4.1.0 (non-nf-core, `VIBTOBIlab` organisation) through a new `TEMPLATE` branch, so later template updates can be applied with `nf-core pipelines sync`.
-- Nextflow `>=25.10.4` is now required, the pipeline passes `nextflow lint` (strict syntax) with Nextflow 26.10.
+- Nextflow `>=26.04.0` is now required, the pipeline passes `nextflow lint` (strict syntax) with Nextflow 26.10.
 - Pipeline parameters are declared as typed parameters in `main.nf`, so values given on the command line (e.g. `--clip_r1 3`, `--rrbs`) keep their type with recent Nextflow versions.
 - Replaced the `lib/` Groovy helpers with the `PIPELINE_INITIALISATION` / `PIPELINE_COMPLETION` subworkflows, and `nf-validation` with `nf-schema` (v2.7.2). `nextflow_schema.json` now uses JSON schema draft 2020-12.
 - Software versions are collected with the `versions` topic channel and saved to `pipeline_info/methylseq_software_mqc_versions.yml`, replacing `CUSTOM_DUMPSOFTWAREVERSIONS`.
