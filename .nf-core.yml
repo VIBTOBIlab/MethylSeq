@@ -1,23 +1,4 @@
-repository_type: pipeline
-
-nf_core_version: 4.1.0
-
 lint:
-  files_unchanged:
-    - CODE_OF_CONDUCT.md
-    - assets/nf-core-methylseq_logo_light.png
-    - docs/images/nf-core-methylseq_logo_light.png
-    - docs/images/nf-core-methylseq_logo_dark.png
-    - .github/ISSUE_TEMPLATE/bug_report.yml
-    - .github/PULL_REQUEST_TEMPLATE.md
-    - assets/email_template.txt
-    - docs/README.md
-    - .prettierignore
-  nextflow_config:
-    - manifest.name
-    - manifest.homePage
-  multiqc_config:
-    - report_comment
   files_exist:
     - CODE_OF_CONDUCT.md
     - assets/nf-core-methylseq_logo_light.png
@@ -26,17 +7,46 @@ lint:
     - .github/ISSUE_TEMPLATE/config.yml
     - .github/workflows/awstest.yml
     - .github/workflows/awsfulltest.yml
-
+    - conf/test_full.config
+    - tests/default.nf.test
+    - ro-crate-metadata.json
+    - assets/nf-core-MethylSeq_logo_light.png
+    - docs/images/nf-core-MethylSeq_logo_light.png
+    - docs/images/nf-core-MethylSeq_logo_dark.png
+    - docs/usage.md
+    - docs/output.md
+  files_unchanged:
+    - CODE_OF_CONDUCT.md
+    - LICENSE
+    - assets/nf-core-methylseq_logo_light.png
+    - docs/images/nf-core-methylseq_logo_light.png
+    - docs/images/nf-core-methylseq_logo_dark.png
+    - .github/ISSUE_TEMPLATE/bug_report.yml
+    - .github/PULL_REQUEST_TEMPLATE.md
+    - assets/email_template.txt
+    - docs/README.md
+    - .prettierignore
+    - assets/nf-core-MethylSeq_logo_light.png
+    - docs/images/nf-core-MethylSeq_logo_light.png
+    - docs/images/nf-core-MethylSeq_logo_dark.png
+    - .github/workflows/linting.yml
+  multiqc_config:
+    - report_comment
+  nextflow_config: false
+  pipeline_name_conventions: false
+  schema_params: false
+nf_core_version: 4.2.2
+repository_type: pipeline
 template:
-  org: VIBTOBIlab
-  name: MethylSeq
+  author: Phil Ewels, Edoardo Giuili
   description: Methylation (Bisulfite-Sequencing) analysis pipeline using Bismark
     or bwa-meth + MethylDackel.
-  author: Phil Ewels, Edoardo Giuili
-  version: 2.6.5
   force: false
+  is_nfcore: false
+  name: MethylSeq
+  org: VIBTOBIlab
   outdir: .
   skip_features:
     - gpu
     - rocrate
-  is_nfcore: false
+  version: 2.6.5
