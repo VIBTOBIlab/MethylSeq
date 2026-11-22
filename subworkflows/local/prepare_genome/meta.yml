@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "PREPARE_GENOME"
+description: Prepare the reference genome files for the selected aligner, building the indices that were not provided
+keywords:
+  - reference
+  - index
+  - bismark
+  - bwameth
+  - fasta
+components:
+  - untar
+  - bismark/genomepreparation
+  - bwameth/index
+  - samtools/faidx
+input:
+  - fasta:
+      type: string
+      description: Path to the genome FASTA file
+  - fasta_index:
+      type: string
+      description: Path to the genome FASTA index (.fai). Built with samtools faidx when not provided
+  - bismark_index:
+      type: string
+      description: Path to a Bismark index directory or .tar.gz archive. Built from the FASTA when not provided (bismark aligners only)
+  - bwa_meth_index:
+      type: string
+      description: Path to a bwa-meth index directory or .tar.gz archive. Built from the FASTA when not provided (bwameth aligner only)
+output:
+  - fasta:
+      type: file
+      description: Channel containing the genome FASTA file
+      pattern: "*.{fa,fasta}"
+  - bismark_index:
+      type: directory
+      description: Channel containing the Bismark index directory
+  - bwameth_index:
+      type: directory
+      description: Channel containing the bwa-meth index directory
+  - fasta_index:
+      type: file
+      description: Channel containing the genome FASTA index
+      pattern: "*.fai"
+authors:
+  - "@VIBTOBIlab/benchmarkteam"
+maintainers:
+  - "@VIBTOBIlab/benchmarkteam"

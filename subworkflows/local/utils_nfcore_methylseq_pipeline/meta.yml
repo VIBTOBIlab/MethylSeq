@@ -1,0 +1,72 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "PIPELINE_INITIALISATION"
+description: Initialisation (PIPELINE_INITIALISATION) and completion (PIPELINE_COMPLETION) steps of the VIBTOBIlab/MethylSeq pipeline
+keywords:
+  - utility
+  - pipeline
+  - initialise
+  - samplesheet
+  - completion
+components:
+  - utils_nextflow_pipeline
+  - utils_nfcore_pipeline
+  - utils_nfschema_plugin
+  # Functions from utils_nfcore_pipeline used by PIPELINE_COMPLETION
+  - completionemail
+  - completionsummary
+input:
+  - version:
+      type: boolean
+      description: Display the pipeline version and exit (PIPELINE_INITIALISATION)
+  - validate_params:
+      type: boolean
+      description: Validate the parameters against nextflow_schema.json (PIPELINE_INITIALISATION)
+  - monochrome_logs:
+      type: boolean
+      description: Do not use coloured log outputs
+  - nextflow_cli_args:
+      type: list
+      description: Positional Nextflow CLI arguments (PIPELINE_INITIALISATION)
+  - outdir:
+      type: string
+      description: The output directory where the results are saved
+  - input:
+      type: string
+      description: Path to the input samplesheet (PIPELINE_INITIALISATION)
+  - help:
+      type: string
+      description: Display the help message, or the help of a single parameter (PIPELINE_INITIALISATION)
+  - help_full:
+      type: boolean
+      description: Display the full help message (PIPELINE_INITIALISATION)
+  - show_hidden:
+      type: boolean
+      description: Display hidden parameters in the help message (PIPELINE_INITIALISATION)
+  - email:
+      type: string
+      description: Email address for the completion summary (PIPELINE_COMPLETION)
+  - email_on_fail:
+      type: string
+      description: Email address for the completion summary, only when the pipeline fails (PIPELINE_COMPLETION)
+  - plaintext_email:
+      type: boolean
+      description: Send a plain-text email instead of HTML (PIPELINE_COMPLETION)
+  - multiqc_report:
+      type: file
+      description: Channel containing the MultiQC report attached to the completion email (PIPELINE_COMPLETION)
+      pattern: "*.html"
+output:
+  - samplesheet:
+      type: file
+      description: |
+        Channel containing the samples of the samplesheet, with the runs of a sample grouped together (PIPELINE_INITIALISATION)
+        Structure: [ val(meta), [ path(fastq) ] ]
+      pattern: "*.{fq,fastq}.gz"
+  - versions:
+      type: file
+      description: Channel containing software versions files (PIPELINE_INITIALISATION)
+      pattern: "versions.yml"
+authors:
+  - "@VIBTOBIlab/benchmarkteam"
+maintainers:
+  - "@VIBTOBIlab/benchmarkteam"

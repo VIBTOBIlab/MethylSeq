@@ -1,0 +1,152 @@
+{
+    "minimap2 | single-end | sarscov2 genome [fasta]": {
+        "content": [
+            "d354e6c6d6a06e36630590de8f27031a",
+            true,
+            [
+                
+            ],
+            {
+                "versions_bismark": [
+                    [
+                        "BISMARK_ALIGN",
+                        "bismark",
+                        "3.4.0"
+                    ]
+                ],
+                "versions_bwamem3": [
+                    [
+                        "BISMARK_ALIGN",
+                        "bwamem3",
+                        "0.18.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-22T02:05:30.785845551",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.3"
+        }
+    },
+    "hisat2 | paired-end | sarscov2 genome [fasta]": {
+        "content": [
+            "fb9d284aec4b2c727af3c5ffd77c6381",
+            false,
+            [
+                
+            ],
+            {
+                "versions_bismark": [
+                    [
+                        "BISMARK_ALIGN",
+                        "bismark",
+                        "3.4.0"
+                    ]
+                ],
+                "versions_bwamem3": [
+                    [
+                        "BISMARK_ALIGN",
+                        "bwamem3",
+                        "0.18.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-22T02:05:25.358822194",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.3"
+        }
+    },
+    "bowtie2 | paired-end | sarscov2 genome [fasta]": {
+        "content": [
+            "458c5350c3f96a8dde710985bfb62827",
+            false,
+            [
+                
+            ],
+            {
+                "versions_bismark": [
+                    [
+                        "BISMARK_ALIGN",
+                        "bismark",
+                        "3.4.0"
+                    ]
+                ],
+                "versions_bwamem3": [
+                    [
+                        "BISMARK_ALIGN",
+                        "bwamem3",
+                        "0.18.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-22T02:05:13.720522842",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.3"
+        }
+    },
+    "bowtie2 | single-end | sarscov2 genome [fasta]": {
+        "content": [
+            "936c0d5ce713130113e99e09a5b53afd",
+            true,
+            [
+                
+            ],
+            {
+                "versions_bismark": [
+                    [
+                        "BISMARK_ALIGN",
+                        "bismark",
+                        "3.4.0"
+                    ]
+                ],
+                "versions_bwamem3": [
+                    [
+                        "BISMARK_ALIGN",
+                        "bwamem3",
+                        "0.18.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-22T02:05:07.853888994",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.3"
+        }
+    },
+    "hisat2 | single-end | sarscov2 genome [fasta]": {
+        "content": [
+            "936c0d5ce713130113e99e09a5b53afd",
+            true,
+            [
+                
+            ],
+            {
+                "versions_bismark": [
+                    [
+                        "BISMARK_ALIGN",
+                        "bismark",
+                        "3.4.0"
+                    ]
+                ],
+                "versions_bwamem3": [
+                    [
+                        "BISMARK_ALIGN",
+                        "bwamem3",
+                        "0.18.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-22T02:05:19.447220456",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.3"
+        }
+    }
+}

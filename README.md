@@ -1,6 +1,7 @@
 # MethylSeq pipeline of TOBI lab
 
-[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A524.04.4-23aa62.svg)](https://www.nextflow.io/)
+[![Nextflow](https://img.shields.io/badge/version-%E2%89%A526.04.0-green?style=flat&logo=nextflow&logoColor=white&color=%230DC09D&link=https%3A%2F%2Fnextflow.io)](https://www.nextflow.io/)
+[![nf-core template version](https://img.shields.io/badge/nf--core_template-4.2.2-green?style=flat&logo=nfcore&logoColor=white&color=%2324B064&link=https%3A%2F%2Fnf-co.re)](https://github.com/nf-core/tools/releases/tag/4.2.2)
 [![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
@@ -24,9 +25,9 @@ On release, automated continuous integration tests run the pipeline on a full-si
 The pipeline allows you to choose between running either [Bismark](https://github.com/FelixKrueger/Bismark) or [bwa-meth](https://github.com/brentp/bwa-meth) / [MethylDackel](https://github.com/dpryan79/methyldackel).
 Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for alignment), `--aligner bismark_hisat` or `--aligner bwameth`.
 
-![MethylSeq metro map](docs/images/methylseq_metro.svg)
+![MethylSeq metro map](docs/public/images/methylseq_metro.svg)
 
-An [interactive version of the metro map](https://htmlpreview.github.io/?https://github.com/VIBTOBIlab/MethylSeq/blob/main/docs/images/methylseq_metro.html) is also available ([source](docs/images/methylseq_metro.html)). The map was generated with [nf-metro](https://github.com/pinin4fjords/nf-metro) from [`docs/images/methylseq_metro.mmd`](docs/images/methylseq_metro.mmd).
+An [interactive version of the metro map](https://htmlpreview.github.io/?https://github.com/VIBTOBIlab/MethylSeq/blob/main/docs/public/images/methylseq_metro.html) is also available ([source](docs/public/images/methylseq_metro.html)). The map was generated with [nf-metro](https://github.com/pinin4fjords/nf-metro) from [`docs/public/images/methylseq_metro.mmd`](docs/public/images/methylseq_metro.mmd).
 
 | Step                                         | Bismark workflow      | bwa-meth workflow     |
 | -------------------------------------------- | --------------------- | --------------------- |

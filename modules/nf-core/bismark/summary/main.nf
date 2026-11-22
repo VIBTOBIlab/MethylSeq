@@ -1,10 +1,13 @@
+// Copyright (c) the nf-core community under an open-source MIT license.
+// See https://github.com/nf-core/modules for full license, file patching instructions and upstream contributing.
+
 process BISMARK_SUMMARY {
     label 'process_low'
 
-    conda "bioconda::bismark=0.24.0"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/bismark:0.24.0--hdfd78af_0' :
-        'biocontainers/bismark:0.24.0--hdfd78af_0' }"
+    conda "${moduleDir}/environment.yml"
+    container "${ workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container ?
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/10/106c5858e0e1021f5eb80619e7ec56f02e5fc857d2bdbb00570d30a5add9b5e9/data' :
+        'community.wave.seqera.io/library/bismark:3.4.0--4721154cfbeba5e3' }"
 
     input:
     val(bam)
@@ -14,20 +17,20 @@ process BISMARK_SUMMARY {
     path(mbias)
 
     output:
-    path  "*report.{html,txt}", emit: summary
-    path  "versions.yml"      , emit: versions
+    path("*report.{html,txt}"), emit: summary
+    tuple val("${task.process}"), val('bismark'), eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'"), emit: versions_bismark, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
-    def args = task.ext.args ?: ''
     """
     bismark2summary ${bam.join(' ')}
+    """
 
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        bismark: \$(echo \$(bismark -v 2>&1) | sed 's/^.*Bismark Version: v//; s/Copyright.*\$//')
-    END_VERSIONS
+    stub:
+    """
+    touch bismark_summary_report.txt
+    touch bismark_summary_report.html
     """
 }

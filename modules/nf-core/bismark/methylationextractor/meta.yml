@@ -17,52 +17,134 @@ tools:
         Bismark is a tool to map bisulfite treated sequencing reads
         and perform methylation calling in a quick and easy-to-use fashion.
       homepage: https://github.com/FelixKrueger/Bismark
-      documentation: https://github.com/FelixKrueger/Bismark/tree/master/Docs
+      documentation: https://github.com/FelixKrueger/Bismark/tree/master/docs
       doi: 10.1093/bioinformatics/btr167
-      licence: ["GPL-3.0-or-later"]
+      licence:
+        - "GPL-3.0-or-later"
+      identifier: biotools:bismark
 input:
-  - meta:
-      type: map
-      description: |
-        Groovy Map containing sample information
-        e.g. [ id:'test', single_end:false ]
-  - bam:
-      type: file
-      description: BAM file containing read alignments
-      pattern: "*.{bam}"
-  - index:
-      type: dir
-      description: Bismark genome index directory
-      pattern: "BismarkIndex"
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test', single_end:false ]
+    - bam:
+        type: file
+        description: BAM file containing read alignments
+        pattern: "*.{bam}"
+        ontologies: []
+  - - meta2:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test', single_end:false ]
+    - index:
+        type: directory
+        description: Bismark genome index directory
+        pattern: "BismarkIndex"
 output:
-  - meta:
-      type: map
-      description: |
-        Groovy Map containing sample information
-        e.g. [ id:'test', single_end:false ]
-  - bedgraph:
-      type: file
-      description: Bismark output file containing coverage and methylation metrics
-      pattern: "*.{bedGraph.gz}"
-  - methylation_calls:
-      type: file
-      description: Bismark output file containing strand-specific methylation calls
-      pattern: "*.{txt.gz}"
-  - coverage:
-      type: file
-      description: Bismark output file containing coverage metrics
-      pattern: "*.{cov.gz}"
-  - report:
-      type: file
-      description: Bismark splitting reports
-      pattern: "*_{splitting_report.txt}"
-  - mbias:
-      type: file
-      description: Text file containing methylation bias information
-      pattern: "*.{M-bias.txt}"
-  - versions:
-      type: file
-      description: File containing software versions
-      pattern: "versions.yml"
+  bedgraph:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "*.bedGraph.gz":
+          type: file
+          description: Bismark output file containing coverage and methylation metrics
+          pattern: "*.{bedGraph.gz}"
+          ontologies: []
+  methylation_calls:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "*.txt.gz":
+          type: file
+          description: Bismark output file containing strand-specific methylation calls
+          pattern: "*.{txt.gz}"
+          ontologies: []
+  coverage:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "*.cov.gz":
+          type: file
+          description: Bismark output file containing coverage metrics
+          pattern: "*.{cov.gz}"
+          ontologies: []
+  report:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "*_splitting_report.txt":
+          type: file
+          description: Bismark splitting reports
+          pattern: "*_{splitting_report.txt}"
+          ontologies: []
+  mbias:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "*.M-bias.txt":
+          type: file
+          description: Text file containing methylation bias information
+          pattern: "*.{M-bias.txt}"
+          ontologies: []
+  versions_bismark:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - bismark:
+          type: string
+          description: The name of the tool
+      - "bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'":
+          type: eval
+          description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - bismark:
+          type: string
+          description: The name of the tool
+      - "bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'":
+          type: eval
+          description: The expression to obtain the version of the tool
 authors:
   - "@phue"
+maintainers:
+  - "@phue"
+  - "@sateeshperi"
+containers:
+  docker:
+    linux/arm64:
+      name: community.wave.seqera.io/library/bismark:3.4.0--56704b289b4ed628
+      build_id: bd-56704b289b4ed628_1
+      scan_id: sc-8fe654a6c7c7e0cc_1
+    linux/amd64:
+      name: community.wave.seqera.io/library/bismark:3.4.0--4721154cfbeba5e3
+      build_id: bd-4721154cfbeba5e3_1
+      scan_id: sc-e58d7647fa648f4f_1
+  singularity:
+    linux/amd64:
+      name: oras://community.wave.seqera.io/library/bismark:3.4.0--389ad6389644dbc5
+      build_id: bd-389ad6389644dbc5_1
+      https: https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/10/106c5858e0e1021f5eb80619e7ec56f02e5fc857d2bdbb00570d30a5add9b5e9/data
+    linux/arm64:
+      name: oras://community.wave.seqera.io/library/bismark:3.4.0--8e6b0778a07044bd
+      build_id: bd-8e6b0778a07044bd_1
+      https: https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/24/240009db98fd86ec6f661a0ea4b1b7628da0c37eb1b5432d75aaab0b56eccc40/data
+  conda:
+    linux/amd64:
+      lock_file: modules/nf-core/bismark/methylationextractor/.conda-lock/linux_amd64-bd-4721154cfbeba5e3_1.txt
+    linux/arm64:
+      lock_file: modules/nf-core/bismark/methylationextractor/.conda-lock/linux_arm64-bd-56704b289b4ed628_1.txt

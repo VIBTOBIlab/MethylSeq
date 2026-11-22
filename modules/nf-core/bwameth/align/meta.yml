@@ -20,34 +20,115 @@ tools:
       homepage: https://github.com/brentp/bwa-meth
       documentation: https://github.com/brentp/bwa-meth
       arxiv: arXiv:1401.1129
-      licence: ["MIT"]
+      licence:
+        - "MIT"
+      identifier: ""
 input:
-  - meta:
-      type: map
-      description: |
-        Groovy Map containing sample information
-        e.g. [ id:'test', single_end:false ]
-  - reads:
-      type: file
-      description: |
-        List of input FastQ files of size 1 and 2 for single-end and paired-end data,
-        respectively.
-  - index:
-      type: dir
-      description: Directory containing bwameth genome index
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test', single_end:false ]
+    - reads:
+        type: file
+        description: |
+          List of input FastQ files of size 1 and 2 for single-end and paired-end data,
+          respectively.
+        ontologies: []
+  - - meta2:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test', single_end:false ]
+    - fasta:
+        type: file
+        description: Input genome fasta file
+        ontologies: []
+  - - meta3:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test', single_end:false ]
+    - index:
+        type: directory
+        description: Directory containing bwameth genome index
 output:
-  - meta:
-      type: map
-      description: |
-        Groovy Map containing sample information
-        e.g. [ id:'test', single_end:false ]
-  - bam:
-      type: file
-      description: Output BAM file containing read alignments
-      pattern: "*.{bam}"
-  - versions:
-      type: file
-      description: File containing software versions
-      pattern: "versions.yml"
+  bam:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "*.bam":
+          type: file
+          description: Output BAM file containing read alignments
+          pattern: "*.{bam}"
+          ontologies: []
+  versions_bwameth:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - bwameth:
+          type: string
+          description: The name of the tool
+      - bwameth.py --version | cut -f2 -d ' ':
+          type: eval
+          description: The expression to obtain the version of the tool
+  versions_samtools:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - samtools:
+          type: string
+          description: The name of the tool
+      - "samtools version | sed '1!d;s/.* //'":
+          type: eval
+          description: The expression to obtain the version of samtools
+topics:
+  versions:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - bwameth:
+          type: string
+          description: The name of the tool
+      - bwameth.py --version | cut -f2 -d ' ':
+          type: eval
+          description: The expression to obtain the version of the tool
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - samtools:
+          type: string
+          description: The name of the tool
+      - "samtools version | sed '1!d;s/.* //'":
+          type: eval
+          description: The expression to obtain the version of samtools
 authors:
   - "@phue"
+maintainers:
+  - "@phue"
+containers:
+  docker:
+    linux/arm64:
+      name: community.wave.seqera.io/library/bwameth_samtools:6b4f7ef4df9c9676
+      build_id: bd-6b4f7ef4df9c9676_2
+      scan_id: sc-01851e9bcd8f6bac_1
+    linux/amd64:
+      name: community.wave.seqera.io/library/bwameth_samtools:4df060e40f3ac9d2
+      build_id: bd-4df060e40f3ac9d2_2
+      scan_id: sc-079255f8505835ba_1
+  singularity:
+    linux/arm64:
+      name: oras://community.wave.seqera.io/library/bwameth_samtools:c43bd4fefc00919f
+      build_id: bd-c43bd4fefc00919f_2
+      https: https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/94/942b26103894a34fe0e409f26ebfa14c5c4ced5a993d1a46bb5ec23e7af57703/data
+    linux/amd64:
+      name: oras://community.wave.seqera.io/library/bwameth_samtools:814138597219282f
+      build_id: bd-814138597219282f_2
+      https: https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/27/27fa347b345bd5ebcd0c6b5a9e9bdf39350f46c1f0a09dabee16708d316bacc5/data
+  conda:
+    linux/amd64:
+      lock_file: modules/nf-core/bwameth/align/.conda-lock/linux_amd64-bd-4df060e40f3ac9d2_2.txt
+    linux/arm64:
+      lock_file: modules/nf-core/bwameth/align/.conda-lock/linux_arm64-bd-6b4f7ef4df9c9676_2.txt

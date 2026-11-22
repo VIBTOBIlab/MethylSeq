@@ -1,0 +1,9 @@
+# Build output and dependencies
+dist/
+.astro/
+node_modules/
+
+# Pages generated from the files of the pipeline (src/integrations/generated-pages.mjs)
+src/content/docs/parameters.md
+src/content/docs/changelog.md
+src/content/docs/citations.md

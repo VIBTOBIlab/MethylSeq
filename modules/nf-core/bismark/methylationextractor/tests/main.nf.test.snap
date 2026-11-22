@@ -1,0 +1,135 @@
+{
+    "sarscov2 paired-end methylated [bam] | sarscov2 genome [fasta]": {
+        "content": [
+            {
+                "bedgraph": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test.paired_end.methylated.bedGraph.gz:md5,3e461daa0b89ee4eeb76e336ad6aad7a"
+                    ]
+                ],
+                "coverage": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test.paired_end.methylated.bismark.cov.gz:md5,1524da1472ed1ad0c0663a9676c142e0"
+                    ]
+                ],
+                "mbias": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test.paired_end.methylated.M-bias.txt:md5,0b100924d46b3c35115f1206f34c4a59"
+                    ]
+                ],
+                "methylation_calls": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        [
+                            "CHG_OB_test.paired_end.methylated.txt.gz:md5,1b672fec4886a184992a8aa837fdbfe5",
+                            "CHG_OT_test.paired_end.methylated.txt.gz:md5,fa05d0d74b47f618938604100726fdae",
+                            "CHH_OB_test.paired_end.methylated.txt.gz:md5,ae07d4b4b37bb856c91ac2d3a0c66c49",
+                            "CHH_OT_test.paired_end.methylated.txt.gz:md5,aa6351755ddaa0d95b26ee933937d53b",
+                            "CpG_OB_test.paired_end.methylated.txt.gz:md5,9bcfdde1dd7b8463d098a1c20a0cba08",
+                            "CpG_OT_test.paired_end.methylated.txt.gz:md5,0a71800198f3d76a30b8eacd1f72a3c3"
+                        ]
+                    ]
+                ],
+                "report": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test.paired_end.methylated_splitting_report.txt:md5,90e1b4d3493e2a3e8c23132920d53f6a"
+                    ]
+                ],
+                "versions_bismark": [
+                    [
+                        "BISMARK_METHYLATIONEXTRACTOR",
+                        "bismark",
+                        "3.4.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-22T02:06:27.817464674",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.3"
+        }
+    },
+    "sarscov2 paired-end methylated [bam] | sarscov2 genome [fasta] | stub": {
+        "content": [
+            {
+                "bedgraph": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test.bedGraph.gz:md5,68b329da9893e34099c7d8ad5cb9c940"
+                    ]
+                ],
+                "coverage": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test.cov.gz:md5,68b329da9893e34099c7d8ad5cb9c940"
+                    ]
+                ],
+                "mbias": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test.M-bias.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "methylation_calls": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test.txt.gz:md5,68b329da9893e34099c7d8ad5cb9c940"
+                    ]
+                ],
+                "report": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test_splitting_report.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "versions_bismark": [
+                    [
+                        "BISMARK_METHYLATIONEXTRACTOR",
+                        "bismark",
+                        "3.4.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-22T02:06:32.670568005",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.3"
+        }
+    }
+}
