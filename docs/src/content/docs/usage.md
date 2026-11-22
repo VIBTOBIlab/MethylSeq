@@ -72,7 +72,13 @@ The library preparation determines how the reads are trimmed and aligned. The pr
 
 :::note[RRBS]
 
-With `--rrbs`, Trim Galore! removes the filled-in cytosines at the MspI sites, and the deduplication and Preseq are skipped, since the reads of an RRBS library start at the same positions. The optical duplicates are still removed (see [`--remove_optic_duplicates`](#--remove_optic_duplicates)).
+With `--rrbs`, Trim Galore! removes the filled-in cytosines at the MspI sites, and the deduplication and Preseq are skipped, since the reads of an RRBS library start at the same positions. The optical duplicates are still removed (see [`--remove_optic_duplicates`](#--remove_optic_duplicates)). For non-directional RRBS libraries, use `--rrbs --non_directional`: Trim Galore! then also removes the end-repair bases from reads of the complementary strands.
+
+:::
+
+:::note[Ignored bases of Read 2]
+
+For paired-end data, the Bismark methylation extractor ignores the first and last 2 bases of Read 2 by default (`--ignore_r2 2`, `--ignore_3prime_r2 2`), which carry an end-repair bias. When Trim Galore! already trims that end of Read 2 (with a library preset, `--clip_r2` / `--three_prime_clip_r2`, or `--rrbs`), the default is 0, so no further methylation calls are lost. A value given explicitly is always used.
 
 :::
 

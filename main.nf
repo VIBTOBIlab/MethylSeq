@@ -112,12 +112,12 @@ params {
     no_overlap: Boolean = true
     // Ignore methylation in first n bases of 5' end of R1
     ignore_r1: Integer = 0
-    // Ignore methylation in first n bases of 5' end of R2
-    ignore_r2: Integer = 2
+    // Ignore methylation in first n bases of 5' end of R2 (unset: 2, or 0 if Trim Galore already trims that end)
+    ignore_r2: Integer?
     // Ignore methylation in last n bases of 3' end of R1
     ignore_3prime_r1: Integer = 0
-    // Ignore methylation in last n bases of 3' end of R2
-    ignore_3prime_r2: Integer = 2
+    // Ignore methylation in last n bases of 3' end of R2 (unset: 2, or 0 if Trim Galore already trims that end)
+    ignore_3prime_r2: Integer?
     // Supply a .gtf file containing known splice sites (bismark_hisat only).
     known_splices: String?
     // Allow soft-clipping of reads (potentially useful for single-cell experiments).

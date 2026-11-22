@@ -49,6 +49,9 @@ nextflow_pipeline {
                             path("$outputDir/qualimap/Ecoli/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222/genome_results.txt")).match("single_end") },
                 { assert snapshot(removeNextflowVersion("$outputDir/pipeline_info/methylseq_software_mqc_versions.yml")).match("single_end_software_versions") },
+                // No R2 clipping: the default R2 ignores apply to the paired-end sample
+                { assert path("$outputDir/bismark/methylation_calls/splitting_report/Ecoli.markdup.deduplicated_splitting_report.txt").text.contains("Ignoring first 2 bp of Read 2") },
+                { assert path("$outputDir/bismark/methylation_calls/splitting_report/Ecoli.markdup.deduplicated_splitting_report.txt").text.contains("Ignoring last 2 bp of Read 2") },
                 { assert new File("$outputDir/bismark/alignments/logs/Ecoli_1_val_1_bismark_bt2_PE_report.txt").exists() },
                 { assert new File("$outputDir/bismark/alignments/logs/SRR389222_trimmed_bismark_bt2_SE_report.txt").exists() },
                 { assert new File("$outputDir/bismark/reports/Ecoli_1_val_1_bismark_bt2_PE_report.html").exists() },
@@ -222,6 +225,8 @@ nextflow_pipeline {
                             path("$outputDir/qualimap/Ecoli/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222/genome_results.txt")).match("clip_r1") },
                 { assert snapshot(removeNextflowVersion("$outputDir/pipeline_info/methylseq_software_mqc_versions.yml")).match("clip_r1_software_versions") },
+                // The em_seq preset clips both R2 ends, so no R2 bases are ignored on top
+                { assert !(path("$outputDir/bismark/methylation_calls/splitting_report/Ecoli.markdup.deduplicated_splitting_report.txt").text =~ /Ignoring (first|last) \d+ bp of Read 2/) },
                 { assert new File("$outputDir/bismark/alignments/logs/Ecoli_1_val_1_bismark_bt2_PE_report.txt").exists() },
                 { assert new File("$outputDir/bismark/alignments/logs/SRR389222_trimmed_bismark_bt2_SE_report.txt").exists() },
                 { assert new File("$outputDir/bismark/reports/Ecoli_1_val_1_bismark_bt2_PE_report.html").exists() },
@@ -273,6 +278,72 @@ nextflow_pipeline {
                             path("$outputDir/bismark/methylation_calls/methylation_coverage/Ecoli.markdup.deduplicated.bismark.cov.gz"),
                             path("$outputDir/bismark/methylation_calls/methylation_coverage/SRR389222.markdup.deduplicated.bismark.cov.gz")).match("filter_non_conversion") },
                 { assert snapshot(removeNextflowVersion("$outputDir/pipeline_info/methylseq_software_mqc_versions.yml")).match("filter_non_conversion_software_versions") }
+            )
+        }
+    }
+
+    test("Bismark RRBS Non-Directional With Trimming") {
+        when {
+            params {
+                aligner         = "bismark"
+                rrbs            = true
+                non_directional = true
+                run_methurator  = false
+                outdir          = "$outputDir"
+            }
+        }
+
+        then {
+            def report = path("$outputDir/bismark/methylation_calls/splitting_report/Ecoli.markdup_splitting_report.txt").text
+            assertAll(
+                { assert workflow.success },
+                // Trim Galore's RRBS mode handles both R2 ends, so no R2 bases are ignored on top
+                { assert !(report =~ /Ignoring (first|last) \d+ bp of Read 2/) },
+                // --rrbs --non_directional is passed on to Trim Galore
+                { assert path("$outputDir/trimgalore/logs/Ecoli_1.fastq.gz_trimming_report.txt").text.contains("non-directional MspI-digested RRBS sample") }
+            )
+        }
+    }
+
+    test("Bismark Explicit ignore_r2 Wins Over Clipping") {
+        when {
+            params {
+                aligner             = "bismark"
+                three_prime_clip_r2 = 5
+                ignore_r2           = 3
+                run_methurator      = false
+                outdir              = "$outputDir"
+            }
+        }
+
+        then {
+            def report = path("$outputDir/bismark/methylation_calls/splitting_report/Ecoli.markdup.deduplicated_splitting_report.txt").text
+            assertAll(
+                { assert workflow.success },
+                // Explicit value is used; the 3' end is clipped, so its default becomes 0
+                { assert report.contains("Ignoring first 3 bp of Read 2") },
+                { assert !(report =~ /Ignoring last \d+ bp of Read 2/) }
+            )
+        }
+    }
+
+    test("Bismark Explicit ignore_3prime_r2 0 Stays 0") {
+        when {
+            params {
+                aligner          = "bismark"
+                clip_r2          = 5
+                ignore_3prime_r2 = 0
+                run_methurator   = false
+                outdir           = "$outputDir"
+            }
+        }
+
+        then {
+            def report = path("$outputDir/bismark/methylation_calls/splitting_report/Ecoli.markdup.deduplicated_splitting_report.txt").text
+            assertAll(
+                { assert workflow.success },
+                // The 5' end is clipped (default 0) and the 3' ignore is explicitly 0
+                { assert !(report =~ /Ignoring (first|last) \d+ bp of Read 2/) }
             )
         }
     }

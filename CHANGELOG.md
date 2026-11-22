@@ -14,6 +14,7 @@
 - Fixed `--known_splices` referencing an undefined variable for `--aligner bismark_hisat`.
 - Fixed `--bwa_meth_index` being passed to the Bismark index channel, so a provided bwa-meth index was never used.
 - Fixed `pipeline_info/methylseq_software_mqc_versions.yml` only listing some of the processes.
+- `--ignore_r2` and `--ignore_3prime_r2` now default to 0 for an R2 end that Trim Galore already handles (trimming presets, `--clip_r2` / `--three_prime_clip_r2`, `--rrbs`) instead of ignoring 2 more bp, and `--rrbs --non_directional` now passes `--non_directional` to Trim Galore (as in [nf-core/methylseq#654](https://github.com/nf-core/methylseq/pull/654)). Set explicitly, either value still wins. Runs without R2 clipping, and single-end runs, are unchanged.
 - Removed the `--hook_url` parameter (dropped from the nf-core template), the unused `test_ci`, `test_full` and `gitpod` profiles, and the old validation parameters (`validationShowHiddenParams`, `validationFailUnrecognisedParams`, `validationLenientMode`). `--test_data_base` is replaced by `--pipelines_testdata_base_path`.
 - Added the `--help_full` and `--show_hidden` parameters, and the `arm64`, `emulate_amd64` and `wave` profiles (the `arm` profile is kept as an alias of `emulate_amd64`).
 - Moved the pipeline tests to `tests/<aligner>.nf.test` and use the `nft-utils` plugin instead of `tests/lib/UTILS.groovy`. Added a test for `--filter_non_conversion`.
@@ -36,6 +37,7 @@ Changed, with the same results:
 
 Changed:
 
+- Bismark methylation calls of paired-end samples whose R2 ends are trimmed by Trim Galore (library presets such as `--em_seq`, `--clip_r2` / `--three_prime_clip_r2`, or `--rrbs` with trimming): the 2 bp R2 ignores are no longer applied on top of the trimming, so more methylation calls are kept. Per-read calls, splitting reports and M-bias reports change for these samples; runs without R2 trimming, and single-end samples, are unchanged.
 - `samtools stats` reports (`bwameth/alignments/samtools_stats/*.stats`): samtools 1.24 reports some summary statistics differently from samtools 1.17 for the same alignments (e.g. `average length`, the inward/outward oriented pair counts and an extra note on the `is sorted` line).
 - Methurator summaries (`methurator/summaries/<sample>/methurator_summary.yml`): the summaries now record methurator 2.2.0 (was 2.1.1), the command, input files and options are unchanged. The saturation estimates vary between runs by design (random downsampling), also with the same version and inputs, so they cannot be compared exactly between v2.6.5 and v3.0.0.
 - QC reports (FastQC, Trim Galore, Qualimap HTML, Bismark alignment, deduplication and summary reports, MultiQC): new tool versions, different layout and version or date information.

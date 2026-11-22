@@ -486,7 +486,7 @@
         "content": [
             "Ecoli.markdup.deduplicated.bedGraph.gz:md5,e8b3933de21d7618cdaab650fe544b17",
             "SRR389222.markdup.deduplicated.bedGraph.gz:md5,bddc7c560a902b842b72e20a21274cba",
-            "Ecoli.markdup.deduplicated.M-bias.txt:md5,83a004a3d957cf95f25933bcd828a8d4",
+            "Ecoli.markdup.deduplicated.M-bias.txt:md5,108623ce112b1f386e1b7ddf01a465c1",
             "SRR389222.markdup.deduplicated.M-bias.txt:md5,90a6b76d41112c6de391d3a017638d95",
             "Ecoli.markdup.deduplicated.bismark.cov.gz:md5,34aa02c199f1496df0704dd239373ebe",
             "SRR389222.markdup.deduplicated.bismark.cov.gz:md5,03178f50ae4bf04a7b78d8bbdb8a77af",
@@ -495,7 +495,7 @@
                 "CHG_OB_SRR389222.markdup.deduplicated.txt.gz:md5,ca7d386dcec24ec7a9a428f6ea89d52a",
                 "CHG_OT_Ecoli.markdup.deduplicated.txt.gz:md5,38db77a21037759756c0c986799930d7",
                 "CHG_OT_SRR389222.markdup.deduplicated.txt.gz:md5,aedd877359b12b045c82baf1dfe5bd62",
-                "CHH_OB_Ecoli.markdup.deduplicated.txt.gz:md5,a7be38ce73540ebd65dd4bbb48ee9ef6",
+                "CHH_OB_Ecoli.markdup.deduplicated.txt.gz:md5,1b2f9c0a9d98606ca03d38add4efcd12",
                 "CHH_OB_SRR389222.markdup.deduplicated.txt.gz:md5,b2f8ad84e0766675c7f32a9b4db0df8d",
                 "CHH_OT_Ecoli.markdup.deduplicated.txt.gz:md5,60d67ed9dd4fce823efd41c77b9ec873",
                 "CHH_OT_SRR389222.markdup.deduplicated.txt.gz:md5,c2b09fd6d26f108b1dd0cdf07bab4917",
@@ -504,13 +504,13 @@
                 "CpG_OT_Ecoli.markdup.deduplicated.txt.gz:md5,eeb1a5e601c28854b31a09a06bcfb0f7",
                 "CpG_OT_SRR389222.markdup.deduplicated.txt.gz:md5,d93b407a2dcafc10769a14cb1ab0516c"
             ],
-            "Ecoli.markdup.deduplicated_splitting_report.txt:md5,e4605d59ee7641e3c2e383ba03369a5d",
+            "Ecoli.markdup.deduplicated_splitting_report.txt:md5,8ad5af713dd06c52f99ba2262e28e2eb",
             "SRR389222.markdup.deduplicated_splitting_report.txt:md5,921e63b4ce858566287051a0324e0e5e",
             "SRR389222.merged.fastq.gz:md5,47e1d7461d511a970e80085dd6454775",
             "genome_results.txt:md5,dbe7f05ba49b94f1e387c499ed3e84a0",
             "genome_results.txt:md5,f02f7342a5e29fa6b0ef9085a3ab5a2e"
         ],
-        "timestamp": "2026-11-22T14:02:28.390061",
+        "timestamp": "2026-11-22T15:14:09.833984",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
