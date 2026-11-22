@@ -7,37 +7,37 @@
                 "nf-core": {
                     "bismark/align": {
                         "branch": "master",
-                        "git_sha": "c565f1b27c06a1e8b726e2a646d4c822ae3b514a",
+                        "git_sha": "46842d1ee933d20b78619d513aef7713ed121d72",
                         "installed_by": ["modules"]
                     },
                     "bismark/coverage2cytosine": {
                         "branch": "master",
-                        "git_sha": "c565f1b27c06a1e8b726e2a646d4c822ae3b514a",
+                        "git_sha": "46842d1ee933d20b78619d513aef7713ed121d72",
                         "installed_by": ["modules"]
                     },
                     "bismark/deduplicate": {
                         "branch": "master",
-                        "git_sha": "c565f1b27c06a1e8b726e2a646d4c822ae3b514a",
+                        "git_sha": "46842d1ee933d20b78619d513aef7713ed121d72",
                         "installed_by": ["modules"]
                     },
                     "bismark/genomepreparation": {
                         "branch": "master",
-                        "git_sha": "c565f1b27c06a1e8b726e2a646d4c822ae3b514a",
+                        "git_sha": "46842d1ee933d20b78619d513aef7713ed121d72",
                         "installed_by": ["modules"]
                     },
                     "bismark/methylationextractor": {
                         "branch": "master",
-                        "git_sha": "c565f1b27c06a1e8b726e2a646d4c822ae3b514a",
+                        "git_sha": "46842d1ee933d20b78619d513aef7713ed121d72",
                         "installed_by": ["modules"]
                     },
                     "bismark/report": {
                         "branch": "master",
-                        "git_sha": "c565f1b27c06a1e8b726e2a646d4c822ae3b514a",
+                        "git_sha": "46842d1ee933d20b78619d513aef7713ed121d72",
                         "installed_by": ["modules"]
                     },
                     "bismark/summary": {
                         "branch": "master",
-                        "git_sha": "c565f1b27c06a1e8b726e2a646d4c822ae3b514a",
+                        "git_sha": "46842d1ee933d20b78619d513aef7713ed121d72",
                         "installed_by": ["modules"]
                     },
                     "bwameth/align": {
@@ -127,7 +127,7 @@
                     },
                     "trimgalore": {
                         "branch": "master",
-                        "git_sha": "f97696ae2ba28e94032adafea6777d7eb38d2c1d",
+                        "git_sha": "6b4353bb630d17b9e6099c4b8dd281532ecb718e",
                         "installed_by": ["modules"]
                     },
                     "untar": {

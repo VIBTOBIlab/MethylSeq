@@ -43,17 +43,17 @@
                     "samtools": 1.24
                 },
                 "TRIMGALORE": {
-                    "trimgalore": "2.3.0"
+                    "trimgalore": "2.6.0"
                 },
                 "Workflow": {
                     "VIBTOBIlab/MethylSeq": "v3.0.0"
                 }
             }
         ],
-        "timestamp": "2026-10-23T15:21:42.59353",
+        "timestamp": "2026-11-22T14:12:12.768609",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.10.0"
+            "nextflow": "26.10.6"
         }
     },
     "Params: bwameth with methurator": {
